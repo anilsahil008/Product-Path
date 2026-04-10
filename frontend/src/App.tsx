@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Chat from './components/Chat'
 import LoginPage from './pages/LoginPage'
@@ -29,28 +29,40 @@ export default function App() {
       <AuthProvider>
         <div className="h-full">
           <Routes>
-            {/* Public */}
-            <Route path="/"    element={<LandingPage />} />
-            <Route path="/app" element={<Chat />} />
-            <Route path="/login"   element={<LoginPage />} />
-            <Route path="/signup"  element={<SignupPage />} />
+            {/* ── Public marketing routes ───────────────────────────────── */}
+            <Route path="/"          element={<LandingPage />} />
+            <Route path="/login"     element={<LoginPage />} />
+            <Route path="/signup"    element={<SignupPage />} />
+            <Route path="/pricing"   element={<LandingPage />} />
+            <Route path="/resources" element={<LandingPage />} />
 
-            {/* Protected */}
-            <Route path="/documents" element={
+            {/* ── /app → /app/chat redirect ─────────────────────────────── */}
+            <Route path="/app" element={<Navigate to="/app/chat" replace />} />
+
+            {/* ── Protected app routes ──────────────────────────────────── */}
+            <Route path="/app/chat" element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/app/documents" element={
               <ProtectedRoute>
                 <div className="flex h-full">
                   <PlaceholderPage title="Documents" description="Your PRDs, specs, and product docs will live here." icon={DocIcon} />
                 </div>
               </ProtectedRoute>
             } />
-            <Route path="/products" element={
+
+            <Route path="/app/products" element={
               <ProtectedRoute>
                 <div className="flex h-full">
                   <PlaceholderPage title="Products" description="Track your products and roadmaps here." icon={ProductIcon} />
                 </div>
               </ProtectedRoute>
             } />
-            <Route path="/templates" element={
+
+            <Route path="/app/templates" element={
               <ProtectedRoute>
                 <div className="flex h-full">
                   <PlaceholderPage title="Templates" description="Reusable PM templates and frameworks." icon={TemplateIcon} />

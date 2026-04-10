@@ -18,7 +18,7 @@ interface Props {
 const NAV_ITEMS = [
   {
     label: 'Chats',
-    to: '/app',
+    to: '/app/chat',
     protected: false,
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -28,7 +28,7 @@ const NAV_ITEMS = [
   },
   {
     label: 'Documents',
-    to: '/documents',
+    to: '/app/documents',
     protected: true,
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -38,7 +38,7 @@ const NAV_ITEMS = [
   },
   {
     label: 'Products',
-    to: '/products',
+    to: '/app/products',
     protected: true,
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -48,7 +48,7 @@ const NAV_ITEMS = [
   },
   {
     label: 'Templates',
-    to: '/templates',
+    to: '/app/templates',
     protected: true,
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">

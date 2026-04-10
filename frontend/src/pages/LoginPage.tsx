@@ -8,7 +8,7 @@ export default function LoginPage() {
   const navigate  = useNavigate()
   const location  = useLocation()
 
-  const from = (location.state as { from?: string })?.from ?? '/'
+  const from = (location.state as { from?: string })?.from ?? '/app/chat'
 
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')

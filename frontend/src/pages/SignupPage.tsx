@@ -30,7 +30,7 @@ export default function SignupPage() {
     try {
       const { token, user } = await apiSignup(email, password)
       login(token, user)
-      navigate('/', { replace: true })
+      navigate('/app/chat', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed')
     } finally {

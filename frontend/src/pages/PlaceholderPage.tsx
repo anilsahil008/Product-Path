@@ -1,18 +1,12 @@
-interface Props {
-  title: string
-  description: string
-  icon: React.ReactNode
-}
-
 import type { ReactNode } from 'react'
 
-interface PlaceholderProps {
+interface Props {
   title: string
   description: string
   icon: ReactNode
 }
 
-export default function PlaceholderPage({ title, description, icon }: PlaceholderProps) {
+export default function PlaceholderPage({ title, description, icon }: Props) {
   return (
     <div className="flex flex-col flex-1 h-full bg-zinc-950 items-center justify-center select-none">
       <div className="text-zinc-700 mb-4">{icon}</div>
