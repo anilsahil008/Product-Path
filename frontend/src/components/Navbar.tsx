@@ -15,6 +15,7 @@ const NAV_LINKS = [
   'Resources',
   'Reviews',
   'How it works',
+  'How AI works',
 ]
 
 export default function Navbar() {
