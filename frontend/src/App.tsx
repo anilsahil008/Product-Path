@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import Chat from './components/Chat'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import LandingPage from './pages/LandingPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import PlaceholderPage from './pages/PlaceholderPage'
 
@@ -29,8 +30,8 @@ export default function App() {
         <div className="h-full">
           <Routes>
             {/* Public */}
-            <Route path="/"        element={<Chat />} />
-            <Route path="/chats"   element={<Chat />} />
+            <Route path="/"    element={<LandingPage />} />
+            <Route path="/app" element={<Chat />} />
             <Route path="/login"   element={<LoginPage />} />
             <Route path="/signup"  element={<SignupPage />} />
 
