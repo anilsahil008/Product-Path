@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field
 from typing import Literal
 import uuid
 
@@ -29,12 +29,12 @@ class SessionDeleteResponse(BaseModel):
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
 class SignupRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str = Field(..., min_length=6, max_length=128)
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 
