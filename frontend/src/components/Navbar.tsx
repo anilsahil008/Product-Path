@@ -4,6 +4,7 @@
  * Do NOT render inside /app/* routes — the app has its own Sidebar.
  */
 
+import { Link } from 'react-router-dom'
 import ProductDropdown from './ProductDropdown'
 
 const PLAIN_LINKS = [
@@ -22,9 +23,9 @@ export default function Navbar() {
       <div className="mx-auto flex h-[54px] max-w-[1280px] items-center justify-between px-5">
 
         {/* ── Left: logo ─────────────────────────────────────────────── */}
-        <div className="flex flex-shrink-0 items-center select-none">
+        <Link to="/" className="flex flex-shrink-0 items-center select-none">
           <img src="/logo-dark.svg" alt="Product Path" className="h-[26px] w-auto" />
-        </div>
+        </Link>
 
         {/* ── Centre: nav links ───────────────────────────────────────── */}
         <nav className="hidden items-center md:flex" aria-label="Main navigation">
@@ -66,21 +67,21 @@ export default function Navbar() {
 
         {/* ── Right: actions ──────────────────────────────────────────── */}
         <div className="flex items-center gap-1">
-          <a
-            href="#"
+          <Link
+            to="/login"
             className="hidden sm:block px-3.5 py-1.5 text-[13px] font-medium text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
           >
             Log in
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="/signup"
             className="ml-1 flex items-center gap-1.5 rounded-full bg-indigo-600 px-4 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-150 hover:bg-indigo-500 hover:scale-[1.02] active:scale-[0.98]"
           >
             Start free
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-3.5 w-3.5" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
-          </a>
+          </Link>
         </div>
 
         {/* ── Mobile hamburger ────────────────────────────────────────── */}
