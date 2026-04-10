@@ -4,6 +4,7 @@ import Chat from './components/Chat'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import LandingPage from './pages/LandingPage'
+import EnterprisePage from './pages/EnterprisePage'
 import ProtectedRoute from './components/ProtectedRoute'
 import PlaceholderPage from './pages/PlaceholderPage'
 
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/"          element={<LandingPage />} />
             <Route path="/login"     element={<LoginPage />} />
             <Route path="/signup"    element={<SignupPage />} />
+            <Route path="/enterprise" element={<EnterprisePage />} />
             <Route path="/pricing"   element={<LandingPage />} />
             <Route path="/resources" element={<LandingPage />} />
 
