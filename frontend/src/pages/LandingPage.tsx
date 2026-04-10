@@ -1,4 +1,70 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
+
+// ── Product dropdown ──────────────────────────────────────────────────────────
+const FEATURES = [
+  { icon: '📄', label: 'Write PRDs', desc: 'AI-powered product docs' },
+  { icon: '🧠', label: 'AI Coaching', desc: 'Expert feedback on your work' },
+  { icon: '🗺️', label: 'Roadmap Planning', desc: 'Prioritize and sequence features' },
+  { icon: '👥', label: 'Team Collaboration', desc: 'Co-pilot for your whole team' },
+  { icon: '🔗', label: 'Integrations', desc: 'Connect your existing tools' },
+]
+
+const USE_CASES = [
+  { icon: '🎯', label: 'Product Managers' },
+  { icon: '⚙️', label: 'Engineering Teams' },
+  { icon: '🎨', label: 'Design Teams' },
+  { icon: '🚀', label: 'Startups' },
+]
+
+function ProductDropdown() {
+  return (
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[560px] bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl shadow-black/60 p-5 z-50">
+      <div className="flex gap-6">
+        {/* Features */}
+        <div className="flex-1">
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3 px-1">Features</p>
+          <div className="space-y-0.5">
+            {FEATURES.map(({ icon, label, desc }) => (
+              <Link key={label} to="/signup"
+                className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-800 transition-colors group"
+              >
+                <span className="text-base mt-0.5 flex-shrink-0">{icon}</span>
+                <div>
+                  <p className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors">{label}</p>
+                  <p className="text-xs text-zinc-500">{desc}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="w-px bg-zinc-800 self-stretch" />
+
+        {/* Use cases */}
+        <div className="w-44">
+          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3 px-1">Use Cases</p>
+          <div className="space-y-0.5">
+            {USE_CASES.map(({ icon, label }) => (
+              <Link key={label} to="/signup"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-800 transition-colors group"
+              >
+                <span className="text-base flex-shrink-0">{icon}</span>
+                <p className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors">{label}</p>
+              </Link>
+            ))}
+          </div>
+          {/* Bottom links */}
+          <div className="mt-4 pt-3 border-t border-zinc-800 space-y-1 px-1">
+            <Link to="/signup" className="block text-xs text-indigo-400 hover:text-indigo-300 transition-colors">Watch demo →</Link>
+            <Link to="/signup" className="block text-xs text-indigo-400 hover:text-indigo-300 transition-colors">Contact us →</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 function Stat({ value, label }: { value: string; label: string }) {
@@ -87,6 +153,46 @@ function Feature({
   )
 }
 
+// ── Nav ───────────────────────────────────────────────────────────────────────
+function Nav() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <nav className="relative z-10 sticky top-0 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/60">
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
+        <Link to="/" className="flex-shrink-0">
+          <img src="/logo-dark.svg" alt="Product Path" className="h-7 select-none" />
+        </Link>
+
+        <div className="hidden md:flex items-center gap-7">
+          {/* Product with dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+          >
+            <button className="flex items-center gap-1 text-sm text-zinc-400 hover:text-white transition-colors">
+              Product
+              <svg className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </button>
+            {open && <ProductDropdown />}
+          </div>
+
+          <Link to="/pricing"   className="text-sm text-zinc-400 hover:text-white transition-colors">Pricing</Link>
+          <Link to="/resources" className="text-sm text-zinc-400 hover:text-white transition-colors">Resources</Link>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link to="/login"  className="text-sm text-zinc-400 hover:text-white transition-colors px-3 py-1.5 hidden sm:block">Log in</Link>
+          <Link to="/signup" className="text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors">Start free</Link>
+        </div>
+      </div>
+    </nav>
+  )
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
   return (
@@ -100,22 +206,7 @@ export default function LandingPage() {
       </div>
 
       {/* ── Nav ── */}
-      <nav className="relative z-10 sticky top-0 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/60">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/" className="flex-shrink-0">
-            <img src="/logo-dark.svg" alt="Product Path" className="h-7 select-none" />
-          </Link>
-          <div className="hidden md:flex items-center gap-7">
-            {['Product', 'Pricing', 'Resources'].map(l => (
-              <Link key={l} to={`/${l.toLowerCase()}`} className="text-sm text-zinc-400 hover:text-white transition-colors">{l}</Link>
-            ))}
-          </div>
-          <div className="flex items-center gap-3">
-            <Link to="/login" className="text-sm text-zinc-400 hover:text-white transition-colors px-3 py-1.5 hidden sm:block">Log in</Link>
-            <Link to="/signup" className="text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors">Start free</Link>
-          </div>
-        </div>
-      </nav>
+      <Nav />
 
       <div className="relative z-10">
 
