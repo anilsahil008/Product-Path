@@ -158,49 +158,62 @@ function Nav() {
   const [open, setOpen] = useState(false)
 
   return (
-    <nav className="relative z-10 sticky top-0 bg-zinc-950/90 backdrop-blur-lg border-b border-white/5">
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+    <nav className="relative z-10 sticky top-0 bg-zinc-950/95 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+      <div className="max-w-7xl mx-auto px-5 flex items-center justify-between h-[52px]">
 
         {/* Logo */}
-        <Link to="/" className="flex-shrink-0">
-          <img src="/logo-dark.svg" alt="Product Path" className="h-7 select-none" />
+        <Link to="/" className="flex-shrink-0 flex items-center gap-2.5">
+          <img src="/logo-dark.svg" alt="Product Path" className="h-6 select-none" />
         </Link>
 
-        {/* Centre links */}
-        <div className="hidden md:flex items-center gap-1">
+        {/* Centre nav links */}
+        <div className="hidden md:flex items-center">
           {/* Product dropdown */}
           <div
             className="relative"
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
           >
-            <button className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors">
+            <button className="flex items-center gap-1 px-3.5 py-2 text-[13px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors">
               Product
-              <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <svg className={`w-3 h-3 opacity-60 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
               </svg>
             </button>
             {open && <ProductDropdown />}
           </div>
 
-          <Link to="/pricing"   className="px-3 py-2 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors">Pricing</Link>
-          <Link to="/resources" className="px-3 py-2 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors">Resources</Link>
+          {[
+            { label: 'Pricing',   to: '/pricing' },
+            { label: 'Resources', to: '/resources' },
+          ].map(({ label, to }) => (
+            <Link key={label} to={to} className="px-3.5 py-2 text-[13px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors">
+              {label}
+            </Link>
+          ))}
         </div>
 
         {/* Right actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Link
             to="/login"
-            className="hidden sm:block px-4 py-2 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="hidden sm:block px-3.5 py-1.5 text-[13px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors"
           >
             Log in
           </Link>
+
+          <button className="hidden sm:block px-3.5 py-1.5 text-[13px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors">
+            Get a demo
+          </button>
+
+          {/* Gradient CTA — matches ChatPRD pill style */}
           <Link
             to="/signup"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors group"
+            className="ml-1 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold text-white transition-all duration-200 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)' }}
           >
             Start free
-            <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
           </Link>
