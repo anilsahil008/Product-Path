@@ -158,36 +158,54 @@ function Nav() {
   const [open, setOpen] = useState(false)
 
   return (
-    <nav className="relative z-10 sticky top-0 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/60">
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
+    <nav className="relative z-10 sticky top-0 bg-zinc-950/90 backdrop-blur-lg border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+
+        {/* Logo */}
         <Link to="/" className="flex-shrink-0">
           <img src="/logo-dark.svg" alt="Product Path" className="h-7 select-none" />
         </Link>
 
-        <div className="hidden md:flex items-center gap-7">
-          {/* Product with dropdown */}
+        {/* Centre links */}
+        <div className="hidden md:flex items-center gap-1">
+          {/* Product dropdown */}
           <div
             className="relative"
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
           >
-            <button className="flex items-center gap-1 text-sm text-zinc-400 hover:text-white transition-colors">
+            <button className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors">
               Product
-              <svg className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
               </svg>
             </button>
             {open && <ProductDropdown />}
           </div>
 
-          <Link to="/pricing"   className="text-sm text-zinc-400 hover:text-white transition-colors">Pricing</Link>
-          <Link to="/resources" className="text-sm text-zinc-400 hover:text-white transition-colors">Resources</Link>
+          <Link to="/pricing"   className="px-3 py-2 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors">Pricing</Link>
+          <Link to="/resources" className="px-3 py-2 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors">Resources</Link>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link to="/login"  className="text-sm text-zinc-400 hover:text-white transition-colors px-3 py-1.5 hidden sm:block">Log in</Link>
-          <Link to="/signup" className="text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors">Start free</Link>
+        {/* Right actions */}
+        <div className="flex items-center gap-2">
+          <Link
+            to="/login"
+            className="hidden sm:block px-4 py-2 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            Log in
+          </Link>
+          <Link
+            to="/signup"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors group"
+          >
+            Start free
+            <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </Link>
         </div>
+
       </div>
     </nav>
   )
@@ -218,12 +236,12 @@ export default function LandingPage() {
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-4xl leading-[1.05]">
-            The AI product manager<br />
-            <span className="text-indigo-400">for your entire team</span>
+            Build products<br />
+            <span className="text-indigo-400">with confidence.</span>
           </h1>
 
           <p className="mt-6 text-lg text-zinc-400 max-w-2xl leading-relaxed">
-            Turn ideas into clear requirements, coach your team to ship better products, and move faster with less friction. Built for PMs, engineers, and designers.
+            Turn ideas into clear decisions, strong requirements, and aligned execution — with an AI product partner that guides you at every step of the product lifecycle.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 mt-10">
