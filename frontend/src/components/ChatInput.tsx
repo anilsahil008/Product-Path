@@ -1,4 +1,15 @@
-import { useState, useRef, type ChangeEvent, type KeyboardEvent } from 'react'
+import { useState, useRef, useEffect, type ChangeEvent, type KeyboardEvent } from 'react'
+
+const PLACEHOLDERS = [
+  'Write a PRD for a new feature…',
+  'Help me prioritize my backlog…',
+  'Create user stories for…',
+  'Prep me for a stakeholder meeting…',
+  'Define success metrics for…',
+  'Review my product spec…',
+  'Write a one-pager for…',
+  'Help me think through a tradeoff…',
+]
 
 interface UploadedFile {
   filename: string
@@ -20,9 +31,19 @@ export default function ChatInput({
   isUploading,
   uploadedFiles,
 }: Props) {
-  const [value, setValue] = useState('')
+  const [value, setValue]         = useState('')
+  const [phIndex, setPhIndex]     = useState(0)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Rotate placeholder every 4 seconds when idle
+  useEffect(() => {
+    if (isStreaming) return
+    const t = setInterval(() => {
+      setPhIndex(i => (i + 1) % PLACEHOLDERS.length)
+    }, 4000)
+    return () => clearInterval(t)
+  }, [isStreaming])
 
   const handleSend = () => {
     const trimmed = value.trim()
@@ -91,8 +112,8 @@ export default function ChatInput({
               isStreaming
                 ? 'Waiting for response…'
                 : uploadedFiles.length > 0
-                ? 'Ask me about the data…'
-                : 'Send a message…'
+                ? 'Ask me about the uploaded file…'
+                : PLACEHOLDERS[phIndex]
             }
             rows={1}
             className="w-full resize-none px-4 pt-3.5 pb-2 text-sm text-zinc-100 placeholder-zinc-500 leading-relaxed focus:outline-none bg-transparent overflow-hidden"
