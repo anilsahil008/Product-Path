@@ -274,8 +274,12 @@ export default function Chat() {
             <ActionCards onSend={sendMessage} isStreaming={isStreaming} />
           ) : (
             <div className="max-w-3xl mx-auto px-4 py-8">
-              {messages.map(msg => (
-                <MessageBubble key={msg.id} message={msg} />
+              {messages.map((msg, i) => (
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  onRetry={msg.role === 'assistant' && i === messages.length - 1 ? retryLast : undefined}
+                />
               ))}
               <div ref={bottomRef} />
             </div>
