@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { login as apiLogin, pingServer } from '../services/chatApi'
@@ -13,28 +13,15 @@ export default function LoginPage() {
   const [password, setPassword]   = useState('')
   const [error, setError]         = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [slowConn, setSlowConn]   = useState(false)
-  const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
   // Wake the server the moment this page loads
   useEffect(() => {
     pingServer()
   }, [])
 
-  const startSlowTimer = () => {
-    slowTimer.current = setTimeout(() => setSlowConn(true), 5000)
-  }
-
-  const clearSlowTimer = () => {
-    if (slowTimer.current) clearTimeout(slowTimer.current)
-    setSlowConn(false)
-  }
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
     setIsLoading(true)
-    startSlowTimer()
 
     try {
       const { token, user } = await apiLogin(email, password)
@@ -49,7 +36,6 @@ export default function LoginPage() {
       )
     } finally {
       setIsLoading(false)
-      clearSlowTimer()
     }
   }
 
@@ -76,15 +62,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Slow connection notice */}
-          {slowConn && isLoading && (
-            <div className="mb-4 px-4 py-3 rounded-lg bg-amber-950/40 border border-amber-800/50 text-sm text-amber-400 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 flex-shrink-0 animate-spin">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
-              Server is starting up — hang tight, almost there…
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
