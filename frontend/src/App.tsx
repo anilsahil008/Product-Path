@@ -33,22 +33,11 @@ const TemplateIcon = (
   </svg>
 )
 
-function MaintenanceBanner() {
-  return (
-    <div className="w-full bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 text-center">
-      <p className="text-[13px] text-amber-400 font-medium">
-        🔧 We're currently performing maintenance — some features may be temporarily unavailable. Thanks for your patience.
-      </p>
-    </div>
-  )
-}
-
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <div className="h-full flex flex-col">
-          <MaintenanceBanner />
           <div className="flex-1 min-h-0">
           <Routes>
             {/* ── Public marketing routes ───────────────────────────────── */}
