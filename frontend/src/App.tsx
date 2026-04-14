@@ -83,6 +83,14 @@ export default function App() {
                 </div>
               </ProtectedRoute>
             } />
+
+            <Route path="/app/projects/:id" element={
+              <ProtectedRoute>
+                <div className="flex h-full">
+                  <PlaceholderPage title="Project" description="Your project workspace will live here." icon={DocIcon} />
+                </div>
+              </ProtectedRoute>
+            } />
           </Routes>
           </div>
         </div>
