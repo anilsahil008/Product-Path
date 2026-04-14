@@ -12,6 +12,10 @@ import BillingPage from './pages/BillingPage'
 import HowAIWorksPage from './pages/HowAIWorksPage'
 import HowItWorksPage from './pages/HowItWorksPage'
 import PricingPage from './pages/PricingPage'
+import UseCasePMPage from './pages/UseCasePMPage'
+import UseCaseEngineeringPage from './pages/UseCaseEngineeringPage'
+import UseCaseDesignPage from './pages/UseCaseDesignPage'
+import UseCaseStartupsPage from './pages/UseCaseStartupsPage'
 
 const DocIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-16 h-16">
@@ -56,6 +60,10 @@ export default function App() {
             <Route path="/resources"    element={<LandingPage />} />
             <Route path="/how-ai-works" element={<HowAIWorksPage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/use-cases/product-managers" element={<UseCasePMPage />} />
+            <Route path="/use-cases/engineering"       element={<UseCaseEngineeringPage />} />
+            <Route path="/use-cases/design"            element={<UseCaseDesignPage />} />
+            <Route path="/use-cases/startups"          element={<UseCaseStartupsPage />} />
 
             {/* ── /app → /app/chat redirect ─────────────────────────────── */}
             <Route path="/app" element={<Navigate to="/app/chat" replace />} />
