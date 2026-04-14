@@ -63,11 +63,6 @@ export default function LandingPage() {
         ══════════════════════════════════════════════ */}
         <section className="max-w-5xl mx-auto px-6 pt-24 pb-16 flex flex-col items-center text-center">
 
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-medium mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse flex-shrink-0" />
-            Now in beta — free for early teams
-          </div>
-
           <h1 className="text-5xl sm:text-6xl lg:text-[72px] font-bold tracking-tight text-white max-w-4xl leading-[1.04]">
             Build products<br />
             <span className="text-indigo-400">with confidence.</span>
