@@ -5,7 +5,7 @@ import Sidebar from './Sidebar'
 import ActionCards from './ActionCards'
 import { streamMessage, fetchHistory, deleteSession, uploadFile, type Message, type Role } from '../services/chatApi'
 
-// ── Session storage helpers ───────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface ChatSession {
   id: string
@@ -13,31 +13,64 @@ interface ChatSession {
   updatedAt: string
 }
 
-function loadSessions(): ChatSession[] {
-  try {
-    return JSON.parse(localStorage.getItem('chatpm_sessions') || '[]')
-  } catch { return [] }
-}
-
-function persistSessions(sessions: ChatSession[]) {
-  localStorage.setItem('chatpm_sessions', JSON.stringify(sessions))
-}
-
-function getOrCreateSessionId(): string {
-  const key = 'chatpm_session_id'
-  const stored = localStorage.getItem(key)
-  if (stored) return stored
-  const id = crypto.randomUUID()
-  localStorage.setItem(key, id)
-  return id
-}
-
-// ── Component ─────────────────────────────────────────────────────────────────
-
 interface UploadedFile {
   filename: string
   artifactId: number
 }
+
+// ── localStorage helpers ──────────────────────────────────────────────────────
+
+const SESSIONS_KEY = 'chatpm_sessions'
+const SESSION_ID_KEY = 'chatpm_session_id'
+const MSG_PREFIX = 'chatpm_msgs_'
+
+function loadSessions(): ChatSession[] {
+  try { return JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]') }
+  catch { return [] }
+}
+
+function persistSessions(sessions: ChatSession[]) {
+  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions))
+}
+
+function getOrCreateSessionId(): string {
+  const stored = localStorage.getItem(SESSION_ID_KEY)
+  if (stored) return stored
+  const id = crypto.randomUUID()
+  localStorage.setItem(SESSION_ID_KEY, id)
+  return id
+}
+
+// Save completed messages for a session to localStorage
+function saveMessages(sid: string, msgs: Message[]) {
+  const toSave = msgs
+    .filter(m => !m.streaming && m.content)
+    .map(m => ({ role: m.role, content: m.content }))
+  if (toSave.length > 0) {
+    localStorage.setItem(MSG_PREFIX + sid, JSON.stringify(toSave))
+  }
+}
+
+// Load messages from localStorage for a session
+function loadMessages(sid: string): Message[] {
+  try {
+    const stored = localStorage.getItem(MSG_PREFIX + sid)
+    if (!stored) return []
+    const parsed = JSON.parse(stored) as Array<{ role: Role; content: string }>
+    return parsed.map(m => ({
+      id: crypto.randomUUID(),
+      role: m.role,
+      content: m.content,
+      streaming: false,
+    }))
+  } catch { return [] }
+}
+
+function removeMessages(sid: string) {
+  localStorage.removeItem(MSG_PREFIX + sid)
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Chat() {
   const [sessionId, setSessionId]               = useState<string>(getOrCreateSessionId)
@@ -52,10 +85,21 @@ export default function Chat() {
   const [isUploading, setIsUploading]           = useState(false)
   const [sidebarOpen, setSidebarOpen]           = useState(true)
 
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const bottomRef       = useRef<HTMLDivElement>(null)
+  const sessionIdRef    = useRef(sessionId)
+  sessionIdRef.current  = sessionId
 
   // ── Load history on session change ─────────────────────────────────────────
   useEffect(() => {
+    // 1. Load from localStorage instantly — always available
+    const local = loadMessages(sessionId)
+    if (local.length > 0) {
+      setMessages(local)
+      setIsLoadingHistory(false)
+      return
+    }
+
+    // 2. Fall back to backend (server may have history if not restarted)
     let cancelled = false
     setIsLoadingHistory(true)
     setMessages([])
@@ -63,16 +107,19 @@ export default function Chat() {
     fetchHistory(sessionId)
       .then(data => {
         if (cancelled) return
-        setMessages(
-          data.messages.map((m: { role: Role; content: string }) => ({
-            id: crypto.randomUUID(),
-            role: m.role,
-            content: m.content,
-            streaming: false,
-          }))
-        )
+        const msgs = data.messages.map((m: { role: Role; content: string }) => ({
+          id: crypto.randomUUID(),
+          role: m.role,
+          content: m.content,
+          streaming: false,
+        }))
+        setMessages(msgs)
+        // Cache in localStorage for next time
+        if (msgs.length > 0) saveMessages(sessionId, msgs)
       })
-      .catch(() => {})
+      .catch(() => {
+        // Backend unavailable — stay with empty chat, no crash
+      })
       .finally(() => { if (!cancelled) setIsLoadingHistory(false) })
 
     return () => { cancelled = true }
@@ -97,21 +144,24 @@ export default function Chat() {
       return updated
     })
 
-  const finalizeStream = () =>
+  // Finalize stream AND persist to localStorage
+  const finalizeStream = useCallback(() =>
     setMessages(prev => {
       const updated = [...prev]
       const last = updated[updated.length - 1]
       if (last?.role === 'assistant') {
         updated[updated.length - 1] = { ...last, streaming: false }
       }
+      // Save completed conversation to localStorage
+      saveMessages(sessionIdRef.current, updated)
       return updated
-    })
+    }), [])
 
   // ── Save session to sidebar list ────────────────────────────────────────────
   const saveToSessionList = useCallback((id: string, title: string) => {
     setSessions(prev => {
       const filtered = prev.filter(s => s.id !== id)
-      const updated = [{ id, title, updatedAt: new Date().toISOString() }, ...filtered].slice(0, 30)
+      const updated = [{ id, title, updatedAt: new Date().toISOString() }, ...filtered].slice(0, 50)
       persistSessions(updated)
       return updated
     })
@@ -120,7 +170,7 @@ export default function Chat() {
   // ── Core stream executor ────────────────────────────────────────────────────
   const executeStream = useCallback(async (text: string, mode: string) => {
     try {
-      for await (const event of streamMessage(sessionId, text, mode)) {
+      for await (const event of streamMessage(sessionIdRef.current, text, mode)) {
         if (event.type === 'chunk') {
           appendChunk(event.content)
         } else if (event.type === 'error') {
@@ -134,7 +184,7 @@ export default function Chat() {
       finalizeStream()
       setIsStreaming(false)
     }
-  }, [sessionId])
+  }, [finalizeStream])
 
   // ── Send message ────────────────────────────────────────────────────────────
   const sendMessage = useCallback(async (text: string, mode: string = 'pm') => {
@@ -144,14 +194,21 @@ export default function Chat() {
     setLastUserMessage(text)
     setLastMode(mode)
 
-    // Derive title from first user message (truncated)
     const title = text.length > 40 ? text.slice(0, 40) + '…' : text
-    saveToSessionList(sessionId, title)
+    saveToSessionList(sessionIdRef.current, title)
 
-    appendMessage({ id: crypto.randomUUID(), role: 'user', content: text })
-    appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: '', streaming: true })
+    const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text }
+    const asstMsg: Message = { id: crypto.randomUUID(), role: 'assistant', content: '', streaming: true }
+
+    setMessages(prev => {
+      const updated = [...prev, userMsg]
+      // Save user message immediately so it persists even if response fails
+      saveMessages(sessionIdRef.current, updated)
+      return [...updated, asstMsg]
+    })
+
     await executeStream(text, mode)
-  }, [isStreaming, sessionId, executeStream, saveToSessionList])
+  }, [isStreaming, executeStream, saveToSessionList])
 
   // ── Retry last message ──────────────────────────────────────────────────────
   const retryLast = useCallback(async () => {
@@ -169,10 +226,11 @@ export default function Chat() {
 
   // ── New chat ────────────────────────────────────────────────────────────────
   const clearChat = useCallback(async () => {
-    await deleteSession(sessionId)
+    deleteSession(sessionId).catch(() => {})
     const newId = crypto.randomUUID()
-    localStorage.setItem('chatpm_session_id', newId)
+    localStorage.setItem(SESSION_ID_KEY, newId)
     setSessionId(newId)
+    setMessages([])
     setError(null)
     setLastUserMessage(null)
     setUploadedFiles([])
@@ -181,11 +239,31 @@ export default function Chat() {
   // ── Load existing session from sidebar ──────────────────────────────────────
   const selectSession = useCallback((id: string) => {
     if (id === sessionId) return
-    localStorage.setItem('chatpm_session_id', id)
+    localStorage.setItem(SESSION_ID_KEY, id)
     setSessionId(id)
     setError(null)
     setLastUserMessage(null)
     setUploadedFiles([])
+  }, [sessionId])
+
+  // ── Delete a session from sidebar ───────────────────────────────────────────
+  const deleteSessionFromList = useCallback((id: string) => {
+    deleteSession(id).catch(() => {})
+    removeMessages(id)
+    setSessions(prev => {
+      const updated = prev.filter(s => s.id !== id)
+      persistSessions(updated)
+      return updated
+    })
+    // If deleting current session, create a new one
+    if (id === sessionId) {
+      const newId = crypto.randomUUID()
+      localStorage.setItem(SESSION_ID_KEY, newId)
+      setSessionId(newId)
+      setMessages([])
+      setError(null)
+      setLastUserMessage(null)
+    }
   }, [sessionId])
 
   // ── File upload ─────────────────────────────────────────────────────────────
@@ -215,6 +293,7 @@ export default function Chat() {
           sessions={sessions}
           onSelectSession={selectSession}
           onNewChat={clearChat}
+          onDeleteSession={deleteSessionFromList}
           isStreaming={isStreaming}
         />
       )}
@@ -234,7 +313,6 @@ export default function Chat() {
             </svg>
           </button>
 
-          {/* Edit / new chat icon */}
           <button
             onClick={clearChat}
             disabled={isStreaming}
@@ -268,6 +346,10 @@ export default function Chat() {
         <div className="flex-1 overflow-y-auto">
           {isLoadingHistory ? (
             <div className="h-full flex items-center justify-center text-zinc-600 text-sm">
+              <svg className="w-4 h-4 animate-spin mr-2" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
               Loading conversation…
             </div>
           ) : isEmpty ? (
