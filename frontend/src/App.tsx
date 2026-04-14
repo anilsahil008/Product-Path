@@ -11,6 +11,7 @@ import AccountSettingsPage from './pages/AccountSettingsPage'
 import BillingPage from './pages/BillingPage'
 import HowAIWorksPage from './pages/HowAIWorksPage'
 import HowItWorksPage from './pages/HowItWorksPage'
+import PricingPage from './pages/PricingPage'
 
 const DocIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-16 h-16">
@@ -51,7 +52,7 @@ export default function App() {
             <Route path="/login"     element={<LoginPage />} />
             <Route path="/signup"    element={<SignupPage />} />
             <Route path="/enterprise" element={<EnterprisePage />} />
-            <Route path="/pricing"      element={<LandingPage />} />
+            <Route path="/pricing"      element={<PricingPage />} />
             <Route path="/resources"    element={<LandingPage />} />
             <Route path="/how-ai-works" element={<HowAIWorksPage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />

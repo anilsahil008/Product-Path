@@ -81,7 +81,12 @@ export default function Navbar() {
 
           {/* Anchor links — scroll to section on landing page */}
           <AnchorLink hash="reviews">Customers</AnchorLink>
-          <AnchorLink hash="pricing">Pricing</AnchorLink>
+          <Link
+            to="/pricing"
+            className="px-3.5 py-2 text-[13px] font-medium leading-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
+          >
+            Pricing
+          </Link>
 
           {/* Resources — placeholder page */}
           <Link
