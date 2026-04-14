@@ -4,18 +4,36 @@
  * Do NOT render inside /app/* routes — the app has its own Sidebar.
  */
 
-import { Link } from 'react-router-dom'
+import type { ReactNode, MouseEvent } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import ProductDropdown from './ProductDropdown'
 
-const PLAIN_LINKS = [
-  'Enterprise',
-  'Customers',
-  'Pricing',
-  'Resources',
-  'Reviews',
-  'How it works',
-  'How AI works',
-]
+// Anchor links scroll to a section on the landing page.
+// If we're already on '/', just scroll. Otherwise navigate there first.
+function AnchorLink({ hash, children }: { hash: string; children: ReactNode }) {
+  const location = useLocation()
+
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    const el = document.getElementById(hash)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    } else if (location.pathname !== '/') {
+      // Not on landing page — navigate there with hash so it scrolls after load
+      window.location.href = `/#${hash}`
+    }
+  }
+
+  return (
+    <a
+      href={`#${hash}`}
+      onClick={handleClick}
+      className="px-3.5 py-2 text-[13px] font-medium leading-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
+    >
+      {children}
+    </a>
+  )
+}
 
 export default function Navbar() {
   return (
@@ -53,16 +71,34 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Remaining plain links */}
-          {PLAIN_LINKS.map((label) => (
-            <a
-              key={label}
-              href="#"
-              className="px-3.5 py-2 text-[13px] font-medium leading-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
-            >
-              {label}
-            </a>
-          ))}
+          {/* Enterprise — page route */}
+          <Link
+            to="/enterprise"
+            className="px-3.5 py-2 text-[13px] font-medium leading-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
+          >
+            Enterprise
+          </Link>
+
+          {/* Anchor links — scroll to section on landing page */}
+          <AnchorLink hash="reviews">Customers</AnchorLink>
+          <AnchorLink hash="pricing">Pricing</AnchorLink>
+
+          {/* Resources — placeholder page */}
+          <Link
+            to="/resources"
+            className="px-3.5 py-2 text-[13px] font-medium leading-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
+          >
+            Resources
+          </Link>
+
+          <AnchorLink hash="reviews">Reviews</AnchorLink>
+          <AnchorLink hash="how-it-works">How it works</AnchorLink>
+          <Link
+            to="/how-ai-works"
+            className="px-3.5 py-2 text-[13px] font-medium leading-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
+          >
+            How AI works
+          </Link>
         </nav>
 
         {/* ── Right: actions ──────────────────────────────────────────── */}

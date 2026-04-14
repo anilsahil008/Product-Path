@@ -7,6 +7,9 @@ import LandingPage from './pages/LandingPage'
 import EnterprisePage from './pages/EnterprisePage'
 import ProtectedRoute from './components/ProtectedRoute'
 import PlaceholderPage from './pages/PlaceholderPage'
+import AccountSettingsPage from './pages/AccountSettingsPage'
+import BillingPage from './pages/BillingPage'
+import HowAIWorksPage from './pages/HowAIWorksPage'
 
 const DocIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-16 h-16">
@@ -47,8 +50,9 @@ export default function App() {
             <Route path="/login"     element={<LoginPage />} />
             <Route path="/signup"    element={<SignupPage />} />
             <Route path="/enterprise" element={<EnterprisePage />} />
-            <Route path="/pricing"   element={<LandingPage />} />
-            <Route path="/resources" element={<LandingPage />} />
+            <Route path="/pricing"      element={<LandingPage />} />
+            <Route path="/resources"    element={<LandingPage />} />
+            <Route path="/how-ai-works" element={<HowAIWorksPage />} />
 
             {/* ── /app → /app/chat redirect ─────────────────────────────── */}
             <Route path="/app" element={<Navigate to="/app/chat" replace />} />
@@ -81,6 +85,18 @@ export default function App() {
                 <div className="flex h-full">
                   <PlaceholderPage title="Templates" description="Reusable PM templates and frameworks." icon={TemplateIcon} />
                 </div>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/app/settings/profile" element={
+              <ProtectedRoute>
+                <AccountSettingsPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/app/settings/billing" element={
+              <ProtectedRoute>
+                <BillingPage />
               </ProtectedRoute>
             } />
 
