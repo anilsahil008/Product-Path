@@ -1,5 +1,15 @@
 const BASE_URL = 'https://product-path.onrender.com'
 
+// ── Server warm-up ping ───────────────────────────────────────────────────────
+// Render free tier sleeps after inactivity. Call this on auth pages so the
+// server starts waking up while the user fills in the form.
+export function pingServer(): void {
+  fetch(`${BASE_URL}/api/auth/me`, {
+    method: 'GET',
+    signal: AbortSignal.timeout(60_000),
+  }).catch(() => {/* intentional — we just want to wake the server */})
+}
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export type Role = 'user' | 'assistant'
