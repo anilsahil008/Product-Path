@@ -92,7 +92,12 @@ export default function Navbar() {
           </Link>
 
           <AnchorLink hash="reviews">Reviews</AnchorLink>
-          <AnchorLink hash="how-it-works">How it works</AnchorLink>
+          <Link
+            to="/how-it-works"
+            className="px-3.5 py-2 text-[13px] font-medium leading-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
+          >
+            How it works
+          </Link>
           <Link
             to="/how-ai-works"
             className="px-3.5 py-2 text-[13px] font-medium leading-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100"
