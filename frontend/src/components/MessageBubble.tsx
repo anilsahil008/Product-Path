@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { Message } from '../services/chatApi'
 
 interface Props {
@@ -173,14 +175,48 @@ export default function MessageBubble({ message, onRetry }: Props) {
 
         <div
           className={[
-            'max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap break-words',
+            'max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed break-words',
             isUser
-              ? 'bg-indigo-600 text-white rounded-br-sm'
+              ? 'bg-indigo-600 text-white rounded-br-sm whitespace-pre-wrap'
               : 'bg-zinc-800 text-zinc-200 border border-zinc-700 rounded-bl-sm',
           ].join(' ')}
         >
-          {message.content || (isStreaming ? '\u00A0' : '')}
-          {isStreaming && (
+          {isUser ? (
+            <>
+              {message.content || (isStreaming ? '\u00A0' : '')}
+              {isStreaming && (
+                <span className="inline-block w-[2px] h-4 ml-0.5 bg-current opacity-70 animate-pulse align-text-bottom" />
+              )}
+            </>
+          ) : (
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                h1: ({ children }) => <h1 className="text-base font-bold text-zinc-100 mt-4 mb-2 first:mt-0">{children}</h1>,
+                h2: ({ children }) => <h2 className="text-sm font-bold text-zinc-100 mt-4 mb-1.5 first:mt-0">{children}</h2>,
+                h3: ({ children }) => <h3 className="text-sm font-semibold text-zinc-200 mt-3 mb-1 first:mt-0">{children}</h3>,
+                p:  ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                strong: ({ children }) => <strong className="font-semibold text-zinc-100">{children}</strong>,
+                em: ({ children }) => <em className="italic text-zinc-300">{children}</em>,
+                ul: ({ children }) => <ul className="list-disc list-outside ml-4 mb-2 space-y-1">{children}</ul>,
+                ol: ({ children }) => <ol className="list-decimal list-outside ml-4 mb-2 space-y-1">{children}</ol>,
+                li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                code: ({ children, className }) => {
+                  const isBlock = className?.includes('language-')
+                  return isBlock
+                    ? <code className="block bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs font-mono text-zinc-300 overflow-x-auto my-2 whitespace-pre">{children}</code>
+                    : <code className="bg-zinc-700 rounded px-1 py-0.5 text-xs font-mono text-zinc-200">{children}</code>
+                },
+                pre: ({ children }) => <pre className="my-2">{children}</pre>,
+                blockquote: ({ children }) => <blockquote className="border-l-2 border-indigo-500 pl-3 my-2 text-zinc-400 italic">{children}</blockquote>,
+                hr: () => <hr className="border-zinc-700 my-3" />,
+                a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2">{children}</a>,
+              }}
+            >
+              {message.content || (isStreaming ? '\u00A0' : '')}
+            </ReactMarkdown>
+          )}
+          {!isUser && isStreaming && (
             <span className="inline-block w-[2px] h-4 ml-0.5 bg-current opacity-70 animate-pulse align-text-bottom" />
           )}
         </div>
