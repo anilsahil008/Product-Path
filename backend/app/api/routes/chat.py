@@ -64,17 +64,18 @@ async def send_message(
         for a in db_artifacts
     ] or None
 
-    # Build time context — injected into every response
-    now_utc     = datetime.now(ZoneInfo("UTC"))
-    now_est     = datetime.now(ZoneInfo("America/New_York"))
-    now_pst     = datetime.now(ZoneInfo("America/Los_Angeles"))
+    # Build time context — injected LAST so it overrides any search result timestamps
+    now_utc = datetime.now(ZoneInfo("UTC"))
+    now_est = datetime.now(ZoneInfo("America/New_York"))
+    now_pst = datetime.now(ZoneInfo("America/Los_Angeles"))
     time_context = (
-        f"\n\n## Current date & time (server)\n"
-        f"- UTC:  {now_utc.strftime('%A, %B %d, %Y %I:%M %p %Z')}\n"
+        f"\n\n## AUTHORITATIVE current date & time (from server clock — overrides all other sources)\n"
+        f"- UTC:     {now_utc.strftime('%A, %B %d, %Y %I:%M %p %Z')}\n"
         f"- EST/EDT: {now_est.strftime('%A, %B %d, %Y %I:%M %p %Z')}\n"
         f"- PST/PDT: {now_pst.strftime('%A, %B %d, %Y %I:%M %p %Z')}\n"
-        f"You always know the current date and time from the above. "
-        f"Answer time questions directly without saying you lack real-time access."
+        f"IMPORTANT: Web search results may contain cached or old timestamps — "
+        f"always use the server clock above for any date or time question. "
+        f"Answer time questions directly and precisely using this data."
     )
 
     async def event_generator():
@@ -90,9 +91,10 @@ async def send_message(
             async for chunk in ai_service.stream_response(
                 history=history,
                 user_message=request.message,
-                system_prompt=system_prompt.content + time_context,
+                system_prompt=system_prompt.content,
                 artifacts=artifacts,
                 search_context=search_context,
+                time_context=time_context,
             ):
                 full_response.append(chunk)
                 payload = json.dumps({"type": "chunk", "content": chunk})

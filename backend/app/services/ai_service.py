@@ -46,6 +46,7 @@ class AIService:
         system_prompt: str,
         artifacts: list[dict] | None = None,
         search_context: str | None = None,
+        time_context: str | None = None,
     ) -> AsyncGenerator[str, None]:
         """
         Args:
@@ -55,10 +56,13 @@ class AIService:
             artifacts:      Optional list of {filename, content_type, raw_content} dicts.
                             Injected as a synthetic early exchange before history.
             search_context: Optional real-time web search results appended to system prompt.
+            time_context:   Current server datetime — injected last so it overrides search results.
         """
         full_system = system_prompt
         if search_context:
-            full_system = system_prompt + "\n\n" + search_context
+            full_system += "\n\n" + search_context
+        if time_context:
+            full_system += time_context
 
         messages: list[dict] = [{"role": "system", "content": full_system}]
 
