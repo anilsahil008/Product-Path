@@ -66,6 +66,7 @@ async def send_message(
         full_response: list[str] = []
         try:
             # Real-time web search (when enabled)
+            print(f"[chat] use_search={request.use_search} message={request.message[:60]!r}", flush=True)
             search_context: str | None = None
             if request.use_search:
                 yield f"data: {json.dumps({'type': 'searching'})}\n\n"

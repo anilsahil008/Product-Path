@@ -78,7 +78,7 @@ export default function Chat() {
   const [messages, setMessages]                 = useState<Message[]>([])
   const [isStreaming, setIsStreaming]            = useState(false)
   const [isSearching, setIsSearching]           = useState(false)
-  const [liveSearch, setLiveSearch]             = useState(false)
+  const [liveSearch, setLiveSearch]             = useState(true)
   const [isLoadingHistory, setIsLoadingHistory] = useState(true)
   const [error, setError]                       = useState<string | null>(null)
   const [lastUserMessage, setLastUserMessage]   = useState<string | null>(null)
