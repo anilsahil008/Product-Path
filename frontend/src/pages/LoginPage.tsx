@@ -28,12 +28,7 @@ export default function LoginPage() {
       login(token, user)
       navigate(from, { replace: true })
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Login failed'
-      setError(
-        msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('network')
-          ? 'Could not reach the server. Please try again.'
-          : msg
-      )
+      setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
       setIsLoading(false)
     }

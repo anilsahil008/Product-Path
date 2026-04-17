@@ -40,9 +40,7 @@ export default function SignupPage() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Signup failed'
       setError(
-        msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('network')
-          ? 'Could not reach the server. Please try again.'
-          : msg.includes('already')
+        msg.includes('already')
           ? 'An account with this email already exists. Try signing in.'
           : msg
       )

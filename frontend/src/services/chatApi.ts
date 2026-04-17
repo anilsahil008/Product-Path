@@ -51,11 +51,17 @@ export interface AuthResponse {
 // ── Auth API ─────────────────────────────────────────────────────────────────
 
 export async function signup(email: string, password: string): Promise<AuthResponse> {
-  const res = await fetch(`${BASE_URL}/api/auth/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  })
+  let res: Response
+  try {
+    res = await fetch(`${BASE_URL}/api/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      signal: AbortSignal.timeout(60_000),
+    })
+  } catch {
+    throw new Error('Could not reach the server. Please try again in a moment.')
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({})) as { detail?: string }
     throw new Error(err.detail ?? `Signup failed: ${res.status}`)
@@ -64,11 +70,17 @@ export async function signup(email: string, password: string): Promise<AuthRespo
 }
 
 export async function login(email: string, password: string): Promise<AuthResponse> {
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  })
+  let res: Response
+  try {
+    res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      signal: AbortSignal.timeout(60_000),
+    })
+  } catch {
+    throw new Error('Could not reach the server. Please try again in a moment.')
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({})) as { detail?: string }
     throw new Error(err.detail ?? 'Invalid email or password')
