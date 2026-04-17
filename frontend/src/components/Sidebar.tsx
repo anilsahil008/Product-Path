@@ -261,9 +261,7 @@ export default function Sidebar({
   const totalChats   = 40
 
   const handleTemplateSelect = (prompt: string) => {
-    onNewChat()
-    // Small delay to let new session ID settle before sending
-    setTimeout(() => onSelectTemplate(prompt), 80)
+    onSelectTemplate(prompt)
   }
 
   return (
