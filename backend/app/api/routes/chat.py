@@ -23,6 +23,7 @@ from app.models.schemas import (
 from app.services.ai_service import ai_service
 from app.services.artifact_service import artifact_service
 from app.services.prompt_service import prompt_service
+from app.services.search_service import search_service
 from app.services.session_service import session_service
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
@@ -64,11 +65,18 @@ async def send_message(
     async def event_generator():
         full_response: list[str] = []
         try:
+            # Real-time web search (when enabled)
+            search_context: str | None = None
+            if request.use_search:
+                yield f"data: {json.dumps({'type': 'searching'})}\n\n"
+                search_context = await search_service.search(request.message)
+
             async for chunk in ai_service.stream_response(
                 history=history,
                 user_message=request.message,
                 system_prompt=system_prompt.content,
                 artifacts=artifacts,
+                search_context=search_context,
             ):
                 full_response.append(chunk)
                 payload = json.dumps({"type": "chunk", "content": chunk})

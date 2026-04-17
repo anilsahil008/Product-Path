@@ -77,6 +77,8 @@ export default function Chat() {
   const [sessions, setSessions]                 = useState<ChatSession[]>(loadSessions)
   const [messages, setMessages]                 = useState<Message[]>([])
   const [isStreaming, setIsStreaming]            = useState(false)
+  const [isSearching, setIsSearching]           = useState(false)
+  const [liveSearch, setLiveSearch]             = useState(false)
   const [isLoadingHistory, setIsLoadingHistory] = useState(true)
   const [error, setError]                       = useState<string | null>(null)
   const [lastUserMessage, setLastUserMessage]   = useState<string | null>(null)
@@ -168,10 +170,13 @@ export default function Chat() {
   }, [])
 
   // ── Core stream executor ────────────────────────────────────────────────────
-  const executeStream = useCallback(async (text: string, mode: string) => {
+  const executeStream = useCallback(async (text: string, mode: string, useSearch: boolean) => {
     try {
-      for await (const event of streamMessage(sessionIdRef.current, text, mode)) {
-        if (event.type === 'chunk') {
+      for await (const event of streamMessage(sessionIdRef.current, text, mode, useSearch)) {
+        if (event.type === 'searching') {
+          setIsSearching(true)
+        } else if (event.type === 'chunk') {
+          setIsSearching(false)
           appendChunk(event.content)
         } else if (event.type === 'error') {
           setError(event.content)
@@ -181,6 +186,7 @@ export default function Chat() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connection lost. You can retry below.')
     } finally {
+      setIsSearching(false)
       finalizeStream()
       setIsStreaming(false)
     }
@@ -207,8 +213,8 @@ export default function Chat() {
       return [...updated, asstMsg]
     })
 
-    await executeStream(text, mode)
-  }, [isStreaming, executeStream, saveToSessionList])
+    await executeStream(text, mode, liveSearch)
+  }, [isStreaming, liveSearch, executeStream, saveToSessionList])
 
   // ── Retry last message ──────────────────────────────────────────────────────
   const retryLast = useCallback(async () => {
@@ -221,8 +227,8 @@ export default function Chat() {
       return updated
     })
     appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: '', streaming: true })
-    await executeStream(lastUserMessage, lastMode)
-  }, [lastUserMessage, lastMode, isStreaming, executeStream])
+    await executeStream(lastUserMessage, lastMode, liveSearch)
+  }, [lastUserMessage, lastMode, liveSearch, isStreaming, executeStream])
 
   // ── New chat ────────────────────────────────────────────────────────────────
   const clearChat = useCallback(async () => {
@@ -325,6 +331,25 @@ export default function Chat() {
               <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
             </svg>
           </button>
+
+          {/* Live Search toggle */}
+          <div className="flex-1 flex justify-end">
+            <button
+              onClick={() => setLiveSearch(o => !o)}
+              title={liveSearch ? 'Live search on — click to disable' : 'Enable live web search'}
+              className={[
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                liveSearch
+                  ? 'bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/20'
+                  : 'bg-zinc-800/60 border border-zinc-700 text-zinc-500 hover:text-zinc-300 hover:border-zinc-500',
+              ].join(' ')}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253" />
+              </svg>
+              {liveSearch ? 'Live search on' : 'Live search'}
+            </button>
+          </div>
         </header>
 
         {/* Error banner */}
@@ -340,6 +365,16 @@ export default function Chat() {
                 Retry
               </button>
             )}
+          </div>
+        )}
+
+        {/* Searching indicator */}
+        {isSearching && (
+          <div className="flex items-center gap-2 px-6 py-2 bg-emerald-950/30 border-b border-emerald-900/40">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5 text-emerald-400 animate-spin">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253" />
+            </svg>
+            <span className="text-xs text-emerald-400 font-medium">Searching the web…</span>
           </div>
         )}
 

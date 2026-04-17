@@ -21,10 +21,11 @@ export interface Message {
   streaming?: boolean
 }
 
-type SSEChunk = { type: 'chunk'; content: string }
-type SSEDone  = { type: 'done' }
-type SSEError = { type: 'error'; content: string }
-export type SSEEvent = SSEChunk | SSEDone | SSEError
+type SSEChunk     = { type: 'chunk'; content: string }
+type SSEDone      = { type: 'done' }
+type SSEError     = { type: 'error'; content: string }
+type SSESearching = { type: 'searching' }
+export type SSEEvent = SSEChunk | SSEDone | SSEError | SSESearching
 
 interface HistoryResponse {
   session_id: string
@@ -102,11 +103,12 @@ export async function* streamMessage(
   sessionId: string,
   message: string,
   mode: string = 'pm',
+  useSearch: boolean = false,
 ): AsyncGenerator<SSEEvent> {
   const response = await fetch(`${BASE_URL}/api/chat/message`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id: sessionId, message, mode }),
+    body: JSON.stringify({ session_id: sessionId, message, mode, use_search: useSearch }),
   })
 
   if (!response.ok) {

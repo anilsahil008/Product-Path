@@ -45,16 +45,22 @@ class AIService:
         user_message: str,
         system_prompt: str,
         artifacts: list[dict] | None = None,
+        search_context: str | None = None,
     ) -> AsyncGenerator[str, None]:
         """
         Args:
-            history:       Prior user/assistant turns (not including current message).
-            user_message:  The new user turn being responded to.
-            system_prompt: Injected as the OpenAI system role message.
-            artifacts:     Optional list of {filename, content_type, raw_content} dicts.
-                           Injected as a synthetic early exchange before history.
+            history:        Prior user/assistant turns (not including current message).
+            user_message:   The new user turn being responded to.
+            system_prompt:  Injected as the OpenAI system role message.
+            artifacts:      Optional list of {filename, content_type, raw_content} dicts.
+                            Injected as a synthetic early exchange before history.
+            search_context: Optional real-time web search results appended to system prompt.
         """
-        messages: list[dict] = [{"role": "system", "content": system_prompt}]
+        full_system = system_prompt
+        if search_context:
+            full_system = system_prompt + "\n\n" + search_context
+
+        messages: list[dict] = [{"role": "system", "content": full_system}]
 
         # Inject data artifacts as synthetic opening exchange
         if artifacts:

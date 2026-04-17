@@ -14,6 +14,7 @@ class ChatRequest(BaseModel):
     session_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     message: str = Field(..., min_length=1, max_length=32000)
     mode: str = Field(default="pm")
+    use_search: bool = Field(default=False)
 
 
 class HistoryResponse(BaseModel):
