@@ -52,10 +52,131 @@ function Tip({ label, children }: { label: string; children: React.ReactNode }) 
   )
 }
 
+// ── Thanks toast ──────────────────────────────────────────────────────────────
+function ThanksToast({ onDone }: { onDone: () => void }) {
+  return (
+    <div
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-xl bg-zinc-800 border border-zinc-700 px-4 py-2.5 text-sm text-zinc-200 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200"
+      onAnimationEnd={() => setTimeout(onDone, 1800)}
+    >
+      <span className="text-teal-400">✓</span>
+      Thanks for your feedback!
+    </div>
+  )
+}
+
+// ── Feedback modal ────────────────────────────────────────────────────────────
+const FEEDBACK_OPTIONS = ['Lacks Detail', 'Inaccurate', 'Bad Writing', 'Too Short', 'Too Long', 'Other'] as const
+
+function FeedbackModal({ onClose }: { onClose: () => void }) {
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [details, setDetails]   = useState('')
+  const [submitted, setSubmitted] = useState(false)
+
+  const toggle = (opt: string) =>
+    setSelected(prev => {
+      const next = new Set(prev)
+      next.has(opt) ? next.delete(opt) : next.add(opt)
+      return next
+    })
+
+  const handleSubmit = () => {
+    // In the future: send feedback to backend
+    setSubmitted(true)
+    setTimeout(onClose, 1500)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="relative w-full max-w-sm mx-4 rounded-2xl bg-zinc-900 border border-zinc-700 shadow-2xl p-6 animate-in zoom-in-95 duration-150">
+
+        {/* Close */}
+        <button
+          onClick={onClose}
+          className="absolute top-3.5 right-3.5 text-zinc-500 hover:text-zinc-300 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {submitted ? (
+          <div className="flex flex-col items-center gap-3 py-4">
+            <span className="text-3xl">🙏</span>
+            <p className="text-sm text-zinc-200 font-medium">Thanks for your feedback!</p>
+          </div>
+        ) : (
+          <>
+            <h3 className="text-base font-semibold text-zinc-100 mb-1">What could we improve?</h3>
+            <p className="text-xs text-zinc-400 mb-4">Select all that apply:</p>
+
+            <div className="flex flex-wrap gap-2 mb-4">
+              {FEEDBACK_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  onClick={() => toggle(opt)}
+                  className={[
+                    'px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150',
+                    selected.has(opt)
+                      ? 'bg-indigo-600 border-indigo-500 text-white'
+                      : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-zinc-100',
+                  ].join(' ')}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={details}
+              onChange={e => setDetails(e.target.value)}
+              placeholder="Additional details about what we could improve..."
+              rows={3}
+              className="w-full rounded-xl bg-zinc-800 border border-zinc-700 text-sm text-zinc-200 placeholder-zinc-500 px-3 py-2.5 resize-none focus:outline-none focus:border-indigo-500 transition-colors mb-4"
+            />
+
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 rounded-lg text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={selected.size === 0 && !details.trim()}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Submit Feedback
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ── Action toolbar ────────────────────────────────────────────────────────────
 function ActionToolbar({ content }: { content: string; onRetry?: () => void }) {
-  const [copied,    setCopied]    = useState(false)
-  const [liked,     setLiked]     = useState<'heart' | 'up' | 'down' | null>(null)
+  const [copied,        setCopied]        = useState(false)
+  const [liked,         setLiked]         = useState<'heart' | 'up' | 'down' | null>(null)
+  const [showThanks,    setShowThanks]    = useState(false)
+  const [showFeedback,  setShowFeedback]  = useState(false)
+
+  const handlePositive = (type: 'heart' | 'up') => {
+    setLiked(l => l === type ? null : type)
+    setShowThanks(true)
+  }
+
+  const handleThumbDown = () => {
+    if (liked === 'down') {
+      setLiked(null)
+    } else {
+      setLiked('down')
+      setShowFeedback(true)
+    }
+  }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content).then(() => {
@@ -68,52 +189,57 @@ function ActionToolbar({ content }: { content: string; onRetry?: () => void }) {
   const btnIdle = 'text-zinc-400 hover:text-white hover:bg-zinc-700'
 
   return (
-    <div className="flex items-center gap-0.5 mt-2 ml-10 rounded-xl bg-zinc-800/60 border border-zinc-700/50 px-1.5 py-1 animate-in fade-in slide-in-from-bottom-1 duration-200">
+    <>
+      <div className="flex items-center gap-0.5 mt-2 ml-10 rounded-xl bg-zinc-800/60 border border-zinc-700/50 px-1.5 py-1 animate-in fade-in slide-in-from-bottom-1 duration-200">
 
-      {/* ── Heart ── */}
-      <Tip label="Love it">
-        <button
-          onClick={() => setLiked(l => l === 'heart' ? null : 'heart')}
-          className={`${btnBase} ${liked === 'heart' ? 'text-rose-400' : btnIdle}`}
-        >
-          <HeartIcon filled={liked === 'heart'} />
-        </button>
-      </Tip>
+        {/* ── Heart ── */}
+        <Tip label="Love it">
+          <button
+            onClick={() => handlePositive('heart')}
+            className={`${btnBase} ${liked === 'heart' ? 'text-rose-400' : btnIdle}`}
+          >
+            <HeartIcon filled={liked === 'heart'} />
+          </button>
+        </Tip>
 
-      {/* ── Thumbs up ── */}
-      <Tip label="Helpful">
-        <button
-          onClick={() => setLiked(l => l === 'up' ? null : 'up')}
-          className={`${btnBase} ${liked === 'up' ? 'text-teal-400' : btnIdle}`}
-        >
-          <ThumbUpIcon filled={liked === 'up'} />
-        </button>
-      </Tip>
+        {/* ── Thumbs up ── */}
+        <Tip label="Helpful">
+          <button
+            onClick={() => handlePositive('up')}
+            className={`${btnBase} ${liked === 'up' ? 'text-teal-400' : btnIdle}`}
+          >
+            <ThumbUpIcon filled={liked === 'up'} />
+          </button>
+        </Tip>
 
-      {/* ── Thumbs down ── */}
-      <Tip label="Not helpful">
-        <button
-          onClick={() => setLiked(l => l === 'down' ? null : 'down')}
-          className={`${btnBase} ${liked === 'down' ? 'text-amber-400' : btnIdle}`}
-        >
-          <ThumbDownIcon filled={liked === 'down'} />
-        </button>
-      </Tip>
+        {/* ── Thumbs down ── */}
+        <Tip label="Not helpful">
+          <button
+            onClick={handleThumbDown}
+            className={`${btnBase} ${liked === 'down' ? 'text-amber-400' : btnIdle}`}
+          >
+            <ThumbDownIcon filled={liked === 'down'} />
+          </button>
+        </Tip>
 
-      {/* ── Divider ── */}
-      <div className="mx-1 h-3.5 w-px bg-zinc-700/60" />
+        {/* ── Divider ── */}
+        <div className="mx-1 h-3.5 w-px bg-zinc-700/60" />
 
-      {/* ── Copy ── */}
-      <Tip label={copied ? 'Copied!' : 'Copy'}>
-        <button
-          onClick={handleCopy}
-          className={`${btnBase} ${copied ? 'text-teal-400' : btnIdle}`}
-        >
-          {copied ? <CheckIcon /> : <CopyIcon />}
-        </button>
-      </Tip>
+        {/* ── Copy ── */}
+        <Tip label={copied ? 'Copied!' : 'Copy'}>
+          <button
+            onClick={handleCopy}
+            className={`${btnBase} ${copied ? 'text-teal-400' : btnIdle}`}
+          >
+            {copied ? <CheckIcon /> : <CopyIcon />}
+          </button>
+        </Tip>
 
-    </div>
+      </div>
+
+      {showThanks && <ThanksToast onDone={() => setShowThanks(false)} />}
+      {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
+    </>
   )
 }
 
