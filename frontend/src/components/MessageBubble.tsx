@@ -8,6 +8,188 @@ interface Props {
   onRetry?: () => void
 }
 
+// ── Markdown → Word HTML converter ───────────────────────────────────────────
+
+function processInline(text: string): string {
+  return text
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code style="background:#f3f4f6;padding:1pt 4pt;font-family:Consolas,monospace;font-size:9pt;border-radius:2pt">$1</code>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:#4338ca">$1</a>')
+}
+
+function markdownToHtml(md: string): string {
+  const lines = md.split('\n')
+  const out: string[] = []
+  let inTable = false
+  let inList = false
+  let inOrderedList = false
+  let tableHasHead = false
+
+  const closeList = () => {
+    if (inList)        { out.push('</ul>');  inList = false }
+    if (inOrderedList) { out.push('</ol>'); inOrderedList = false }
+  }
+  const closeTable = () => {
+    if (inTable) { out.push('</tbody></table>'); inTable = false; tableHasHead = false }
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw  = lines[i]
+    const line = raw.trimEnd()
+
+    // ── Table row ──
+    if (/^\s*\|.+\|\s*$/.test(line)) {
+      const cells = line.trim().slice(1, -1).split('|').map(c => c.trim())
+      const nextLine = (lines[i + 1] || '').trim()
+      const isSep = /^\|[\s\-:|]+\|$/.test(nextLine)
+
+      if (!inTable) {
+        closeList()
+        out.push('<table style="border-collapse:collapse;width:100%;margin:10pt 0;font-size:10pt">')
+        if (isSep) {
+          out.push('<thead><tr style="background:#eef2ff">')
+          cells.forEach(c => out.push(`<th style="border:1pt solid #c7d2fe;padding:6pt 8pt;text-align:left;font-weight:600;color:#312e81">${processInline(c)}</th>`))
+          out.push('</tr></thead><tbody>')
+          i++
+          inTable = true
+          tableHasHead = true
+          continue
+        }
+        out.push('<tbody>')
+        inTable = true
+      }
+      if (tableHasHead && /^[\s\-:|]+$/.test(cells.join(''))) continue // skip separator
+      out.push('<tr>')
+      cells.forEach((c, idx) => out.push(
+        `<td style="border:1pt solid #e5e7eb;padding:5pt 8pt;${idx === 0 ? 'font-weight:500;color:#1f2937' : 'color:#374151'}">${processInline(c)}</td>`
+      ))
+      out.push('</tr>')
+      continue
+    } else {
+      closeTable()
+    }
+
+    // ── HR ──
+    if (/^---+$/.test(line.trim())) {
+      closeList()
+      out.push('<hr style="border:none;border-top:1pt solid #e5e7eb;margin:14pt 0"/>')
+      continue
+    }
+
+    // ── Headers ──
+    if (line.startsWith('# ')) {
+      closeList()
+      out.push(`<h1 style="font-size:22pt;color:#1e1b4b;margin:0 0 6pt;font-family:Calibri,Arial,sans-serif">${processInline(line.slice(2))}</h1>`)
+      continue
+    }
+    if (line.startsWith('## ')) {
+      closeList()
+      out.push(`<h2 style="font-size:14pt;color:#312e81;border-bottom:1.5pt solid #c7d2fe;padding-bottom:3pt;margin:18pt 0 6pt;font-family:Calibri,Arial,sans-serif">${processInline(line.slice(3))}</h2>`)
+      continue
+    }
+    if (line.startsWith('### ')) {
+      closeList()
+      out.push(`<h3 style="font-size:11pt;color:#4338ca;margin:12pt 0 4pt;font-family:Calibri,Arial,sans-serif">${processInline(line.slice(4))}</h3>`)
+      continue
+    }
+
+    // ── Unordered list ──
+    if (/^[-*] /.test(line)) {
+      if (inOrderedList) { out.push('</ol>'); inOrderedList = false }
+      if (!inList) { out.push('<ul style="margin:4pt 0 4pt 18pt;padding:0">'); inList = true }
+      out.push(`<li style="margin:2pt 0;color:#374151">${processInline(line.replace(/^[-*] /, ''))}</li>`)
+      continue
+    }
+
+    // ── Ordered list ──
+    if (/^\d+\. /.test(line)) {
+      if (inList) { out.push('</ul>'); inList = false }
+      if (!inOrderedList) { out.push('<ol style="margin:4pt 0 4pt 18pt;padding:0">'); inOrderedList = true }
+      out.push(`<li style="margin:2pt 0;color:#374151">${processInline(line.replace(/^\d+\. /, ''))}</li>`)
+      continue
+    }
+
+    // ── Blank line ──
+    if (line.trim() === '') {
+      closeList()
+      out.push('<p style="margin:3pt 0"> </p>')
+      continue
+    }
+
+    // ── Italic-only line (section subtitle) ──
+    if (/^\*[^*].+[^*]\*$/.test(line.trim())) {
+      closeList()
+      out.push(`<p style="color:#6b7280;font-style:italic;margin:2pt 0 6pt;font-size:10pt">${processInline(line.trim())}</p>`)
+      continue
+    }
+
+    // ── Plain paragraph ──
+    closeList()
+    out.push(`<p style="margin:4pt 0;line-height:1.6;color:#1f2937">${processInline(line)}</p>`)
+  }
+
+  closeTable()
+  closeList()
+  return out.join('\n')
+}
+
+function downloadAsDoc(content: string) {
+  // Extract title from first H1 for filename
+  const titleMatch = content.match(/^# (.+)$/m)
+  const title = titleMatch ? titleMatch[1].replace(/[^\w\s-]/g, '').trim() : 'Document'
+  const filename = `${title}.doc`
+
+  const bodyHtml = markdownToHtml(content)
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:w="urn:schemas-microsoft-com:office:word"
+  xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="utf-8">
+  <title>${title}</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    @page { margin: 2.5cm; }
+    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1f2937; line-height: 1.5; }
+    h1 { font-size: 22pt; color: #1e1b4b; page-break-after: avoid; }
+    h2 { font-size: 14pt; color: #312e81; page-break-after: avoid; border-bottom: 1.5pt solid #c7d2fe; padding-bottom: 3pt; margin-top: 18pt; }
+    h3 { font-size: 11pt; color: #4338ca; page-break-after: avoid; margin-top: 12pt; }
+    table { border-collapse: collapse; width: 100%; margin: 8pt 0; }
+    th { background: #eef2ff; padding: 6pt 8pt; text-align: left; font-weight: 600; color: #312e81; border: 1pt solid #c7d2fe; }
+    td { padding: 5pt 8pt; border: 1pt solid #e5e7eb; color: #374151; }
+    tr:nth-child(even) td { background: #f9fafb; }
+    ul, ol { margin-left: 18pt; padding: 0; }
+    li { margin: 2pt 0; }
+    hr { border: none; border-top: 1pt solid #e5e7eb; margin: 14pt 0; }
+    p { margin: 4pt 0; }
+    strong { color: #111827; }
+    code { background: #f3f4f6; padding: 1pt 4pt; font-family: Consolas, monospace; font-size: 9pt; border-radius: 2pt; }
+    a { color: #4338ca; }
+  </style>
+</head>
+<body>${bodyHtml}</body>
+</html>`
+
+  const blob = new Blob([html], { type: 'application/msword' })
+  const url  = URL.createObjectURL(blob)
+  const a    = document.createElement('a')
+  a.href     = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
 const HeartIcon = ({ filled }: { filled: boolean }) => (
@@ -37,6 +219,12 @@ const CopyIcon = () => (
 const CheckIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+  </svg>
+)
+
+const DownloadIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
   </svg>
 )
 
@@ -81,7 +269,6 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
     })
 
   const handleSubmit = () => {
-    // In the future: send feedback to backend
     setSubmitted(true)
     setTimeout(onClose, 1500)
   }
@@ -89,8 +276,6 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
       <div className="relative w-full max-w-sm mx-4 rounded-2xl bg-zinc-900 border border-zinc-700 shadow-2xl p-6 animate-in zoom-in-95 duration-150">
-
-        {/* Close */}
         <button
           onClick={onClose}
           className="absolute top-3.5 right-3.5 text-zinc-500 hover:text-zinc-300 transition-colors"
@@ -109,7 +294,6 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
           <>
             <h3 className="text-base font-semibold text-zinc-100 mb-1">What could we improve?</h3>
             <p className="text-xs text-zinc-400 mb-4">Select all that apply:</p>
-
             <div className="flex flex-wrap gap-2 mb-4">
               {FEEDBACK_OPTIONS.map(opt => (
                 <button
@@ -126,7 +310,6 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
                 </button>
               ))}
             </div>
-
             <textarea
               value={details}
               onChange={e => setDetails(e.target.value)}
@@ -134,12 +317,8 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
               rows={3}
               className="w-full rounded-xl bg-zinc-800 border border-zinc-700 text-sm text-zinc-200 placeholder-zinc-500 px-3 py-2.5 resize-none focus:outline-none focus:border-indigo-500 transition-colors mb-4"
             />
-
             <div className="flex gap-2 justify-end">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 rounded-lg text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
-              >
+              <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
                 Cancel
               </button>
               <button
@@ -159,10 +338,11 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
 
 // ── Action toolbar ────────────────────────────────────────────────────────────
 function ActionToolbar({ content }: { content: string; onRetry?: () => void }) {
-  const [copied,        setCopied]        = useState(false)
-  const [liked,         setLiked]         = useState<'heart' | 'up' | 'down' | null>(null)
-  const [showThanks,    setShowThanks]    = useState(false)
-  const [showFeedback,  setShowFeedback]  = useState(false)
+  const [copied,       setCopied]       = useState(false)
+  const [liked,        setLiked]        = useState<'heart' | 'up' | 'down' | null>(null)
+  const [showThanks,   setShowThanks]   = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [downloaded,   setDownloaded]   = useState(false)
 
   const handlePositive = (type: 'heart' | 'up') => {
     setLiked(l => l === type ? null : type)
@@ -170,12 +350,8 @@ function ActionToolbar({ content }: { content: string; onRetry?: () => void }) {
   }
 
   const handleThumbDown = () => {
-    if (liked === 'down') {
-      setLiked(null)
-    } else {
-      setLiked('down')
-      setShowFeedback(true)
-    }
+    if (liked === 'down') { setLiked(null) }
+    else { setLiked('down'); setShowFeedback(true) }
   }
 
   const handleCopy = () => {
@@ -183,6 +359,12 @@ function ActionToolbar({ content }: { content: string; onRetry?: () => void }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     })
+  }
+
+  const handleDownload = () => {
+    downloadAsDoc(content)
+    setDownloaded(true)
+    setTimeout(() => setDownloaded(false), 2000)
   }
 
   const btnBase = 'flex items-center justify-center rounded-lg p-2 transition-all duration-150'
@@ -194,30 +376,21 @@ function ActionToolbar({ content }: { content: string; onRetry?: () => void }) {
 
         {/* ── Heart ── */}
         <Tip label="Love it">
-          <button
-            onClick={() => handlePositive('heart')}
-            className={`${btnBase} ${liked === 'heart' ? 'text-rose-400' : btnIdle}`}
-          >
+          <button onClick={() => handlePositive('heart')} className={`${btnBase} ${liked === 'heart' ? 'text-rose-400' : btnIdle}`}>
             <HeartIcon filled={liked === 'heart'} />
           </button>
         </Tip>
 
         {/* ── Thumbs up ── */}
         <Tip label="Helpful">
-          <button
-            onClick={() => handlePositive('up')}
-            className={`${btnBase} ${liked === 'up' ? 'text-teal-400' : btnIdle}`}
-          >
+          <button onClick={() => handlePositive('up')} className={`${btnBase} ${liked === 'up' ? 'text-teal-400' : btnIdle}`}>
             <ThumbUpIcon filled={liked === 'up'} />
           </button>
         </Tip>
 
         {/* ── Thumbs down ── */}
         <Tip label="Not helpful">
-          <button
-            onClick={handleThumbDown}
-            className={`${btnBase} ${liked === 'down' ? 'text-amber-400' : btnIdle}`}
-          >
+          <button onClick={handleThumbDown} className={`${btnBase} ${liked === 'down' ? 'text-amber-400' : btnIdle}`}>
             <ThumbDownIcon filled={liked === 'down'} />
           </button>
         </Tip>
@@ -227,17 +400,21 @@ function ActionToolbar({ content }: { content: string; onRetry?: () => void }) {
 
         {/* ── Copy ── */}
         <Tip label={copied ? 'Copied!' : 'Copy'}>
-          <button
-            onClick={handleCopy}
-            className={`${btnBase} ${copied ? 'text-teal-400' : btnIdle}`}
-          >
+          <button onClick={handleCopy} className={`${btnBase} ${copied ? 'text-teal-400' : btnIdle}`}>
             {copied ? <CheckIcon /> : <CopyIcon />}
+          </button>
+        </Tip>
+
+        {/* ── Download as Word ── */}
+        <Tip label={downloaded ? 'Downloaded!' : 'Download as Word'}>
+          <button onClick={handleDownload} className={`${btnBase} ${downloaded ? 'text-indigo-400' : btnIdle}`}>
+            <DownloadIcon />
           </button>
         </Tip>
 
       </div>
 
-      {showThanks && <ThanksToast onDone={() => setShowThanks(false)} />}
+      {showThanks   && <ThanksToast onDone={() => setShowThanks(false)} />}
       {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
     </>
   )
