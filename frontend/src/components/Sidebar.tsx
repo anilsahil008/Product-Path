@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect, type KeyboardEvent } from 'react'
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import SidebarItem from './SidebarItem'
 import AccountMenu from './AccountMenu'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -12,64 +11,96 @@ interface ChatSession {
   updatedAt: string
 }
 
-interface Project {
-  id: string
-  name: string
-  createdAt: string
-}
-
 interface Props {
   currentSessionId: string
   sessions: ChatSession[]
   onSelectSession: (id: string) => void
   onNewChat: () => void
   onDeleteSession: (id: string) => void
+  onSelectTemplate: (prompt: string) => void
   isStreaming: boolean
 }
 
-// ── Project storage ───────────────────────────────────────────────────────────
+// ── Templates ─────────────────────────────────────────────────────────────────
 
-const PROJECTS_KEY = 'chatpm_projects'
-
-function loadProjects(): Project[] {
-  try { return JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]') }
-  catch { return [] }
-}
-
-function saveProjects(projects: Project[]) {
-  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects))
-}
+const TEMPLATE_GROUPS = [
+  {
+    label: 'Core PM',
+    color: 'text-indigo-400',
+    items: [
+      {
+        label: 'Write a PRD',
+        prompt: "I want to write a PRD. Before we start, ask me the 2–3 questions you need answered to make this genuinely useful — not a generic template.",
+      },
+      {
+        label: 'User stories',
+        prompt: "Help me write user stories for a feature. Ask me about the feature, the persona, and what job they're trying to do — then generate stories with clear acceptance criteria.",
+      },
+      {
+        label: 'Define an epic',
+        prompt: "I need to define an epic for my backlog. Ask me about the initiative, the business outcome we're targeting, and the key user segment — then help me write a well-structured epic with sub-stories.",
+      },
+      {
+        label: 'Roadmap planning',
+        prompt: "Help me plan my product roadmap. Ask me about my current priorities, team capacity, and business goals — then help me structure a Now/Next/Later roadmap with clear rationale for each decision.",
+      },
+      {
+        label: 'Stakeholder update',
+        prompt: "I need to write a stakeholder update for my product area. Ask me what's shipped, what's in progress, and what decisions need to be made — then help me write a clear, concise update.",
+      },
+    ],
+  },
+  {
+    label: 'Data & BI',
+    color: 'text-emerald-400',
+    items: [
+      {
+        label: 'BI dashboard PRD',
+        prompt: "I want to write a PRD for a business intelligence dashboard or report. Ask me who the audience is, what decisions this will drive, and what data sources we're working with — then help me write a strong PRD.",
+      },
+      {
+        label: 'Data quality initiative',
+        prompt: "I need to scope a data quality initiative. Ask me about the data domain, what business impact the quality issues are causing, and what good looks like — then help me define the initiative clearly with success metrics.",
+      },
+      {
+        label: 'Metrics framework',
+        prompt: "Help me define a metrics framework for my product area. Ask me about the business outcomes we care about, the user behaviors that drive them, and what we can actually measure — then help me build a clear, layered framework.",
+      },
+      {
+        label: 'CRM / Salesforce analysis',
+        prompt: "I need to think through a product initiative involving Salesforce or CRM data. Ask me about the business question we're trying to answer and who needs this insight — then help me define what data is needed and what decisions it enables.",
+      },
+    ],
+  },
+  {
+    label: 'Agile',
+    color: 'text-amber-400',
+    items: [
+      {
+        label: 'Sprint goal',
+        prompt: "Help me write a sprint goal. Ask me about the sprint theme and the key outcome we're driving — then help me write a goal that's outcome-focused, not task-focused.",
+      },
+      {
+        label: 'Backlog grooming',
+        prompt: "I need to groom my backlog and prioritize items for an upcoming sprint. Describe your top 5–7 candidate items and I'll help you think through prioritization with clear rationale for what makes the cut.",
+      },
+      {
+        label: 'OKR definition',
+        prompt: "Help me write OKRs for my product area. Ask me about the business goals for the quarter, what success looks like, and how my team contributes — then help me write objectives with measurable key results.",
+      },
+      {
+        label: 'Retro action items',
+        prompt: "I just ran a retrospective and want to turn the output into concrete action items. Share your key themes and I'll help you prioritize and frame them as clear, ownable actions with expected outcomes.",
+      },
+    ],
+  },
+]
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
 const icons = {
-  chat: (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-    </svg>
-  ),
-  document: (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-    </svg>
-  ),
-  product: (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3" />
-    </svg>
-  ),
-  template: (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25" />
-    </svg>
-  ),
-  folder: (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
-    </svg>
-  ),
   plus: (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
     </svg>
   ),
@@ -88,6 +119,11 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
     </svg>
   ),
+  template: (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3 h-3">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+    </svg>
+  ),
 }
 
 // ── Section header ─────────────────────────────────────────────────────────────
@@ -98,6 +134,55 @@ function SectionHeader({ label, action }: { label: string; action?: React.ReactN
         {label}
       </span>
       {action}
+    </div>
+  )
+}
+
+// ── Template group (collapsible) ───────────────────────────────────────────────
+function TemplateGroup({
+  label,
+  color,
+  items,
+  onSelect,
+  isStreaming,
+}: {
+  label: string
+  color: string
+  items: { label: string; prompt: string }[]
+  onSelect: (prompt: string) => void
+  isStreaming: boolean
+}) {
+  const [open, setOpen] = useState(true)
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-zinc-800/60 transition-colors group"
+      >
+        <span className={`text-[10px] font-semibold uppercase tracking-[0.1em] ${color} flex-1 text-left`}>
+          {label}
+        </span>
+        <span className={`text-zinc-600 transition-transform duration-150 ${open ? '' : '-rotate-90'}`}>
+          {icons.chevronDown}
+        </span>
+      </button>
+
+      {open && (
+        <div className="space-y-0.5 mt-0.5">
+          {items.map(item => (
+            <button
+              key={item.label}
+              onClick={() => onSelect(item.prompt)}
+              disabled={isStreaming}
+              className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left text-[12px] text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed group"
+            >
+              <span className="text-zinc-600 group-hover:text-zinc-500 flex-shrink-0">{icons.template}</span>
+              <span className="truncate">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -161,6 +246,7 @@ export default function Sidebar({
   onSelectSession,
   onNewChat,
   onDeleteSession,
+  onSelectTemplate,
   isStreaming,
 }: Props) {
   const { user }   = useAuth()
@@ -168,47 +254,16 @@ export default function Sidebar({
 
   const [accountMenuOpen,   setAccountMenuOpen]   = useState(false)
   const [workspaceCardOpen, setWorkspaceCardOpen] = useState(false)
-  const [projects,          setProjects]          = useState<Project[]>(loadProjects)
-  const [creatingProject,   setCreatingProject]   = useState(false)
-  const [projectName,       setProjectName]       = useState('')
-  const projectInputRef = useRef<HTMLInputElement>(null)
 
   const initials     = user?.email?.charAt(0).toUpperCase() ?? '?'
   const displayName  = user?.email?.split('@')[0] ?? 'Guest'
   const usedChats    = sessions.length
   const totalChats   = 40
 
-  // Focus the project input when it appears
-  useEffect(() => {
-    if (creatingProject) projectInputRef.current?.focus()
-  }, [creatingProject])
-
-  const openCreateProject = () => {
-    setProjectName('')
-    setCreatingProject(true)
-  }
-
-  const confirmCreateProject = () => {
-    const name = projectName.trim()
-    if (!name) { setCreatingProject(false); return }
-    const project: Project = { id: crypto.randomUUID(), name, createdAt: new Date().toISOString() }
-    const updated = [project, ...projects]
-    setProjects(updated)
-    saveProjects(updated)
-    setCreatingProject(false)
-    setProjectName('')
-    navigate(`/app/projects/${project.id}`)
-  }
-
-  const deleteProject = (id: string) => {
-    const updated = projects.filter(p => p.id !== id)
-    setProjects(updated)
-    saveProjects(updated)
-  }
-
-  const handleProjectKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') confirmCreateProject()
-    if (e.key === 'Escape') { setCreatingProject(false); setProjectName('') }
+  const handleTemplateSelect = (prompt: string) => {
+    onNewChat()
+    // Small delay to let new session ID settle before sending
+    setTimeout(() => onSelectTemplate(prompt), 80)
   }
 
   return (
@@ -220,7 +275,6 @@ export default function Sidebar({
           <img src="/logo-dark.svg" alt="Product Path" className="h-6 select-none" />
         </NavLink>
 
-        {/* Workspace switcher button */}
         <button
           onClick={() => { setWorkspaceCardOpen(o => !o); setAccountMenuOpen(false) }}
           className="flex w-full items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-zinc-800"
@@ -245,125 +299,87 @@ export default function Sidebar({
         )}
       </div>
 
-      {/* ── PRIMARY NAV ───────────────────────────────────────────── */}
-      <div className="border-b border-zinc-800 px-2 py-2 space-y-0.5">
-        <SidebarItem to="/app/chat"      icon={icons.chat}     label="Chats"     end />
-        <SidebarItem to="/app/documents" icon={icons.document} label="Documents" />
-        <SidebarItem to="/app/products"  icon={icons.product}  label="Products"  />
-        <SidebarItem to="/app/templates" icon={icons.template} label="Templates" />
+      {/* ── NEW CHAT BUTTON ───────────────────────────────────────── */}
+      <div className="px-3 pt-3 pb-2">
+        <button
+          onClick={onNewChat}
+          disabled={isStreaming}
+          className="w-full flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {icons.plus}
+          New chat
+        </button>
       </div>
 
-      {/* ── PROJECTS ─────────────────────────────────────────────── */}
-      <div className="border-b border-zinc-800 px-2 pb-2">
-        <SectionHeader
-          label="Projects"
-          action={
-            <button
-              onClick={openCreateProject}
-              title="New project"
-              className="text-zinc-500 hover:text-zinc-300 transition-colors"
-            >
-              {icons.plus}
-            </button>
-          }
-        />
+      {/* ── SCROLLABLE BODY ───────────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto flex flex-col min-h-0">
 
-        {/* Inline project name input */}
-        {creatingProject && (
-          <div className="flex items-center gap-1 px-1 mb-1">
-            <input
-              ref={projectInputRef}
-              value={projectName}
-              onChange={e => setProjectName(e.target.value)}
-              onKeyDown={handleProjectKeyDown}
-              onBlur={confirmCreateProject}
-              placeholder="Project name…"
-              className="flex-1 rounded-lg bg-zinc-800 border border-indigo-500 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder-zinc-500 focus:outline-none"
-            />
+        {/* ── TEMPLATES ─────────────────────────────────────────── */}
+        <div className="px-2 border-b border-zinc-800 pb-3">
+          <SectionHeader label="Templates" />
+          <div className="space-y-1 mt-0.5">
+            {TEMPLATE_GROUPS.map(group => (
+              <TemplateGroup
+                key={group.label}
+                label={group.label}
+                color={group.color}
+                items={group.items}
+                onSelect={handleTemplateSelect}
+                isStreaming={isStreaming}
+              />
+            ))}
           </div>
-        )}
-
-        {/* Project list */}
-        {projects.map(p => (
-          <div key={p.id} className="group relative">
-            <button
-              onClick={() => navigate(`/app/projects/${p.id}`)}
-              className="w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-[13px] text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200 truncate"
-            >
-              <span className="flex-shrink-0 text-zinc-600">{icons.folder}</span>
-              <span className="truncate flex-1">{p.name}</span>
-            </button>
-            <button
-              onClick={() => deleteProject(p.id)}
-              title="Delete project"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 hidden rounded-md p-1 text-zinc-500 hover:bg-red-900/50 hover:text-red-400 group-hover:flex transition-colors"
-            >
-              {icons.trash}
-            </button>
-          </div>
-        ))}
-
-        {/* Create project button — only when no input open */}
-        {!creatingProject && (
-          <button
-            onClick={openCreateProject}
-            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-[13px] text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300"
-          >
-            {icons.plus}
-            <span>Create a project</span>
-          </button>
-        )}
-      </div>
-
-      {/* ── CHATS LIST ────────────────────────────────────────────── */}
-      <div className="flex flex-1 flex-col min-h-0 px-2">
-        <SectionHeader
-          label="Chats"
-          action={
-            <button
-              onClick={onNewChat}
-              disabled={isStreaming}
-              title="New chat"
-              className="text-zinc-500 hover:text-zinc-300 transition-colors disabled:opacity-40"
-            >
-              {icons.edit}
-            </button>
-          }
-        />
-
-        {/* Session list */}
-        <div className="flex-1 overflow-y-auto space-y-0.5 pb-2">
-          {sessions.length === 0 ? (
-            <p className="px-2.5 py-2 text-xs text-zinc-600 italic">No chats yet</p>
-          ) : (
-            sessions.map(session => (
-              <div key={session.id} className="group relative">
-                <button
-                  onClick={() => onSelectSession(session.id)}
-                  className={[
-                    'w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors',
-                    session.id === currentSessionId
-                      ? 'bg-zinc-700/70 text-zinc-100'
-                      : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100',
-                  ].join(' ')}
-                >
-                  <span className="truncate flex-1 pr-5">{session.title}</span>
-                </button>
-                <button
-                  onClick={e => { e.stopPropagation(); onDeleteSession(session.id) }}
-                  title="Delete chat"
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 hidden rounded-md p-1 text-zinc-500 hover:bg-red-900/50 hover:text-red-400 group-hover:flex transition-colors"
-                >
-                  {icons.trash}
-                </button>
-              </div>
-            ))
-          )}
         </div>
 
-        {/* Usage bar */}
-        <div className="border-t border-zinc-800 py-3 space-y-2">
-          <div className="flex items-center justify-between px-1">
+        {/* ── CHATS LIST ────────────────────────────────────────── */}
+        <div className="flex flex-col flex-1 min-h-0 px-2">
+          <SectionHeader
+            label="Recent chats"
+            action={
+              <button
+                onClick={onNewChat}
+                disabled={isStreaming}
+                title="New chat"
+                className="text-zinc-500 hover:text-zinc-300 transition-colors disabled:opacity-40"
+              >
+                {icons.edit}
+              </button>
+            }
+          />
+
+          <div className="flex-1 overflow-y-auto space-y-0.5 pb-2">
+            {sessions.length === 0 ? (
+              <p className="px-2.5 py-2 text-xs text-zinc-600 italic">No chats yet</p>
+            ) : (
+              sessions.map(session => (
+                <div key={session.id} className="group relative">
+                  <button
+                    onClick={() => onSelectSession(session.id)}
+                    className={[
+                      'w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[12px] transition-colors',
+                      session.id === currentSessionId
+                        ? 'bg-zinc-700/70 text-zinc-100'
+                        : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100',
+                    ].join(' ')}
+                  >
+                    <span className="truncate flex-1 pr-5">{session.title}</span>
+                  </button>
+                  <button
+                    onClick={e => { e.stopPropagation(); onDeleteSession(session.id) }}
+                    title="Delete chat"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 hidden rounded-md p-1 text-zinc-500 hover:bg-red-900/50 hover:text-red-400 group-hover:flex transition-colors"
+                  >
+                    {icons.trash}
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* ── USAGE BAR ─────────────────────────────────────────── */}
+        <div className="border-t border-zinc-800 px-3 py-3 space-y-2">
+          <div className="flex items-center justify-between">
             <span className="text-[11px] text-zinc-500">
               {usedChats} of {totalChats} free chats
             </span>
@@ -383,7 +399,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* ── BOTTOM: Profile + account menu ───────────────────────── */}
+      {/* ── BOTTOM: Account menu ──────────────────────────────────── */}
       <div className="relative border-t border-zinc-800 px-3 py-3">
         <button
           onClick={() => { setAccountMenuOpen(o => !o); setWorkspaceCardOpen(false) }}

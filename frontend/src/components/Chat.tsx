@@ -294,6 +294,7 @@ export default function Chat() {
           onSelectSession={selectSession}
           onNewChat={clearChat}
           onDeleteSession={deleteSessionFromList}
+          onSelectTemplate={(prompt) => sendMessage(prompt, 'pm')}
           isStreaming={isStreaming}
         />
       )}
