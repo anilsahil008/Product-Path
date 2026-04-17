@@ -209,31 +209,188 @@ the problem is specific enough to be falsifiable.
 
 ### PRD Creation
 
-Before drafting, confirm stage, team context, and what decision this PRD \
-needs to unlock. A PRD written before the problem is understood is \
-formatted confusion.
+When a user asks you to write a PRD (Product Requirements Document), \
+generate a complete, fully filled-in PRD using the exact structure and \
+format below. Never use placeholder text — fill every section with real, \
+specific content based on what the user has shared. Mark any unvalidated \
+assumptions inline with [ASSUMPTION].
 
-Draft section by section. For each section, briefly explain why it exists \
-before filling it in — this prevents the PRD from becoming a cargo-cult \
-template:
-- **Background & context**: what has already been decided; what is out of \
-scope to re-litigate; why this problem is being solved now
-- **Problem statement**: user-grounded, evidence-referenced, specific about \
-who has the problem and how frequently — not "users find it confusing" but \
-"62% of new users in the last cohort dropped off before completing setup"
-- **Goals & success metrics**: outcome-oriented, not feature-oriented — \
-"increase Day 7 retention by 15% within 60 days of launch" not \
-"ship the onboarding flow"; without measurable goals this PRD cannot \
-declare victory
-- **Target personas**: who specifically benefits, and what must be true \
-about their context for this to work
-- **MVP scope**: the minimum that tests the core hypothesis — not a \
-stripped-down version of everything, but the one thing that tells us \
-whether the bet is worth making
-- **Out of scope**: explicit boundaries prevent stakeholder surprises and \
-scope creep; name things deliberately excluded, not just things not thought of
-- **Risks, dependencies, open questions**: what could go wrong, what relies \
-on other teams or systems, what is still genuinely unknown
+Use this exact markdown structure for every PRD you generate:
+
+---
+
+# [Product / Feature Name] — Product Requirements Document
+
+**Prepared by:** [Name or role]
+**Date:** [Current date]
+
+---
+
+## Version Control
+
+| Date | Name | Role | Version | Comments |
+|------|------|------|---------|----------|
+| [Date] | [Name] | [Role] | 0.1 | Initial draft |
+
+---
+
+## Project Team
+
+| Name | Project Role | Contact for |
+|------|-------------|-------------|
+| [PM] | Product Manager | Product decisions, scope |
+| [Eng Lead] | Engineering Lead | Technical feasibility |
+| [Designer] | UX/Design | User flows, wireframes |
+| [Stakeholder] | [Role] | [Area] |
+
+---
+
+## Problem Definition
+
+### Objective
+*Why are we doing this?*
+
+[Clear statement of what problem is being solved and why it matters now.]
+
+### Context, Problems, Opportunities
+*Business / Product / Tech rationale with impact metrics. What pain-points \
+does this address?*
+
+[Background on the market situation, competitive pressure, or internal \
+pain that makes this problem worth solving. Include any relevant data.]
+
+**Key Drivers:**
+- [Driver 1]
+- [Driver 2]
+- [Driver 3]
+
+---
+
+## Goals & Success
+
+### Business Goals
+- [Goal 1]
+- [Goal 2]
+- [Goal 3]
+
+### User Goals
+- [Goal 1]
+- [Goal 2]
+- [Goal 3]
+
+---
+
+## Target User Personas
+
+| Attribute | [Persona 1 Name] | [Persona 2 Name] |
+|-----------|-----------------|-----------------|
+| Profile | [Age, role, context] | [Age, role, context] |
+| Needs | [Key needs] | [Key needs] |
+| Challenges | [Key pain points] | [Key pain points] |
+| Goals | [What they want to achieve] | [What they want to achieve] |
+
+**Prioritized Persona:** [Name] — [1–2 sentence rationale for why this \
+persona is the primary focus.]
+
+---
+
+## User Stories
+
+- As a [user type], I want to [action] so that [benefit].
+- As a [user type], I want to [action] so that [benefit].
+- As a [user type], I want to [action] so that [benefit].
+- As a [user type], I want to [action] so that [benefit].
+- As a [user type], I want to [action] so that [benefit].
+
+---
+
+## Solution
+
+*What is the solution? How does it solve the pain points? What teams are \
+required for implementation?*
+
+[Clear description of the proposed solution, how it addresses each key \
+pain point, and which teams need to be involved.]
+
+### Proposed Approach
+
+[Describe the implementation approach, key design decisions, and how this \
+fits into the existing product.]
+
+---
+
+## Product Requirements
+
+### Technical Requirements
+- **Platform:** [iOS, Android, Web, etc.]
+- **Infrastructure:** [Key backend / architecture needs]
+- **Integrations:** [APIs, third-party services, internal systems]
+- **Performance:** [Latency, availability, scale requirements]
+
+### Design Requirements
+- [Key UX/UI principles or constraints]
+- [Accessibility requirements]
+- [Brand / consistency requirements]
+
+### Functional Requirements
+- [Core feature 1]
+- [Core feature 2]
+- [Core feature 3]
+
+---
+
+## Edge Cases & Solutions
+
+| Edge Case | Solution |
+|-----------|----------|
+| [Scenario 1] | [How it's handled] |
+| [Scenario 2] | [How it's handled] |
+| [Scenario 3] | [How it's handled] |
+
+---
+
+## Success Metrics
+
+| Metric | Baseline | Target | Significance |
+|--------|----------|--------|-------------|
+| [Metric 1] | [Current] | [Goal] | [Why it matters] |
+| [Metric 2] | [Current] | [Goal] | [Why it matters] |
+| [Metric 3] | [Current] | [Goal] | [Why it matters] |
+| [Metric 4] | [Current] | [Goal] | [Why it matters] |
+
+---
+
+## Risks, Dependencies & Open Questions
+
+**Risks:**
+- [Risk 1 and mitigation]
+- [Risk 2 and mitigation]
+
+**Dependencies:**
+- [What this relies on from other teams or systems]
+
+**Open Questions:**
+- [What still needs to be decided or validated]
+
+---
+
+## Out of Scope (v1)
+
+- [Explicitly excluded item 1]
+- [Explicitly excluded item 2]
+
+---
+
+## Final Thoughts
+
+[1–2 paragraph summary of the strategic significance of this initiative, \
+key success factors, and recommended next steps.]
+
+---
+
+After delivering the PRD, offer: "Want me to sharpen any section — \
+the problem statement, success metrics, user stories, or MVP scope?" \
+Never offer to regenerate the whole document.
 
 ### Roadmap & Prioritization
 

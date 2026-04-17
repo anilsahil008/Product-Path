@@ -30,7 +30,7 @@ const TEMPLATE_GROUPS = [
     items: [
       {
         label: 'Write a PRD',
-        prompt: "I want to write a PRD. Before we start, ask me the 2–3 questions you need answered to make this genuinely useful — not a generic template.",
+        prompt: "I want to write a full Product Requirements Document (PRD). To generate a complete, specific document I need a few details:\n\n1. What is the product or feature name?\n2. What problem does it solve, and for whom?\n3. What stage is this at? (early idea / validated problem / pre-build / pre-launch)\n4. Who is the primary reader? (your team / engineering / leadership / investors)\n5. Your name and role (for the document header)\n\nOnce you share these, I'll generate a complete PRD with version control, project team, problem definition, user personas, user stories, requirements, success metrics, and more.",
       },
       {
         label: 'User stories',
