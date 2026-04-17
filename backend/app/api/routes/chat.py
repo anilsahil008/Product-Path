@@ -8,6 +8,8 @@ GET    /api/chat/modes                — list available prompt modes
 """
 
 import json
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -62,6 +64,19 @@ async def send_message(
         for a in db_artifacts
     ] or None
 
+    # Build time context — injected into every response
+    now_utc     = datetime.now(ZoneInfo("UTC"))
+    now_est     = datetime.now(ZoneInfo("America/New_York"))
+    now_pst     = datetime.now(ZoneInfo("America/Los_Angeles"))
+    time_context = (
+        f"\n\n## Current date & time (server)\n"
+        f"- UTC:  {now_utc.strftime('%A, %B %d, %Y %I:%M %p %Z')}\n"
+        f"- EST/EDT: {now_est.strftime('%A, %B %d, %Y %I:%M %p %Z')}\n"
+        f"- PST/PDT: {now_pst.strftime('%A, %B %d, %Y %I:%M %p %Z')}\n"
+        f"You always know the current date and time from the above. "
+        f"Answer time questions directly without saying you lack real-time access."
+    )
+
     async def event_generator():
         full_response: list[str] = []
         try:
@@ -75,7 +90,7 @@ async def send_message(
             async for chunk in ai_service.stream_response(
                 history=history,
                 user_message=request.message,
-                system_prompt=system_prompt.content,
+                system_prompt=system_prompt.content + time_context,
                 artifacts=artifacts,
                 search_context=search_context,
             ):
