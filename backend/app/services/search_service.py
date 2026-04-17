@@ -22,7 +22,7 @@ _CONTENT_LIMIT = 600  # chars per result to stay within token budget
 def _do_search(query: str) -> dict:
     """Sync Tavily call — runs in a thread pool via asyncio.to_thread."""
     from tavily import TavilyClient
-    client = TavilyClient(api_key=settings.tavily_api_key)
+    client = TavilyClient(api_key=settings.tavily_api_key.strip())
     return client.search(
         query,
         max_results=_MAX_RESULTS,
