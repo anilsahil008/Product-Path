@@ -1,46 +1,49 @@
 """
 Search service — wraps Tavily for real-time web search.
 
-Injected as additional context before the AI response when the user
-enables Live Search mode. Keeps AIService decoupled from search logic.
+Uses the sync TavilyClient via asyncio.to_thread to avoid AsyncTavilyClient
+version compatibility issues. Errors are logged to stdout so they appear
+in Render logs.
 """
 
 from __future__ import annotations
 
+import asyncio
+import logging
+
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 _MAX_RESULTS   = 4
 _CONTENT_LIMIT = 600  # chars per result to stay within token budget
 
 
-class SearchService:
-    def __init__(self) -> None:
-        self._client = None
+def _do_search(query: str) -> dict:
+    """Sync Tavily call — runs in a thread pool via asyncio.to_thread."""
+    from tavily import TavilyClient
+    client = TavilyClient(api_key=settings.tavily_api_key)
+    return client.search(
+        query,
+        max_results=_MAX_RESULTS,
+        search_depth="basic",
+        include_answer=True,
+    )
 
-    def _get_client(self):
-        if self._client is None:
-            if not settings.tavily_api_key:
-                return None
-            from tavily import AsyncTavilyClient
-            self._client = AsyncTavilyClient(api_key=settings.tavily_api_key)
-        return self._client
+
+class SearchService:
 
     async def search(self, query: str) -> str | None:
         """
         Search the web and return a formatted context string, or None if
         search is unavailable or fails.
         """
-        client = self._get_client()
-        if client is None:
+        if not settings.tavily_api_key:
+            logger.warning("TAVILY_API_KEY not set — skipping web search")
             return None
 
         try:
-            response = await client.search(
-                query,
-                max_results=_MAX_RESULTS,
-                search_depth="basic",
-                include_answer=True,
-            )
+            response = await asyncio.to_thread(_do_search, query)
 
             parts: list[str] = []
 
@@ -59,7 +62,10 @@ class SearchService:
                     parts.append(f"**{title}** ({url})\n{content}")
 
             if not parts:
+                logger.warning("Tavily returned no results for query: %s", query)
                 return None
+
+            logger.info("Tavily search succeeded — %d results for: %s", len(parts), query)
 
             return (
                 "## Real-time web search results\n\n"
@@ -69,7 +75,8 @@ class SearchService:
                 "Cite sources when you reference specific information from them."
             )
 
-        except Exception:
+        except Exception as exc:
+            logger.error("Tavily search failed: %s", exc)
             return None
 
 
