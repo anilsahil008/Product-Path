@@ -10,6 +10,24 @@ interface Props {
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
+const HeartIcon = ({ filled }: { filled: boolean }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill={filled ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+  </svg>
+)
+
+const ThumbUpIcon = ({ filled }: { filled: boolean }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill={filled ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.25M6.633 10.25H5.25a1.125 1.125 0 0 0-1.125 1.125v6.75c0 .621.504 1.125 1.125 1.125h1.383" />
+  </svg>
+)
+
+const ThumbDownIcon = ({ filled }: { filled: boolean }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill={filled ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7.498 15.25H4.372c-1.026 0-1.945-.694-2.054-1.715a12.137 12.137 0 0 1-.068-1.285c0-2.848.992-5.464 2.649-7.521C5.287 4.247 5.886 4 6.504 4h4.016a4.5 4.5 0 0 1 1.423.23l3.114 1.04a4.5 4.5 0 0 0 1.423.23h1.294M7.498 15.25c.618 0 .991.724.725 1.282A7.471 7.471 0 0 0 7.5 19.75 2.25 2.25 0 0 0 9.75 22a.75.75 0 0 0 .75-.75v-.633c0-.573.11-1.14.322-1.672.304-.76.93-1.33 1.653-1.715a9.04 9.04 0 0 0 2.86-2.4c.498-.634 1.226-1.08 2.032-1.08h.384m-10.253 1.5H9.7m8.075-9.75c.01.05.027.1.05.148.593 1.2.925 2.55.925 3.977 0 1.487-.36 2.89-.999 4.125m.023-8.25c-.076-.365.183-.75.575-.75h.908c.889 0 1.713.518 1.972 1.368.339 1.11.521 2.287.521 3.507 0 1.553-.295 3.036-.831 4.398-.306.774-1.086 1.227-1.918 1.227h-1.053c-.472 0-.745-.556-.5-.96a8.95 8.95 0 0 0 .303-.54" />
+  </svg>
+)
+
 const CopyIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
@@ -19,41 +37,6 @@ const CopyIcon = () => (
 const CheckIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-  </svg>
-)
-
-// Bookmark — Save to Docs
-const BookmarkIcon = ({ filled }: { filled: boolean }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill={filled ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-  </svg>
-)
-
-// Checkmark circle — Mark as helpful
-const HelpfulIcon = ({ filled }: { filled: boolean }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill={filled ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-  </svg>
-)
-
-// Flag — Flag response
-const FlagIcon = ({ filled }: { filled: boolean }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill={filled ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
-  </svg>
-)
-
-// Sparkle — Regenerate
-const SparkleIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-  </svg>
-)
-
-// Dots — More
-const DotsIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm6.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm6.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
   </svg>
 )
 
@@ -70,10 +53,9 @@ function Tip({ label, children }: { label: string; children: React.ReactNode }) 
 }
 
 // ── Action toolbar ────────────────────────────────────────────────────────────
-function ActionToolbar({ content, onRetry }: { content: string; onRetry?: () => void }) {
-  const [copied, setCopied]     = useState(false)
-  const [saved, setSaved]       = useState(false)
-  const [helpful, setHelpful]   = useState<'yes' | 'flag' | null>(null)
+function ActionToolbar({ content }: { content: string; onRetry?: () => void }) {
+  const [copied,    setCopied]    = useState(false)
+  const [liked,     setLiked]     = useState<'heart' | 'up' | 'down' | null>(null)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content).then(() => {
@@ -88,6 +70,39 @@ function ActionToolbar({ content, onRetry }: { content: string; onRetry?: () => 
   return (
     <div className="flex items-center gap-0.5 mt-2 ml-10 rounded-xl bg-zinc-800/60 border border-zinc-700/50 px-1.5 py-1 animate-in fade-in slide-in-from-bottom-1 duration-200">
 
+      {/* ── Heart ── */}
+      <Tip label="Love it">
+        <button
+          onClick={() => setLiked(l => l === 'heart' ? null : 'heart')}
+          className={`${btnBase} ${liked === 'heart' ? 'text-rose-400' : btnIdle}`}
+        >
+          <HeartIcon filled={liked === 'heart'} />
+        </button>
+      </Tip>
+
+      {/* ── Thumbs up ── */}
+      <Tip label="Helpful">
+        <button
+          onClick={() => setLiked(l => l === 'up' ? null : 'up')}
+          className={`${btnBase} ${liked === 'up' ? 'text-teal-400' : btnIdle}`}
+        >
+          <ThumbUpIcon filled={liked === 'up'} />
+        </button>
+      </Tip>
+
+      {/* ── Thumbs down ── */}
+      <Tip label="Not helpful">
+        <button
+          onClick={() => setLiked(l => l === 'down' ? null : 'down')}
+          className={`${btnBase} ${liked === 'down' ? 'text-amber-400' : btnIdle}`}
+        >
+          <ThumbDownIcon filled={liked === 'down'} />
+        </button>
+      </Tip>
+
+      {/* ── Divider ── */}
+      <div className="mx-1 h-3.5 w-px bg-zinc-700/60" />
+
       {/* ── Copy ── */}
       <Tip label={copied ? 'Copied!' : 'Copy'}>
         <button
@@ -95,61 +110,6 @@ function ActionToolbar({ content, onRetry }: { content: string; onRetry?: () => 
           className={`${btnBase} ${copied ? 'text-teal-400' : btnIdle}`}
         >
           {copied ? <CheckIcon /> : <CopyIcon />}
-        </button>
-      </Tip>
-
-      {/* ── Divider ── */}
-      <div className="mx-1 h-3.5 w-px bg-zinc-700/60" />
-
-      {/* ── Helpful ── */}
-      <Tip label={helpful === 'yes' ? 'Marked helpful' : 'Helpful'}>
-        <button
-          onClick={() => setHelpful(h => h === 'yes' ? null : 'yes')}
-          className={`${btnBase} ${helpful === 'yes' ? 'text-teal-400' : btnIdle}`}
-        >
-          <HelpfulIcon filled={helpful === 'yes'} />
-        </button>
-      </Tip>
-
-      {/* ── Flag ── */}
-      <Tip label={helpful === 'flag' ? 'Flagged' : 'Flag response'}>
-        <button
-          onClick={() => setHelpful(h => h === 'flag' ? null : 'flag')}
-          className={`${btnBase} ${helpful === 'flag' ? 'text-amber-400' : btnIdle}`}
-        >
-          <FlagIcon filled={helpful === 'flag'} />
-        </button>
-      </Tip>
-
-      {/* ── Divider ── */}
-      <div className="mx-1 h-3.5 w-px bg-zinc-700/60" />
-
-      {/* ── Save to Docs ── */}
-      <Tip label={saved ? 'Saved!' : 'Save to Docs'}>
-        <button
-          onClick={() => setSaved(s => !s)}
-          className={`${btnBase} ${saved ? 'text-indigo-400' : btnIdle}`}
-        >
-          <BookmarkIcon filled={saved} />
-        </button>
-      </Tip>
-
-      {/* ── Regenerate ── */}
-      {onRetry && (
-        <Tip label="Regenerate">
-          <button
-            onClick={onRetry}
-            className={`${btnBase} ${btnIdle} hover:rotate-12 transition-transform`}
-          >
-            <SparkleIcon />
-          </button>
-        </Tip>
-      )}
-
-      {/* ── More ── */}
-      <Tip label="More">
-        <button className={`${btnBase} ${btnIdle}`}>
-          <DotsIcon />
         </button>
       </Tip>
 
