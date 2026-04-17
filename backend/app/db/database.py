@@ -1,17 +1,15 @@
 """
 Async SQLAlchemy engine and session factory.
 
-Why async (aiosqlite) instead of sync SQLAlchemy?
-FastAPI runs on an async event loop. Sync DB calls inside async route handlers
-would block the loop and kill throughput. aiosqlite gives us a proper async
-driver so all DB I/O is non-blocking.
+DATABASE_URL env var controls which database is used:
+  - Set on Render: postgresql+asyncpg://... (persistent, survives restarts)
+  - Not set locally: falls back to SQLite (zero-setup for dev)
 
-Why SQLite for now?
-Zero-setup, file-based, perfect for single-server deployments and development.
-Swapping to Postgres later requires only changing DATABASE_URL and the driver.
+Render's free tier wipes the local filesystem on every restart, so SQLite
+cannot be used in production — use Render's free PostgreSQL instead.
 """
 
-from collections.abc import AsyncGenerator
+import os
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -20,17 +18,27 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL = "sqlite+aiosqlite:///./chatpm.db"
+_raw_url = os.environ.get("DATABASE_URL", "sqlite+aiosqlite:///./chatpm.db")
+
+# Render provides postgres:// URLs; SQLAlchemy requires postgresql+asyncpg://
+if _raw_url.startswith("postgres://"):
+    _raw_url = _raw_url.replace("postgres://", "postgresql+asyncpg://", 1)
+elif _raw_url.startswith("postgresql://") and "+asyncpg" not in _raw_url:
+    _raw_url = _raw_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+DATABASE_URL = _raw_url
+
+_is_sqlite = DATABASE_URL.startswith("sqlite")
 
 engine = create_async_engine(
     DATABASE_URL,
-    echo=False,           # set True to log SQL in development
-    connect_args={"check_same_thread": False},
+    echo=False,
+    **({"connect_args": {"check_same_thread": False}} if _is_sqlite else {}),
 )
 
 AsyncSessionLocal = async_sessionmaker(
     engine,
-    expire_on_commit=False,  # keep ORM objects usable after commit
+    expire_on_commit=False,
 )
 
 
@@ -38,7 +46,7 @@ class Base(DeclarativeBase):
     pass
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_db():
     """FastAPI dependency — yields one session per request, always closes it."""
     async with AsyncSessionLocal() as session:
         yield session
@@ -46,7 +54,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db() -> None:
     """Create all tables on startup. Safe to call repeatedly (CREATE IF NOT EXISTS)."""
-    # Import here to ensure models are registered on Base.metadata before create_all
     import app.db.models  # noqa: F401
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
