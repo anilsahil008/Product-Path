@@ -276,6 +276,151 @@ const SITUATIONS = [
   },
 ]
 
+// ── Meetings ──────────────────────────────────────────────────────────────────
+
+const CADENCE_COLORS: Record<string, string> = {
+  'Daily':      'bg-rose-500/15 text-rose-400',
+  'Weekly':     'bg-emerald-500/15 text-emerald-400',
+  'Bi-weekly':  'bg-indigo-500/15 text-indigo-400',
+  'Monthly':    'bg-amber-500/15 text-amber-400',
+  'Quarterly':  'bg-violet-500/15 text-violet-400',
+  'As needed':  'bg-zinc-500/15 text-zinc-400',
+}
+
+const MEETINGS = [
+  // ── 1:1s ──
+  {
+    name: '1:1 with Your Manager',
+    cadence: 'Weekly',
+    category: '1:1s',
+    description: 'Alignment, blockers & career growth',
+    prompt: "Give me a complete guide to running my weekly 1:1 with my manager as a Product Manager. Cover: what to put on the agenda (status updates vs. topics that need discussion vs. career development), how to come prepared so the time is valuable, how to use 1:1s to get unblocked fast, how to bring up concerns without seeming negative, and how to follow up after the meeting. Include a reusable 1:1 agenda template I can use every week. What mistakes do PMs make in manager 1:1s that hurt their career?",
+  },
+  {
+    name: '1:1 with Engineering Manager',
+    cadence: 'Bi-weekly',
+    category: '1:1s',
+    description: 'Delivery health, priorities & trust building',
+    prompt: "Give me a guide to running effective bi-weekly 1:1s with my Engineering Manager as a PM. Cover: what topics to bring (upcoming spec clarity, delivery risks, resourcing, team morale signals), what the EM needs from me to do their job well, how to build a strong PM-EM relationship that makes the whole team faster, how to handle disagreements about scope or timeline in 1:1s, and how to follow up. Include a reusable agenda template. What do Engineering Managers wish PMs understood about their role?",
+  },
+  {
+    name: '1:1 with Tech Lead',
+    cadence: 'Weekly',
+    category: '1:1s',
+    description: 'Technical feasibility & early problem-solving',
+    prompt: "Give me a guide to running effective weekly 1:1s with my Tech Lead as a PM. Cover: what to discuss (upcoming technical decisions, feasibility questions, architecture concerns, dependency risks), how to build trust with a technical lead when you're non-technical, what questions to ask to surface technical risks early, how to balance technical debt conversations vs. feature discussions, and how to follow up on decisions made. Include an agenda template. What do Tech Leads wish PMs knew about working with them?",
+  },
+  {
+    name: '1:1 with Product Designer',
+    cadence: 'Bi-weekly',
+    category: '1:1s',
+    description: 'Design direction, feedback & collaboration',
+    prompt: "Give me a guide to running effective 1:1s with my Product Designer as a PM. Cover: what to discuss (upcoming design work, feedback on in-progress designs, research plans, bandwidth and timeline), how to give good design feedback in a 1:1 vs. a formal design review, how to involve design earlier in discovery, how to handle disagreements about design direction, and how to follow up. What does a healthy PM-designer working relationship actually look like day to day?",
+  },
+  {
+    name: '1:1 with Other PMs',
+    cadence: 'Monthly',
+    category: '1:1s',
+    description: 'Knowledge sharing & cross-product alignment',
+    prompt: "Give me a guide to running effective monthly 1:1s with peer Product Managers. Cover: what to discuss (cross-product dependencies, shared learnings, industry observations, career feedback), how to make peer PM 1:1s genuinely useful vs. just a catch-up, how to use peer PMs as a sounding board for difficult decisions, how to share roadmap context that prevents surprises, and how to follow up on action items. How do the best PMs use their peer network to grow faster?",
+  },
+  // ── Engineering ceremonies ──
+  {
+    name: 'Daily Standup',
+    cadence: 'Daily',
+    category: 'Engineering',
+    description: 'Blockers, progress & team sync',
+    prompt: "Give me a complete guide to the daily standup from a Product Manager's perspective. Cover: what the PM's role is in standup (observer vs. active participant), what to listen for (blockers, scope creep signals, morale issues), what PMs should and should not say in standup, how to handle it when standup turns into a problem-solving session, how to follow up on blockers raised in standup same-day, and what a healthy vs. dysfunctional standup looks like. How should a PM respond when a standup reveals the sprint is off track?",
+  },
+  {
+    name: 'Sprint Planning',
+    cadence: 'Bi-weekly',
+    category: 'Engineering',
+    description: 'Scope, stories & sprint commitment',
+    prompt: "Give me a complete guide to sprint planning for Product Managers. Cover: how to prepare the backlog before planning (story refinement, acceptance criteria, prioritization), what happens during sprint planning and the PM's role, how to facilitate a realistic capacity conversation with the team, how to handle scope pushback from engineering, how to set sprint goals that are meaningful (not just a list of tickets), and how to follow up after planning. Include a sprint planning checklist. What makes a sprint planning session go badly, and how do I prevent it?",
+  },
+  {
+    name: 'Sprint Retrospective',
+    cadence: 'Bi-weekly',
+    category: 'Engineering',
+    description: 'Process improvement & team health',
+    prompt: "Give me a complete guide to sprint retrospectives for Product Managers. Cover: what the PM's role is in retro (facilitator vs. participant), the best retro formats (Start/Stop/Continue, 4Ls, Mad/Sad/Glad), how to create psychological safety so people say what's actually wrong, how to turn retro feedback into real process changes (not just a list that gets ignored), and how to follow up on action items between retros. What are the most common retro anti-patterns? How do I run a retro when there's real tension on the team?",
+  },
+  {
+    name: 'Epic Kickoff',
+    cadence: 'As needed',
+    category: 'Engineering',
+    description: 'Align the team before building starts',
+    prompt: "Give me a complete guide to running an epic kickoff meeting as a Product Manager. Cover: what should be ready before the kickoff (spec, design, acceptance criteria, success metrics), who to invite, the agenda for the session (problem context → solution walkthrough → open questions → task breakdown → timeline), how to handle technical questions you can't answer on the spot, and how to follow up after the kickoff. Include an epic kickoff agenda template. What happens when you skip the kickoff, and what problems does it cause?",
+  },
+  {
+    name: 'Backlog Grooming',
+    cadence: 'Weekly',
+    category: 'Engineering',
+    description: 'Refine, estimate & sequence upcoming work',
+    prompt: "Give me a complete guide to backlog grooming (refinement) for Product Managers. Cover: what grooming is and why it matters, how to prepare stories for grooming (what 'ready' looks like), how to run the session (walking through stories, clarifying requirements, estimation), how to handle stories that are too big or too vague, how to prioritize what gets groomed first, and how to follow up. Include a checklist for what makes a story 'groomed and ready.' How often should grooming happen and how long should it take?",
+  },
+  // ── Product meetings ──
+  {
+    name: 'Product Area Sync',
+    cadence: 'Weekly',
+    category: 'Product',
+    description: 'Team status, risks & decisions',
+    prompt: "Give me a guide to running effective weekly product area sync meetings as a PM. Cover: what to put on the agenda (sprint status, upcoming milestones, risks, decisions needed, cross-team dependencies), how to run it efficiently so it doesn't become a status read-out, how to create a shared doc that captures decisions and action items, how to follow up on items raised, and how to keep the meeting from becoming bloated over time. Include a reusable sync agenda template. What's the difference between a good product sync and one that wastes everyone's time?",
+  },
+  {
+    name: 'Roadmap Presentation',
+    cadence: 'Quarterly',
+    category: 'Product',
+    description: 'Share the plan, get alignment & buy-in',
+    prompt: "Give me a complete guide to presenting the product roadmap to stakeholders as a PM. Cover: how to structure the presentation (context → strategy → roadmap → how we decided → what we need), how to present uncertainty without losing confidence, how to handle stakeholders who want to see different things on the roadmap, how to present to engineering vs. sales vs. executives (different audiences, different emphasis), how to follow up after the presentation, and how to document the decisions made. What are the most common mistakes PMs make in roadmap presentations?",
+  },
+  {
+    name: 'Requirements Review',
+    cadence: 'As needed',
+    category: 'Product',
+    description: 'Validate specs with engineering & design',
+    prompt: "Give me a guide to running a requirements review meeting as a PM. Cover: when to call a requirements review vs. just sharing a doc for async review, who should attend (engineering lead, design, QA, sometimes data), how to walk through a spec without just reading it aloud, how to capture open questions and decisions in real time, how to handle scope challenges from engineering, and how to follow up with a decisions log. Include an agenda template. What makes the difference between a requirements review that unblocks a team vs. one that creates more confusion?",
+  },
+  // ── Cross-functional ──
+  {
+    name: 'Customer Call',
+    cadence: 'Weekly',
+    category: 'Cross-functional',
+    description: 'Discovery, feedback & relationship building',
+    prompt: "Give me a complete guide to customer calls for Product Managers. Cover: the different types of customer calls (discovery interview, feedback session, QBR, escalation, sales support), how to prepare for each type, the most important questions to ask and the ones to avoid, how to listen for what customers mean vs. what they say, how to take notes that turn into product decisions, and how to follow up with the customer after the call. Include a customer interview question guide. How do I synthesize learnings across multiple customer calls to find real patterns?",
+  },
+  {
+    name: 'Cross-Functional Sync',
+    cadence: 'Bi-weekly',
+    category: 'Cross-functional',
+    description: 'Align with Sales, Marketing, CS & Ops',
+    prompt: "Give me a guide to running effective cross-functional sync meetings as a Product Manager. Cover: who to include and why (Sales, Marketing, Customer Success, Operations — and when to include each), how to structure the agenda so every team gets value (what's launching, what's coming, what we need from each team), how to prevent it from becoming a complaint session, how to capture and follow up on cross-functional action items, and how to make these meetings feel useful rather than obligatory. What's the right cadence for cross-functional syncs at different company sizes?",
+  },
+  {
+    name: 'UX Research Readout',
+    cadence: 'As needed',
+    category: 'Cross-functional',
+    description: 'Share insights & align on next steps',
+    prompt: "Give me a guide to running a UX research readout meeting as a PM. Cover: how to structure the readout (research goals → methodology → key findings → implications → recommended next steps), how to present qualitative findings to an audience that wants data, how to facilitate the 'so what do we do with this?' conversation, how to handle findings that contradict the team's assumptions, and how to follow up with a written summary and action items. How do I make sure research findings actually influence product decisions rather than getting filed away?",
+  },
+  // ── Launch ──
+  {
+    name: 'Pre-Launch Readiness Review',
+    cadence: 'As needed',
+    category: 'Launch',
+    description: 'Go / No-go decision before shipping',
+    prompt: "Give me a complete guide to running a pre-launch readiness review as a PM. Cover: what a launch readiness checklist looks like (feature complete, QA done, docs ready, GTM prepared, rollback plan in place, metrics instrumented, support team briefed), who should be in the readiness review meeting, how to run a go/no-go vote, how to handle disagreements about whether you're ready, and how to follow up after the meeting (launch day communication, monitoring plan). Include a launch readiness checklist template. What are the most common things teams think are ready but aren't?",
+  },
+  {
+    name: 'Go-to-Market Sync',
+    cadence: 'As needed',
+    category: 'Launch',
+    description: 'Align on launch messaging, timing & channels',
+    prompt: "Give me a guide to running a go-to-market (GTM) sync meeting as a Product Manager. Cover: who to include (Marketing, Sales, Customer Success, Support, sometimes Legal), what to cover in the session (launch date, ICP targeting, messaging and positioning, launch channels, enablement needs for Sales and CS, pricing and packaging), how to assign owners for each GTM workstream, and how to follow up with a GTM tracker doc. What does a great PM-owned GTM sync look like vs. a disorganized one? Include a GTM sync agenda template.",
+  },
+]
+
 // ── Teams ─────────────────────────────────────────────────────────────────────
 
 const TEAMS = [
@@ -462,7 +607,7 @@ const FRAMEWORKS = [
 
 // ── Tab types ─────────────────────────────────────────────────────────────────
 
-type Tab = 'books' | 'situations' | 'frameworks' | 'teams'
+type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings'
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -513,6 +658,7 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
             { key: 'situations', label: '🎯 Situations' },
             { key: 'frameworks', label: '🧠 Frameworks' },
             { key: 'teams',      label: '🏢 Teams' },
+            { key: 'meetings',   label: '📅 Meetings' },
           ] as { key: Tab; label: string }[]).map(tab => (
             <button
               key={tab.key}
@@ -626,6 +772,32 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
                     {t.focus}
                   </p>
                 </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Meetings tab */}
+        {activeTab === 'meetings' && (
+          <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
+            {MEETINGS.map(m => (
+              <button
+                key={m.name}
+                onClick={() => onSend(m.prompt, 'pm')}
+                disabled={isStreaming}
+                className="flex flex-col gap-1.5 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
+                    {m.name}
+                  </span>
+                  <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${CADENCE_COLORS[m.cadence]}`}>
+                    {m.cadence}
+                  </span>
+                </div>
+                <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
+                  {m.description}
+                </p>
               </button>
             ))}
           </div>
