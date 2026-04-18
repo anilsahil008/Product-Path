@@ -150,81 +150,6 @@ const ROADMAP_STEPS = [
   },
 ]
 
-// ── Templates ─────────────────────────────────────────────────────────────────
-
-const TEMPLATE_GROUPS = [
-  {
-    label: 'Core PM',
-    color: 'text-indigo-400',
-    items: [
-      {
-        label: 'Write a PRD',
-        prompt: "I want to write a full Product Requirements Document (PRD). To generate a complete, specific document I need a few details:\n\n1. What is the product or feature name?\n2. What problem does it solve, and for whom?\n3. What stage is this at? (early idea / validated problem / pre-build / pre-launch)\n4. Who is the primary reader? (your team / engineering / leadership / investors)\n5. Your name and role (for the document header)\n\nOnce you share these, I'll generate a complete PRD with version control, project team, problem definition, user personas, user stories, requirements, success metrics, and more.",
-      },
-      {
-        label: 'User stories',
-        prompt: "Help me write user stories for a feature. Ask me about the feature, the persona, and what job they're trying to do — then generate stories with clear acceptance criteria.",
-      },
-      {
-        label: 'Define an epic',
-        prompt: "I need to define an epic for my backlog. Ask me about the initiative, the business outcome we're targeting, and the key user segment — then help me write a well-structured epic with sub-stories.",
-      },
-      {
-        label: 'Roadmap planning',
-        prompt: "Help me plan my product roadmap. Ask me about my current priorities, team capacity, and business goals — then help me structure a Now/Next/Later roadmap with clear rationale for each decision.",
-      },
-      {
-        label: 'Stakeholder update',
-        prompt: "I need to write a stakeholder update for my product area. Ask me what's shipped, what's in progress, and what decisions need to be made — then help me write a clear, concise update.",
-      },
-    ],
-  },
-  {
-    label: 'Data & BI',
-    color: 'text-emerald-400',
-    items: [
-      {
-        label: 'BI dashboard PRD',
-        prompt: "I want to write a PRD for a business intelligence dashboard or report. Ask me who the audience is, what decisions this will drive, and what data sources we're working with — then help me write a strong PRD.",
-      },
-      {
-        label: 'Data quality initiative',
-        prompt: "I need to scope a data quality initiative. Ask me about the data domain, what business impact the quality issues are causing, and what good looks like — then help me define the initiative clearly with success metrics.",
-      },
-      {
-        label: 'Metrics framework',
-        prompt: "Help me define a metrics framework for my product area. Ask me about the business outcomes we care about, the user behaviors that drive them, and what we can actually measure — then help me build a clear, layered framework.",
-      },
-      {
-        label: 'CRM / Salesforce analysis',
-        prompt: "I need to think through a product initiative involving Salesforce or CRM data. Ask me about the business question we're trying to answer and who needs this insight — then help me define what data is needed and what decisions it enables.",
-      },
-    ],
-  },
-  {
-    label: 'Agile',
-    color: 'text-amber-400',
-    items: [
-      {
-        label: 'Sprint goal',
-        prompt: "Help me write a sprint goal. Ask me about the sprint theme and the key outcome we're driving — then help me write a goal that's outcome-focused, not task-focused.",
-      },
-      {
-        label: 'Backlog grooming',
-        prompt: "I need to groom my backlog and prioritize items for an upcoming sprint. Describe your top 5–7 candidate items and I'll help you think through prioritization with clear rationale for what makes the cut.",
-      },
-      {
-        label: 'OKR definition',
-        prompt: "Help me write OKRs for my product area. Ask me about the business goals for the quarter, what success looks like, and how my team contributes — then help me write objectives with measurable key results.",
-      },
-      {
-        label: 'Retro action items',
-        prompt: "I just ran a retrospective and want to turn the output into concrete action items. Share your key themes and I'll help you prioritize and frame them as clear, ownable actions with expected outcomes.",
-      },
-    ],
-  },
-]
-
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
 const icons = {
@@ -311,55 +236,6 @@ function SectionHeader({ label, action }: { label: string; action?: React.ReactN
         {label}
       </span>
       {action}
-    </div>
-  )
-}
-
-// ── Template group (collapsible) ───────────────────────────────────────────────
-function TemplateGroup({
-  label,
-  color,
-  items,
-  onSelect,
-  isStreaming,
-}: {
-  label: string
-  color: string
-  items: { label: string; prompt: string }[]
-  onSelect: (prompt: string) => void
-  isStreaming: boolean
-}) {
-  const [open, setOpen] = useState(true)
-
-  return (
-    <div>
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-zinc-800/60 transition-colors group"
-      >
-        <span className={`text-[10px] font-semibold uppercase tracking-[0.1em] ${color} flex-1 text-left`}>
-          {label}
-        </span>
-        <span className={`text-zinc-600 transition-transform duration-150 ${open ? '' : '-rotate-90'}`}>
-          {icons.chevronDown}
-        </span>
-      </button>
-
-      {open && (
-        <div className="space-y-0.5 mt-0.5">
-          {items.map(item => (
-            <button
-              key={item.label}
-              onClick={() => onSelect(item.prompt)}
-              disabled={isStreaming}
-              className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left text-[12px] text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed group"
-            >
-              <span className="text-zinc-600 group-hover:text-zinc-500 flex-shrink-0">{icons.template}</span>
-              <span className="truncate">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   )
 }
