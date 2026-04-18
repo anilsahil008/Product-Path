@@ -19,6 +19,13 @@ _IMAGE_TRIGGERS = [
     "show me an image", "generate a visual", "create a visual",
     "design an image", "illustrate ", "generate a diagram",
     "create a diagram", "make a diagram",
+    # short-form variants
+    "generate a pic", "create a pic", "make a pic", "generate pic",
+    "create pic", "make pic", "gen a pic", "gen an image",
+    "generate a photo", "create a photo", "make a photo",
+    "generate photo", "create photo", "show me a pic",
+    "show me a photo", "generate a ", "create a realistic",
+    "make a realistic", "generate realistic",
 ]
 
 
@@ -102,12 +109,13 @@ def _detect_visual_type(message: str) -> str | None:
 # ── Prompt builder ────────────────────────────────────────────────────────────
 
 _GENERIC_SYSTEM = (
-    "You are an expert at writing image generation prompts for professional product "
-    "management visuals. Convert the user's request into a detailed DALL-E prompt. "
-    "Always specify: clean infographic or diagram style, flat design, professional "
-    "business presentation quality, modern color scheme (blues, purples, teals, "
-    "white or light background), clear readable labels, organized layout. "
-    "Never include: photos of people, abstract art, cluttered designs. "
+    "You are an expert at writing image generation prompts for DALL-E 3. "
+    "Convert the user's request into a highly detailed, vivid prompt that produces "
+    "a realistic, high-quality image. "
+    "For photos of people, animals, or nature: specify 'realistic photograph, "
+    "professional photography, sharp focus, natural lighting, high resolution'. "
+    "For diagrams or infographics: specify clean flat design and professional layout. "
+    "Always add enough detail about style, lighting, mood, and composition. "
     "Return only the image prompt, nothing else."
 )
 
