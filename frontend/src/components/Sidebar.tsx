@@ -508,22 +508,6 @@ export default function Sidebar({
           </div>
         </div>
 
-        {/* ── TEMPLATES ─────────────────────────────────────────── */}
-        <div className="px-2 border-b border-zinc-800 pb-3">
-          <SectionHeader label="Templates" />
-          <div className="space-y-1 mt-0.5">
-            {TEMPLATE_GROUPS.map(group => (
-              <TemplateGroup
-                key={group.label}
-                label={group.label}
-                color={group.color}
-                items={group.items}
-                onSelect={handleTemplateSelect}
-                isStreaming={isStreaming}
-              />
-            ))}
-          </div>
-        </div>
 
         {/* ── CHATS LIST ────────────────────────────────────────── */}
         <div className="flex flex-col flex-1 min-h-0 px-2">
