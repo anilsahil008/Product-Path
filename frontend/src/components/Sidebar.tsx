@@ -21,6 +21,135 @@ interface Props {
   isStreaming: boolean
 }
 
+// ── PM Roadmap steps ──────────────────────────────────────────────────────────
+
+const ROADMAP_STEPS = [
+  {
+    number: 1,
+    label: 'Discovery & Ideation',
+    color: 'text-violet-400',
+    badge: 'bg-violet-500/20 text-violet-300',
+    items: [
+      {
+        label: 'Problem Identification',
+        prompt: "Teach me how to identify a real product problem worth solving. Give me a framework for spotting user 'symptoms' vs. root causes, and show me a real-world example of how a PM identified a problem that led to a successful product.",
+      },
+      {
+        label: 'Customer Research',
+        prompt: "Walk me through how to run effective customer interviews and market research as a PM. Include: what questions to ask, how to avoid leading questions, how to spot patterns across interviews, and how to turn research findings into actionable insights. Give me a practical example.",
+      },
+      {
+        label: 'Idea Management',
+        prompt: "How do I build and manage a product idea backlog effectively? Explain how to collect, organize, and screen ideas from customers, support tickets, sales, and internal stakeholders. Include a framework for scoring and filtering ideas before they hit the roadmap.",
+      },
+    ],
+  },
+  {
+    number: 2,
+    label: 'Strategy & Vision',
+    color: 'text-indigo-400',
+    badge: 'bg-indigo-500/20 text-indigo-300',
+    items: [
+      {
+        label: 'Product Vision',
+        prompt: "Help me understand how to craft a compelling product vision. What makes a vision statement powerful vs. generic? Show me examples of strong product visions (like Spotify or Airbnb) and walk me through how to write one for my own product.",
+      },
+      {
+        label: 'Value Proposition',
+        prompt: "Teach me how to define a clear value proposition for my product. Walk me through the Value Proposition Canvas framework and show me how to use it to identify what makes my product unique compared to competitors. Give me a real example.",
+      },
+      {
+        label: 'Roadmapping',
+        prompt: "Explain how to build a product roadmap that leadership and engineering will actually trust. Cover: Now/Next/Later vs. timeline roadmaps, how to communicate tradeoffs, how to handle stakeholder pressure, and what a good vs. bad roadmap looks like. Include an example.",
+      },
+    ],
+  },
+  {
+    number: 3,
+    label: 'Concept & Validation',
+    color: 'text-teal-400',
+    badge: 'bg-teal-500/20 text-teal-300',
+    items: [
+      {
+        label: 'Prototyping',
+        prompt: "Walk me through the different levels of prototyping as a PM — from paper sketches to high-fidelity prototypes. When should I use each type? What should I be testing with each? Give me a practical example of a PM using a prototype to validate an idea before writing a single line of code.",
+      },
+      {
+        label: 'User Testing',
+        prompt: "Teach me how to run usability testing as a PM. Cover: how to recruit the right participants, how to design test scenarios, how to observe without influencing, and how to synthesize findings into product decisions. Include common mistakes PMs make in usability testing.",
+      },
+    ],
+  },
+  {
+    number: 4,
+    label: 'Specs & Planning',
+    color: 'text-amber-400',
+    badge: 'bg-amber-500/20 text-amber-300',
+    items: [
+      {
+        label: 'Requirements & User Stories',
+        prompt: "Explain how to write clear functional requirements and user stories that engineers can actually build from. Show me the difference between weak and strong user stories, what good acceptance criteria looks like, and how to avoid the most common mistakes PMs make when writing specs.",
+      },
+      {
+        label: 'Prioritization Frameworks',
+        prompt: "Walk me through the most useful product prioritization frameworks: MoSCoW, RICE, ICE, and Now/Next/Later. For each one, explain when to use it, how to score items, and what its limitations are. Then give me a worked example using a real backlog scenario.",
+      },
+    ],
+  },
+  {
+    number: 5,
+    label: 'Development',
+    color: 'text-emerald-400',
+    badge: 'bg-emerald-500/20 text-emerald-300',
+    items: [
+      {
+        label: 'Agile & Scrum',
+        prompt: "Explain Agile and Scrum from a PM perspective. Cover: sprint planning, standups, backlog grooming, sprint reviews, and retrospectives. What is the PM's role in each ceremony? What should a PM never do that slows the team down? Give me a real example of a well-run Agile sprint.",
+      },
+      {
+        label: 'MVP Strategy',
+        prompt: "Teach me how to define a true MVP (Minimum Viable Product) — not a watered-down version of everything, but the smallest thing that tests the core hypothesis. Walk me through how to identify the riskiest assumption, scope the MVP around it, and decide when the MVP has done its job. Include a famous MVP example.",
+      },
+    ],
+  },
+  {
+    number: 6,
+    label: 'Launch & Marketing',
+    color: 'text-rose-400',
+    badge: 'bg-rose-500/20 text-rose-300',
+    items: [
+      {
+        label: 'Go-to-Market Plan',
+        prompt: "Walk me through how to build a Go-to-Market (GTM) plan as a PM. Cover: defining the ICP, positioning, messaging, launch channels, and success criteria. What does a PM own vs. marketing? What does a strong GTM look like vs. a weak one? Give me a real product launch example.",
+      },
+      {
+        label: 'Release Management',
+        prompt: "Explain the different types of product releases: soft launch, beta, phased rollout, and general availability (GA). When should I use each? How do I manage feature flags, rollback plans, and stakeholder communication during a release? Give me a checklist for a successful launch day.",
+      },
+    ],
+  },
+  {
+    number: 7,
+    label: 'Post-Launch & Growth',
+    color: 'text-orange-400',
+    badge: 'bg-orange-500/20 text-orange-300',
+    items: [
+      {
+        label: 'Analytics & Monitoring',
+        prompt: "Teach me how to measure product success after launch. What metrics should I track for activation, retention, engagement, and revenue? How do I set up a North Star metric? What does a healthy post-launch analytics review look like? Give me a real example of a PM using data to make a post-launch decision.",
+      },
+      {
+        label: 'Feedback Loops',
+        prompt: "Explain how to build continuous feedback loops as a PM after launch. Cover: how to collect user feedback at scale, how to prioritize what to act on, how to close the loop with users, and how to use feedback to drive the next sprint. Include practical tools and methods.",
+      },
+      {
+        label: 'Sunsetting Features',
+        prompt: "Walk me through how to sunset a feature or product the right way. How do I know when something should be retired? How do I get stakeholder buy-in to remove something? What's the right way to communicate this to users? Give me a framework and a real example.",
+      },
+    ],
+  },
+]
+
 // ── Templates ─────────────────────────────────────────────────────────────────
 
 const TEMPLATE_GROUPS = [
@@ -124,6 +253,54 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
     </svg>
   ),
+}
+
+// ── Roadmap step (collapsible) ────────────────────────────────────────────────
+function RoadmapStep({
+  number, label, color, badge, items, onSelect, isStreaming,
+}: {
+  number: number
+  label: string
+  color: string
+  badge: string
+  items: { label: string; prompt: string }[]
+  onSelect: (prompt: string) => void
+  isStreaming: boolean
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800/60 transition-colors"
+      >
+        <span className={`flex-shrink-0 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center ${badge}`}>
+          {number}
+        </span>
+        <span className={`text-[11px] font-medium flex-1 text-left ${color}`}>{label}</span>
+        <span className={`text-zinc-600 transition-transform duration-150 flex-shrink-0 ${open ? '' : '-rotate-90'}`}>
+          {icons.chevronDown}
+        </span>
+      </button>
+
+      {open && (
+        <div className="space-y-0.5 mt-0.5 ml-2">
+          {items.map(item => (
+            <button
+              key={item.label}
+              onClick={() => onSelect(item.prompt)}
+              disabled={isStreaming}
+              className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left text-[11px] text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed group"
+            >
+              <span className="w-1 h-1 rounded-full bg-zinc-600 group-hover:bg-zinc-400 flex-shrink-0" />
+              <span className="truncate">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 // ── Section header ─────────────────────────────────────────────────────────────
@@ -311,6 +488,25 @@ export default function Sidebar({
 
       {/* ── SCROLLABLE BODY ───────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto flex flex-col min-h-0">
+
+        {/* ── ROADMAP ───────────────────────────────────────────── */}
+        <div className="px-2 border-b border-zinc-800 pb-3">
+          <SectionHeader label="Roadmap" />
+          <div className="space-y-0.5 mt-0.5">
+            {ROADMAP_STEPS.map(step => (
+              <RoadmapStep
+                key={step.number}
+                number={step.number}
+                label={step.label}
+                color={step.color}
+                badge={step.badge}
+                items={step.items}
+                onSelect={handleTemplateSelect}
+                isStreaming={isStreaming}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* ── TEMPLATES ─────────────────────────────────────────── */}
         <div className="px-2 border-b border-zinc-800 pb-3">
