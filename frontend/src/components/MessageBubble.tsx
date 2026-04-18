@@ -432,7 +432,11 @@ export default function MessageBubble({ message, onRetry }: Props) {
         {/* Assistant avatar */}
         {!isUser && (
           <div className="flex-shrink-0 w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center mr-3 mt-1 select-none overflow-hidden">
-            <img src="/logo-dark.svg" alt="Product Path" className="w-5 h-5 object-contain" />
+            <img
+              src="/logo-dark.svg"
+              alt="Product Path"
+              className={`w-5 h-5 object-contain transition-all duration-300 ${isStreaming ? 'animate-spin' : ''}`}
+            />
           </div>
         )}
 
