@@ -486,6 +486,9 @@ export default function MessageBubble({ message, onRetry }: Props) {
                 blockquote: ({ children }) => <blockquote className="border-l-2 border-indigo-500 pl-3 my-2 text-zinc-400 italic">{children}</blockquote>,
                 hr: () => <hr className="border-zinc-700 my-3" />,
                 a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2">{children}</a>,
+                img: ({ src, alt }) => (
+                  <img src={src} alt={alt || 'Generated image'} className="rounded-xl w-full max-w-sm my-3 border border-zinc-700 shadow-lg" />
+                ),
               }}
             >
               {message.content || (isStreaming ? '\u00A0' : '')}

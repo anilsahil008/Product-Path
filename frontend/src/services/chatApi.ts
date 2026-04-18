@@ -21,11 +21,13 @@ export interface Message {
   streaming?: boolean
 }
 
-type SSEChunk     = { type: 'chunk'; content: string }
-type SSEDone      = { type: 'done' }
-type SSEError     = { type: 'error'; content: string }
-type SSESearching = { type: 'searching' }
-export type SSEEvent = SSEChunk | SSEDone | SSEError | SSESearching
+type SSEChunk          = { type: 'chunk'; content: string }
+type SSEDone           = { type: 'done' }
+type SSEError          = { type: 'error'; content: string }
+type SSESearching      = { type: 'searching' }
+type SSEGeneratingImage = { type: 'generating_image' }
+type SSEImage          = { type: 'image'; url: string }
+export type SSEEvent = SSEChunk | SSEDone | SSEError | SSESearching | SSEGeneratingImage | SSEImage
 
 interface HistoryResponse {
   session_id: string

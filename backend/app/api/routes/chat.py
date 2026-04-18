@@ -24,6 +24,7 @@ from app.models.schemas import (
 )
 from app.services.ai_service import ai_service
 from app.services.artifact_service import artifact_service
+from app.services.image_service import image_service, is_image_request
 from app.services.prompt_service import prompt_service
 from app.services.search_service import search_service
 from app.services.session_service import session_service
@@ -81,6 +82,19 @@ async def send_message(
     async def event_generator():
         full_response: list[str] = []
         try:
+            # ── Image generation (auto-detected) ──────────────────────
+            if is_image_request(request.message):
+                yield f"data: {json.dumps({'type': 'generating_image'})}\n\n"
+                image_url = await image_service.generate(request.message)
+                content = f"![Generated image]({image_url})\n\n*Generated with DALL-E 3*"
+                await session_service.append_message(
+                    db, request.session_id,
+                    Message(role="assistant", content=content),
+                )
+                yield f"data: {json.dumps({'type': 'image', 'url': image_url})}\n\n"
+                yield f"data: {json.dumps({'type': 'done'})}\n\n"
+                return
+
             # Real-time web search (when enabled)
             print(f"[chat] use_search={request.use_search} message={request.message[:60]!r}", flush=True)
             search_context: str | None = None
