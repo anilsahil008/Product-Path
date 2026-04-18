@@ -276,6 +276,101 @@ const SITUATIONS = [
   },
 ]
 
+// ── Teams ─────────────────────────────────────────────────────────────────────
+
+const TEAMS = [
+  {
+    name: 'Sales',
+    icon: '💼',
+    iconBg: 'bg-emerald-500/15',
+    iconColor: 'text-emerald-400',
+    tagColor: 'bg-emerald-500/15 text-emerald-400',
+    focus: 'Revenue, quotas & deal velocity',
+    prompt: "Give me a complete PM guide to working with the Sales team. Cover: what Sales cares about most (quota attainment, deal velocity, win rate, competitive differentiators), the metrics they live by, what they typically need from Product (and where conflict arises), how to run a productive sales-product feedback session, how to present the roadmap to Sales in a way they actually care about, and how to say no to a sales-driven feature request without damaging the relationship. Include real examples of PM-Sales collaboration done well and done poorly.",
+  },
+  {
+    name: 'Marketing',
+    icon: '📣',
+    iconBg: 'bg-pink-500/15',
+    iconColor: 'text-pink-400',
+    tagColor: 'bg-pink-500/15 text-pink-400',
+    focus: 'Pipeline, brand & go-to-market',
+    prompt: "Give me a complete PM guide to working with Marketing. Cover: what Marketing cares about (pipeline generation, MQLs, brand positioning, content, campaigns, demand gen), the metrics they live by, what they need from Product (messaging, release timing, case studies), how to collaborate on a product launch, how to brief Marketing on a new feature so they can position it correctly, and how to navigate disagreements about launch timing or messaging. What does great PM-Marketing collaboration look like in a B2B SaaS company?",
+  },
+  {
+    name: 'Finance',
+    icon: '💰',
+    iconBg: 'bg-amber-500/15',
+    iconColor: 'text-amber-400',
+    tagColor: 'bg-amber-500/15 text-amber-400',
+    focus: 'ROI, budget & unit economics',
+    prompt: "Give me a complete PM guide to working with Finance. Cover: what Finance cares about (ROI, budget allocation, cost reduction, revenue forecasting, unit economics, payback period), the metrics they track, what they need from Product (business cases, cost estimates, revenue projections), how to build a business case that Finance will approve, how to justify product investment with data, and how to handle budget cuts to the product roadmap. What language should a PM use when presenting to CFOs or Finance business partners?",
+  },
+  {
+    name: 'Engineering',
+    icon: '⚙️',
+    iconBg: 'bg-indigo-500/15',
+    iconColor: 'text-indigo-400',
+    tagColor: 'bg-indigo-500/15 text-indigo-400',
+    focus: 'Reliability, velocity & tech debt',
+    prompt: "Give me a complete PM guide to working with Engineering effectively. Cover: what engineers care about (technical debt, code quality, architecture, system reliability, scalability, clear requirements), the metrics they track (velocity, lead time, deployment frequency, incident rate), what makes engineers frustrated with PMs, how to write specs that engineers can actually build from, how to handle the tech debt vs. feature tradeoff conversation, how to run sprint planning well, and how to build genuine trust with your engineering lead. What separates PMs that engineers love from ones they dread working with?",
+  },
+  {
+    name: 'Design & UX',
+    icon: '🎨',
+    iconBg: 'bg-violet-500/15',
+    iconColor: 'text-violet-400',
+    tagColor: 'bg-violet-500/15 text-violet-400',
+    focus: 'Usability, accessibility & design systems',
+    prompt: "Give me a complete PM guide to working with Design and UX. Cover: what designers care about (user experience quality, accessibility, design system consistency, time for proper research and iteration), the metrics they track (usability scores, task completion, error rates, NPS), what frustrates designers about PMs (jumping to solutions, skipping discovery, compressing design timelines), how to give good design feedback, how to involve design early in discovery, and how to build a strong PM-design partnership. What does a healthy PM-design workflow look like from kick-off to handoff?",
+  },
+  {
+    name: 'Data & BI',
+    icon: '📊',
+    iconBg: 'bg-sky-500/15',
+    iconColor: 'text-sky-400',
+    tagColor: 'bg-sky-500/15 text-sky-400',
+    focus: 'Dashboards, data quality & insights',
+    prompt: "Give me a complete PM guide to working with the Data and BI team. Cover: what Data/BI cares about (data quality, pipeline reliability, dashboard accuracy, self-serve analytics, governance), the metrics they track, what they need from Product (instrumentation requirements, data contracts, event taxonomies), how to write a good analytics requirements doc, how to prioritize BI work alongside feature work, and how to build a collaborative relationship so data insights actually influence product decisions. What are the most common mistakes PMs make when working with data teams?",
+  },
+  {
+    name: 'Customer Success',
+    icon: '🤝',
+    iconBg: 'bg-teal-500/15',
+    iconColor: 'text-teal-400',
+    tagColor: 'bg-teal-500/15 text-teal-400',
+    focus: 'Retention, NPS & churn prevention',
+    prompt: "Give me a complete PM guide to working with Customer Success (CS). Cover: what CS cares about (retention rate, churn, NPS, time-to-value, customer health scores, expansion revenue), the metrics they live by, what they need from Product (faster fixes for customer pain points, better onboarding, release notes they can share), how to run a productive CS-product feedback session, how to use CS data to prioritize the roadmap, and how to handle the tension between new feature requests from CS vs. strategic roadmap work. What does great PM-CS collaboration look like?",
+  },
+  {
+    name: 'Operations',
+    icon: '⚡',
+    iconBg: 'bg-orange-500/15',
+    iconColor: 'text-orange-400',
+    tagColor: 'bg-orange-500/15 text-orange-400',
+    focus: 'Efficiency, processes & scalability',
+    prompt: "Give me a complete PM guide to working with the Operations team. Cover: what Ops cares about (process efficiency, cost per unit, error rates, SLA compliance, operational scalability), the metrics they track, what they need from Product (tools that reduce manual work, automation, reliable integrations), how to uncover operational pain points that should be product problems, how to prioritize internal tooling alongside customer-facing features, and how to run a discovery session with an ops team that isn't used to being asked what they need. What are the best examples of product teams building for internal operations?",
+  },
+  {
+    name: 'Legal & Compliance',
+    icon: '⚖️',
+    iconBg: 'bg-zinc-500/15',
+    iconColor: 'text-zinc-400',
+    tagColor: 'bg-zinc-500/15 text-zinc-400',
+    focus: 'Risk, privacy & regulatory compliance',
+    prompt: "Give me a complete PM guide to working with Legal and Compliance. Cover: what Legal cares about (regulatory compliance, data privacy, GDPR/CCPA, terms of service, IP risk, liability), how they think about product decisions differently from PMs, what they need from Product (early involvement, clear documentation, time to review), how to involve Legal early so they don't become a launch blocker, how to navigate a situation where Legal wants to kill a feature, and how to build a working relationship where Legal is a partner not a gatekeeper. What are the most common Legal-Product conflicts and how do they get resolved?",
+  },
+  {
+    name: 'HR & People',
+    icon: '👥',
+    iconBg: 'bg-rose-500/15',
+    iconColor: 'text-rose-400',
+    tagColor: 'bg-rose-500/15 text-rose-400',
+    focus: 'Hiring, culture & employee experience',
+    prompt: "Give me a complete PM guide to working with HR and People teams — both as a cross-functional partner and as a consumer of their work. Cover: what HR cares about (employee engagement, retention, time-to-hire, culture, DEI, performance management), how they measure success, what they need from Product (headcount clarity, job descriptions, interview panel time, manager feedback), how to partner with HR when scaling a product team, how to navigate difficult people situations (underperformers, team conflict) with HR support, and what PMs building HR tech or internal tools should know about this team's pain points.",
+  },
+]
+
 // ── Frameworks ───────────────────────────────────────────────────────────────
 
 const FRAMEWORKS = [
@@ -367,7 +462,7 @@ const FRAMEWORKS = [
 
 // ── Tab types ─────────────────────────────────────────────────────────────────
 
-type Tab = 'books' | 'situations' | 'frameworks'
+type Tab = 'books' | 'situations' | 'frameworks' | 'teams'
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -417,6 +512,7 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
             { key: 'books',      label: '📚 PM Books' },
             { key: 'situations', label: '🎯 Situations' },
             { key: 'frameworks', label: '🧠 Frameworks' },
+            { key: 'teams',      label: '🏢 Teams' },
           ] as { key: Tab; label: string }[]).map(tab => (
             <button
               key={tab.key}
@@ -504,6 +600,32 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
                 <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
                   {f.description}
                 </p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Teams tab */}
+        {activeTab === 'teams' && (
+          <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
+            {TEAMS.map(t => (
+              <button
+                key={t.name}
+                onClick={() => onSend(t.prompt, 'pm')}
+                disabled={isStreaming}
+                className="flex items-start gap-3 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
+              >
+                <span className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base ${t.iconBg}`}>
+                  {t.icon}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[12px] font-bold text-zinc-200 group-hover:text-white transition-colors">
+                    {t.name}
+                  </p>
+                  <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors mt-0.5">
+                    {t.focus}
+                  </p>
+                </div>
               </button>
             ))}
           </div>
