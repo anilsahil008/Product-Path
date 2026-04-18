@@ -276,6 +276,158 @@ const SITUATIONS = [
   },
 ]
 
+// ── Technical Knowledge ───────────────────────────────────────────────────────
+
+const TECH_TOPICS = [
+  {
+    name: 'Frontend vs Backend',
+    tag: 'Architecture',
+    tagColor: 'bg-sky-500/15 text-sky-400',
+    description: 'What each side does & why it matters for specs',
+    prompt: "Explain the difference between frontend and backend to me as a Product Manager — no coding required. Cover: what the frontend is responsible for (UI, user interactions, performance in the browser), what the backend is responsible for (business logic, databases, APIs, security), how they communicate, and why this distinction matters when I'm writing specs or estimating work. Give me real examples: when I ask for a change, how do I know if it's a frontend or backend change? Why does that matter for effort estimates? What questions should I ask engineers to understand the scope of a change?",
+  },
+  {
+    name: 'APIs Explained',
+    tag: 'Architecture',
+    tagColor: 'bg-sky-500/15 text-sky-400',
+    description: 'What APIs are, REST vs GraphQL, and why PMs care',
+    prompt: "Explain APIs to me as a Product Manager in plain language. Cover: what an API is (a contract between systems), why APIs matter for product decisions (third-party integrations, mobile vs. web, partner ecosystems), the difference between REST and GraphQL at a conceptual level, what API rate limits and versioning mean for PMs, and what happens when an API changes (breaking vs. non-breaking changes). Give me examples of product decisions that are heavily influenced by API design — like building a marketplace, opening a developer platform, or integrating with Salesforce.",
+  },
+  {
+    name: 'Databases 101',
+    tag: 'Architecture',
+    tagColor: 'bg-sky-500/15 text-sky-400',
+    description: 'SQL vs NoSQL, queries & why schema changes are risky',
+    prompt: "Explain databases to me as a Product Manager — just enough to have smart conversations with engineers. Cover: what a database is and the difference between SQL (relational) and NoSQL at a conceptual level, why PMs need to understand schema changes (and why they're risky and slow), what a migration is, what 'query performance' means for product features, and why some product decisions (like adding a new filter or search field) might be harder than they look. Give me 3 real examples of product decisions that were much more complex than expected because of database constraints.",
+  },
+  {
+    name: 'Microservices vs Monolith',
+    tag: 'Architecture',
+    tagColor: 'bg-sky-500/15 text-sky-400',
+    description: 'How system architecture affects your roadmap',
+    prompt: "Explain microservices vs. monolithic architecture to me as a PM — not to build it, but to understand how it affects product decisions. Cover: what a monolith is, what microservices are, the tradeoffs (monolith is simpler and faster to build, microservices scale better but add complexity), how architectural choices affect how fast features can ship, why splitting a monolith into microservices is a big engineering investment, and how this affects my roadmap planning. Give me real examples of companies that moved from monolith to microservices and what it meant for the product team.",
+  },
+  {
+    name: 'Git & Version Control',
+    tag: 'Dev Process',
+    tagColor: 'bg-violet-500/15 text-violet-400',
+    description: 'Branches, pull requests & what "merging" means',
+    prompt: "Explain Git and version control to me as a Product Manager — enough to understand what engineers are talking about. Cover: what Git is (a way to track code changes), what a branch is and why engineers work in branches, what a pull request (PR) is and why it exists, what 'merging' and 'conflicts' mean, and how all of this connects to the product release process. Why do some PRs take days to review? What does it mean when engineers say 'we need to merge main into our branch'? How does Git branching strategy affect how we do releases and feature flags?",
+  },
+  {
+    name: 'CI/CD Pipelines',
+    tag: 'Dev Process',
+    tagColor: 'bg-violet-500/15 text-violet-400',
+    description: 'How code goes from laptop to production',
+    prompt: "Explain CI/CD (Continuous Integration / Continuous Deployment) to me as a Product Manager. Cover: what CI/CD is in plain English (automated testing + automated deployment), why it matters for product velocity, what a 'build failure' or 'pipeline failure' means, what environments are (dev, staging, production) and why code moves through them, and how CI/CD connects to our release process. How does a healthy CI/CD pipeline make a PM's life better? What should I do when the CI pipeline is broken and blocking the sprint? What's the difference between continuous delivery and continuous deployment?",
+  },
+  {
+    name: 'Feature Flags',
+    tag: 'Dev Process',
+    tagColor: 'bg-violet-500/15 text-violet-400',
+    description: 'Ship safely, roll out gradually, kill switches',
+    prompt: "Explain feature flags to me as a Product Manager and why they're one of the most powerful tools I have for launches. Cover: what a feature flag is (a toggle that turns features on/off without redeployment), how to use them for gradual rollouts (10% → 50% → 100%), canary releases, A/B testing, and kill switches for bad launches, why feature flags change the launch checklist, and what the risks of feature flags are (flag debt, complexity). Give me a concrete example of how a PM used feature flags to safely launch a major feature and roll back when something went wrong.",
+  },
+  {
+    name: 'Dev / Staging / Prod',
+    tag: 'Dev Process',
+    tagColor: 'bg-violet-500/15 text-violet-400',
+    description: 'What environments are and how to use them',
+    prompt: "Explain the concept of environments (development, staging, production) to me as a Product Manager. Cover: what each environment is for, why code must pass through each one, how to use the staging environment for QA and demos, why you should never test directly in production, what 'environment parity' means, and common PM mistakes related to environments (like demoing to a customer in staging and calling it live). How does environment management affect sprint planning and release timelines? What should I check in staging before approving a release?",
+  },
+  {
+    name: 'Event Tracking & Analytics Instrumentation',
+    tag: 'Data',
+    tagColor: 'bg-amber-500/15 text-amber-400',
+    description: 'How to spec tracking so you can measure what matters',
+    prompt: "Explain event tracking and analytics instrumentation to me as a Product Manager — this is critical for measuring product success. Cover: what an event is (a user action that gets tracked), how event tracking works (client-side vs. server-side), how to write an instrumentation spec for a new feature, what properties to attach to each event, the difference between page views, clicks, and custom events, how this data flows into tools like Amplitude or Mixpanel, and what happens when you forget to add tracking before shipping. Give me a template for an instrumentation spec I can use when writing requirements.",
+  },
+  {
+    name: 'SQL for PMs',
+    tag: 'Data',
+    tagColor: 'bg-amber-500/15 text-amber-400',
+    description: 'Read data yourself without waiting for the data team',
+    prompt: "Teach me enough SQL to be useful as a Product Manager — not to build databases, but to query data and answer my own questions. Cover: what SELECT, FROM, WHERE, GROUP BY, ORDER BY, and LIMIT do in plain English, how to count users who did something (basic aggregation), how to join two tables, and how to write a query that answers a real PM question like 'how many users completed onboarding this week?' Give me 5 example SQL queries that every PM should know how to write. What tools do most companies use for PMs to run SQL (Metabase, Mode, Looker, etc.)?",
+  },
+  {
+    name: 'Data Pipelines',
+    tag: 'Data',
+    tagColor: 'bg-amber-500/15 text-amber-400',
+    description: 'How raw events become dashboards (and why it breaks)',
+    prompt: "Explain data pipelines to me as a PM in plain language. Cover: what a data pipeline is (the path from raw event → warehouse → dashboard), why data is sometimes delayed or wrong, what ETL means, what a data warehouse is (Snowflake, BigQuery, Redshift) vs. a production database, why the data in Amplitude sometimes doesn't match the data in the data warehouse, and what PMs should do when they discover a data quality issue. How do I spec a data instrumentation requirement so the data team can build a reliable pipeline for my feature's metrics?",
+  },
+  {
+    name: 'Performance & Latency',
+    tag: 'Performance',
+    tagColor: 'bg-emerald-500/15 text-emerald-400',
+    description: 'Load time, response time & how they affect users',
+    prompt: "Explain web and app performance to me as a Product Manager — enough to make smart product decisions about it. Cover: what latency is, what page load time means and why it matters (every 100ms of latency costs conversion), what Core Web Vitals are (LCP, FID, CLS), what causes slow APIs and how engineers fix them, what caching is and how it helps performance, and how to think about performance as a product feature (when to prioritize it vs. new features). Give me real examples of companies that made performance a product priority and the results they saw. How do I write a performance requirement in a spec?",
+  },
+  {
+    name: 'Scalability & Uptime',
+    tag: 'Performance',
+    tagColor: 'bg-emerald-500/15 text-emerald-400',
+    description: 'SLAs, 99.9% uptime & what happens when it breaks',
+    prompt: "Explain scalability and uptime to me as a Product Manager. Cover: what 'scalability' means (handling more users/load without degrading), what uptime and SLAs mean (99.9% = ~8.7 hours downtime/year — what does that really mean?), what an incident is and what the PM's role is during one, what a post-mortem is and how to run one, and how to think about reliability as a product requirement. What does it cost to go from 99.9% to 99.99% uptime? How do I write a reliability or SLA requirement in a spec that engineering can actually build to?",
+  },
+  {
+    name: 'Authentication & Authorization',
+    tag: 'Security',
+    tagColor: 'bg-rose-500/15 text-rose-400',
+    description: 'Login, permissions & who can access what',
+    prompt: "Explain authentication and authorization to me as a Product Manager — the difference matters for product design. Cover: what authentication is (proving who you are — login, SSO, MFA), what authorization is (what you're allowed to do — roles, permissions, access control), the difference between OAuth and SSO, what JWT tokens are in simple terms, and why these concepts affect product decisions like feature rollouts, admin panels, and enterprise features. Give me examples of product features where understanding auth/authz changed how the spec was written. What questions should I ask my security team before launching a new login or permissions feature?",
+  },
+  {
+    name: 'GDPR & Data Privacy',
+    tag: 'Security',
+    tagColor: 'bg-rose-500/15 text-rose-400',
+    description: 'What PMs must know about user data & compliance',
+    prompt: "Explain GDPR, CCPA, and data privacy to me as a Product Manager — what I'm legally and ethically responsible for. Cover: what GDPR and CCPA require at a product level (consent, data deletion, data portability, right to be forgotten), what a privacy-by-design approach means, what PII is and why I need to track which data my product collects, what happens to a company when it violates GDPR, and how to work with Legal to build compliant features. Give me a data privacy checklist for new features. What are the most common product decisions that create GDPR risk without the PM realizing it?",
+  },
+  {
+    name: 'How AI & ML Work',
+    tag: 'AI / ML',
+    tagColor: 'bg-indigo-500/15 text-indigo-400',
+    description: 'Models, training data & what "accuracy" really means',
+    prompt: "Explain AI and machine learning to me as a Product Manager — not to build models, but to make smart product decisions about AI features. Cover: what a machine learning model is (a system trained on data to make predictions), what training data is and why it matters for model quality, what 'model accuracy' means and why 95% accurate can still be a bad product, what bias in AI means and why it's a product risk, the difference between supervised and unsupervised learning in plain English, and what it means to 'retrain' a model. Give me examples of AI product decisions that went wrong because the PM didn't understand these concepts.",
+  },
+  {
+    name: 'LLMs & Generative AI',
+    tag: 'AI / ML',
+    tagColor: 'bg-indigo-500/15 text-indigo-400',
+    description: 'How ChatGPT-style AI works & product implications',
+    prompt: "Explain Large Language Models (LLMs) and generative AI to me as a Product Manager building AI-powered features. Cover: what an LLM is and how it works at a conceptual level (next-token prediction, transformer architecture — no math needed), what a prompt is and why prompt engineering matters for product quality, what hallucinations are and why they're a product risk, what RAG (Retrieval-Augmented Generation) is and when to use it, the difference between fine-tuning and prompting, and what latency and token costs mean for product decisions. Give me a framework for evaluating whether to use AI for a product feature and what risks to anticipate.",
+  },
+  {
+    name: 'Native vs Web vs Hybrid Apps',
+    tag: 'Mobile',
+    tagColor: 'bg-teal-500/15 text-teal-400',
+    description: 'iOS, Android, React Native & when each makes sense',
+    prompt: "Explain the difference between native, web, and hybrid mobile apps to me as a Product Manager — so I can make smart platform decisions. Cover: what native apps are (built specifically for iOS or Android), what web apps are (run in a browser), what hybrid/cross-platform apps are (React Native, Flutter), the tradeoffs in performance, development speed, and maintenance cost, and when each approach makes sense for a product. What questions should I ask engineering before deciding on a mobile strategy? What are the product implications of choosing React Native vs. native Swift/Kotlin?",
+  },
+  {
+    name: 'App Store Review Process',
+    tag: 'Mobile',
+    tagColor: 'bg-teal-500/15 text-teal-400',
+    description: 'iOS & Android submission, rejection risks & timelines',
+    prompt: "Explain the App Store (iOS) and Play Store (Android) review process to me as a Product Manager — this directly affects my release planning. Cover: how long review takes for each store, what the most common reasons for rejection are (and how to avoid them), what expedited review is and when to use it, how to handle a rejection that blocks a critical launch, how the review process affects how I plan mobile releases, and what the difference is between a 'hotfix' submission and a regular release. Give me a mobile launch checklist that accounts for app store review timelines.",
+  },
+  {
+    name: 'Webhooks & Integrations',
+    tag: 'Integrations',
+    tagColor: 'bg-orange-500/15 text-orange-400',
+    description: 'How systems talk to each other in real time',
+    prompt: "Explain webhooks and third-party integrations to me as a Product Manager. Cover: what a webhook is (a push notification between systems — when X happens in System A, it automatically tells System B), how webhooks differ from polling APIs, what the most common integration patterns are, what failure modes exist (webhook retries, dead letter queues), and how to spec an integration requirement so engineering can build it reliably. Give me examples of product features that rely on webhooks (Slack notifications, Stripe payments, Zapier) and what can go wrong. What questions should I ask when evaluating whether to build or buy an integration?",
+  },
+  {
+    name: 'Rate Limits & API Quotas',
+    tag: 'Integrations',
+    tagColor: 'bg-orange-500/15 text-orange-400',
+    description: 'Why "just call the API" has limits — and what to do',
+    prompt: "Explain API rate limits and quotas to me as a Product Manager. Cover: what a rate limit is (a cap on how many API calls you can make in a time window), why third-party APIs have rate limits, what happens when you hit a rate limit (errors, degraded experience), how rate limits affect product design decisions (like real-time data refresh, bulk imports, or notification volume), and how engineers typically handle rate limits (caching, queuing, backoff strategies). Give me 3 real product examples where rate limits created unexpected constraints. What should I ask when evaluating a third-party API for a new feature?",
+  },
+]
+
 // ── Meetings ──────────────────────────────────────────────────────────────────
 
 const CADENCE_COLORS: Record<string, string> = {
@@ -607,7 +759,7 @@ const FRAMEWORKS = [
 
 // ── Tab types ─────────────────────────────────────────────────────────────────
 
-type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings'
+type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical'
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -659,6 +811,7 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
             { key: 'frameworks', label: '🧠 Frameworks' },
             { key: 'teams',      label: '🏢 Teams' },
             { key: 'meetings',   label: '📅 Meetings' },
+            { key: 'technical',  label: '⚙️ Technical' },
           ] as { key: Tab; label: string }[]).map(tab => (
             <button
               key={tab.key}
@@ -797,6 +950,32 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
                 </div>
                 <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
                   {m.description}
+                </p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Technical tab */}
+        {activeTab === 'technical' && (
+          <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
+            {TECH_TOPICS.map(t => (
+              <button
+                key={t.name}
+                onClick={() => onSend(t.prompt, 'pm')}
+                disabled={isStreaming}
+                className="flex flex-col gap-1.5 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
+                    {t.name}
+                  </span>
+                  <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${t.tagColor}`}>
+                    {t.tag}
+                  </span>
+                </div>
+                <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
+                  {t.description}
                 </p>
               </button>
             ))}
