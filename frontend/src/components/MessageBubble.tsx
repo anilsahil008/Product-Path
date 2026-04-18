@@ -490,7 +490,7 @@ export default function MessageBubble({ message, onRetry }: Props) {
               {message.content || (isStreaming ? '\u00A0' : '')}
             </ReactMarkdown>
           )}
-          {!isUser && isStreaming && (
+          {!isUser && isStreaming && message.content && (
             <span className="inline-block w-[2px] h-4 ml-0.5 bg-current opacity-70 animate-pulse align-text-bottom" />
           )}
         </div>
