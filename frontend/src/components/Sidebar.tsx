@@ -547,57 +547,6 @@ function SectionHeader({ label, action }: { label: string; action?: React.ReactN
   )
 }
 
-// ── Workspace info card ────────────────────────────────────────────────────────
-function WorkspaceCard({ user, onClose, onNavigate }: {
-  user: { email: string } | null
-  onClose: () => void
-  onNavigate: (path: string) => void
-}) {
-  const initial = user?.email?.charAt(0).toUpperCase() ?? '?'
-  const name    = user?.email?.split('@')[0] ?? 'Guest'
-
-  return (
-    <>
-      <div className="fixed inset-0 z-10" onClick={onClose} />
-      <div className="absolute left-2 right-2 top-full z-20 mt-1 overflow-hidden rounded-xl border border-zinc-700/60 bg-zinc-900 shadow-2xl shadow-black/60">
-        <div className="p-3 border-b border-zinc-800">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white select-none">
-              {initial}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-[13px] font-semibold text-zinc-200">{name}</p>
-              <p className="truncate text-[10px] text-zinc-500">{user?.email}</p>
-            </div>
-          </div>
-          <span className="mt-2 inline-block rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-400">
-            Free plan · Personal workspace
-          </span>
-        </div>
-        <div className="p-1.5 space-y-0.5">
-          {[
-            { label: 'Account settings', path: '/app/settings/profile' },
-            { label: 'Billing & plan',   path: '/app/settings/billing' },
-          ].map(({ label, path }) => (
-            <button
-              key={label}
-              onClick={() => { onClose(); onNavigate(path) }}
-              className="w-full rounded-lg px-3 py-2 text-left text-[13px] text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <div className="border-t border-zinc-800 p-1.5">
-          <div className="flex items-center justify-between px-3 py-2 rounded-lg text-[12px] text-zinc-500 bg-zinc-800/50">
-            <span>Create workspace</span>
-            <span className="text-[10px] text-zinc-600 bg-zinc-700 px-1.5 py-0.5 rounded-full">Soon</span>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function Sidebar({
@@ -612,8 +561,7 @@ export default function Sidebar({
   const { user }   = useAuth()
   const navigate   = useNavigate()
 
-  const [accountMenuOpen,   setAccountMenuOpen]   = useState(false)
-  const [workspaceCardOpen, setWorkspaceCardOpen] = useState(false)
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
 
   const initials     = user?.email?.charAt(0).toUpperCase() ?? '?'
   const displayName  = user?.email?.split('@')[0] ?? 'Guest'
@@ -627,34 +575,11 @@ export default function Sidebar({
   return (
     <aside className="relative flex h-full w-[220px] flex-shrink-0 flex-col bg-zinc-900 border-r border-zinc-800">
 
-      {/* ── TOP: Logo + workspace switcher ────────────────────────── */}
-      <div className="relative border-b border-zinc-800 px-3 py-3 space-y-2">
+      {/* ── TOP: Logo ─────────────────────────────────────────────── */}
+      <div className="border-b border-zinc-800 px-3 py-3">
         <NavLink to="/" className="flex items-center px-1 py-1">
           <img src="/logo-dark.svg" alt="Product Path" className="h-6 select-none" />
         </NavLink>
-
-        <button
-          onClick={() => { setWorkspaceCardOpen(o => !o); setAccountMenuOpen(false) }}
-          className="flex w-full items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-zinc-800"
-        >
-          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-indigo-600 text-[10px] font-bold text-white select-none">
-            {initials}
-          </div>
-          <span className="flex-1 truncate text-left text-[13px] font-medium text-zinc-300">
-            Personal account
-          </span>
-          <span className={`text-zinc-500 transition-transform duration-200 ${workspaceCardOpen ? 'rotate-180' : ''}`}>
-            {icons.chevronDown}
-          </span>
-        </button>
-
-        {workspaceCardOpen && (
-          <WorkspaceCard
-            user={user}
-            onClose={() => setWorkspaceCardOpen(false)}
-            onNavigate={navigate}
-          />
-        )}
       </div>
 
       {/* ── NEW CHAT BUTTON ───────────────────────────────────────── */}
@@ -764,7 +689,7 @@ export default function Sidebar({
       {/* ── BOTTOM: Account menu ──────────────────────────────────── */}
       <div className="relative border-t border-zinc-800 px-3 py-3">
         <button
-          onClick={() => { setAccountMenuOpen(o => !o); setWorkspaceCardOpen(false) }}
+          onClick={() => setAccountMenuOpen(o => !o)}
           className="flex w-full items-center gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-zinc-800"
         >
           <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-indigo-500 text-xs font-bold text-white select-none">
