@@ -431,8 +431,19 @@ export default function MessageBubble({ message, onRetry }: Props) {
 
         {/* Assistant avatar */}
         {!isUser && (
-          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center mr-3 mt-1 select-none overflow-hidden">
-            <img src="/logo-dark.svg" alt="Product Path" className="w-5 h-5 object-contain" />
+          <div className="flex-shrink-0 mr-3 mt-1 select-none">
+            {isStreaming ? (
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-indigo-600/20 border border-indigo-500/30 animate-pulse">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="text-[10px] font-medium text-indigo-300 ml-0.5">Thinking…</span>
+              </div>
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center overflow-hidden">
+                <img src="/logo-dark.svg" alt="Product Path" className="w-5 h-5 object-contain" />
+              </div>
+            )}
           </div>
         )}
 
