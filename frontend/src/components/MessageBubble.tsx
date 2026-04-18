@@ -453,6 +453,7 @@ export default function MessageBubble({ message, onRetry }: Props) {
             isUser
               ? 'bg-indigo-600 text-white rounded-br-sm whitespace-pre-wrap'
               : 'bg-zinc-800 text-zinc-200 border border-zinc-700 rounded-bl-sm',
+            !isUser && isStreaming && !message.content ? 'hidden' : '',
           ].join(' ')}
         >
           {isUser ? (
