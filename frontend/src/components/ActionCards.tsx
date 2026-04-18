@@ -783,18 +783,18 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
       </div>
 
       {/* Quick action cards */}
-      <div className="w-full max-w-2xl grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
+      <div className="w-full max-w-2xl grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         {SUGGESTIONS.map(s => (
           <button
             key={s.label}
             onClick={() => onSend(s.prompt, 'pm')}
             disabled={isStreaming}
-            className="flex flex-col items-start gap-3 px-4 py-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-zinc-800 hover:border-zinc-600 transition-all text-left group disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex flex-col items-start gap-3.5 px-4 py-4 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-zinc-800 hover:border-zinc-700 transition-all text-left group disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
           >
-            <span className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${s.iconBg} ${s.iconColor} transition-transform group-hover:scale-110`}>
+            <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.iconBg} ${s.iconColor} transition-transform duration-200 group-hover:scale-110`}>
               {s.icon}
             </span>
-            <span className="text-[12px] font-semibold text-zinc-300 group-hover:text-white transition-colors leading-snug">
+            <span className="text-sm font-semibold text-zinc-300 group-hover:text-white transition-colors leading-snug">
               {s.label}
             </span>
           </button>
@@ -803,8 +803,9 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
 
       {/* Resource tabs */}
       <div className="w-full max-w-2xl">
-        {/* Tab headers */}
-        <div className="flex items-center gap-1 mb-3 border-b border-zinc-800 pb-0">
+
+        {/* Pill tabs */}
+        <div className="flex items-center gap-1.5 mb-4 flex-wrap">
           {([
             { key: 'books',      label: '📚 PM Books' },
             { key: 'situations', label: '🎯 Situations' },
@@ -817,10 +818,10 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={[
-                'px-3 py-2 text-xs font-semibold rounded-t-lg transition-colors -mb-px border-b-2',
+                'px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all',
                 activeTab === tab.key
-                  ? 'text-zinc-100 border-indigo-500'
-                  : 'text-zinc-500 border-transparent hover:text-zinc-300',
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30'
+                  : 'bg-zinc-800/60 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200',
               ].join(' ')}
             >
               {tab.label}
@@ -830,155 +831,177 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
 
         {/* Books tab */}
         {activeTab === 'books' && (
-          <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide">
-            {PM_BOOKS.map(book => (
-              <button
-                key={book.title}
-                onClick={() => onSend(book.prompt, 'pm')}
-                disabled={isStreaming}
-                className={[
-                  'flex-shrink-0 w-[100px] rounded-xl border overflow-hidden text-left transition-all hover:scale-105 hover:shadow-lg hover:shadow-black/40 disabled:opacity-40 disabled:cursor-not-allowed',
-                  book.accent,
-                ].join(' ')}
-              >
-                {/* Book cover */}
-                <div className={`${book.bg} h-[120px] p-2.5 flex flex-col justify-between`}>
-                  <p className={`text-[11px] font-black leading-tight ${book.titleColor}`}>
-                    {book.title}
-                  </p>
-                  <p className={`text-[9px] font-medium leading-tight ${book.authorColor}`}>
-                    {book.author}
-                  </p>
-                </div>
-                {/* Ask button strip */}
-                <div className="bg-zinc-900 px-2 py-1.5 border-t border-zinc-800">
-                  <p className="text-[9px] text-indigo-400 font-semibold">Ask AI →</p>
-                </div>
-              </button>
-            ))}
+          <div className="relative">
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide">
+              {PM_BOOKS.map(book => (
+                <button
+                  key={book.title}
+                  onClick={() => onSend(book.prompt, 'pm')}
+                  disabled={isStreaming}
+                  className={[
+                    'flex-shrink-0 w-[120px] rounded-2xl border overflow-hidden text-left transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-black/50 disabled:opacity-40 disabled:cursor-not-allowed',
+                    book.accent,
+                  ].join(' ')}
+                >
+                  <div className={`${book.bg} h-[152px] p-3 flex flex-col justify-between`}>
+                    <p className={`text-[12px] font-black leading-tight ${book.titleColor}`}>
+                      {book.title}
+                    </p>
+                    <div>
+                      <p className={`text-[9px] leading-snug mb-1 ${book.titleColor} opacity-70`}>
+                        {book.tagline}
+                      </p>
+                      <p className={`text-[9px] font-semibold ${book.authorColor}`}>
+                        {book.author}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-zinc-900/90 px-3 py-2 border-t border-zinc-800 flex items-center justify-between">
+                    <p className="text-[10px] text-indigo-400 font-semibold">Ask AI</p>
+                    <span className="text-indigo-500 text-[10px]">→</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-12 bg-gradient-to-l from-black/60 to-transparent rounded-r-2xl" />
           </div>
         )}
 
         {/* Situations tab */}
         {activeTab === 'situations' && (
-          <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
-            {SITUATIONS.map(s => (
-              <button
-                key={s.label}
-                onClick={() => onSend(s.prompt, 'pm')}
-                disabled={isStreaming}
-                className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
-              >
-                <span className="text-base leading-none mt-0.5 flex-shrink-0">{s.emoji}</span>
-                <span className="text-[11px] font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors leading-snug">
-                  {s.label}
-                </span>
-              </button>
-            ))}
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto pr-1">
+              {SITUATIONS.map(s => (
+                <button
+                  key={s.label}
+                  onClick={() => onSend(s.prompt, 'pm')}
+                  disabled={isStreaming}
+                  className="flex items-start gap-3 px-4 py-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800/80 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
+                >
+                  <span className="text-xl leading-none mt-0.5 flex-shrink-0">{s.emoji}</span>
+                  <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors leading-snug">
+                    {s.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <div className="pointer-events-none absolute bottom-0 left-0 right-1 h-10 bg-gradient-to-t from-black/50 to-transparent rounded-b-2xl" />
           </div>
         )}
 
         {/* Frameworks tab */}
         {activeTab === 'frameworks' && (
-          <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
-            {FRAMEWORKS.map(f => (
-              <button
-                key={f.name}
-                onClick={() => onSend(f.prompt, 'pm')}
-                disabled={isStreaming}
-                className="flex flex-col gap-1.5 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[12px] font-bold text-zinc-200 group-hover:text-white transition-colors">
-                    {f.name}
-                  </span>
-                  <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ${f.tagColor}`}>
-                    {f.tag}
-                  </span>
-                </div>
-                <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
-                  {f.description}
-                </p>
-              </button>
-            ))}
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto pr-1">
+              {FRAMEWORKS.map(f => (
+                <button
+                  key={f.name}
+                  onClick={() => onSend(f.prompt, 'pm')}
+                  disabled={isStreaming}
+                  className="flex flex-col gap-2 px-4 py-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800/80 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
+                      {f.name}
+                    </span>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5 ${f.tagColor}`}>
+                      {f.tag}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
+                    {f.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+            <div className="pointer-events-none absolute bottom-0 left-0 right-1 h-10 bg-gradient-to-t from-black/50 to-transparent rounded-b-2xl" />
           </div>
         )}
 
         {/* Teams tab */}
         {activeTab === 'teams' && (
-          <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
-            {TEAMS.map(t => (
-              <button
-                key={t.name}
-                onClick={() => onSend(t.prompt, 'pm')}
-                disabled={isStreaming}
-                className="flex items-start gap-3 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
-              >
-                <span className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base ${t.iconBg}`}>
-                  {t.icon}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[12px] font-bold text-zinc-200 group-hover:text-white transition-colors">
-                    {t.name}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors mt-0.5">
-                    {t.focus}
-                  </p>
-                </div>
-              </button>
-            ))}
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto pr-1">
+              {TEAMS.map(t => (
+                <button
+                  key={t.name}
+                  onClick={() => onSend(t.prompt, 'pm')}
+                  disabled={isStreaming}
+                  className="flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800/80 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
+                >
+                  <span className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl ${t.iconBg}`}>
+                    {t.icon}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors">
+                      {t.name}
+                    </p>
+                    <p className="text-xs text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors mt-0.5">
+                      {t.focus}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="pointer-events-none absolute bottom-0 left-0 right-1 h-10 bg-gradient-to-t from-black/50 to-transparent rounded-b-2xl" />
           </div>
         )}
 
         {/* Meetings tab */}
         {activeTab === 'meetings' && (
-          <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
-            {MEETINGS.map(m => (
-              <button
-                key={m.name}
-                onClick={() => onSend(m.prompt, 'pm')}
-                disabled={isStreaming}
-                className="flex flex-col gap-1.5 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
-                    {m.name}
-                  </span>
-                  <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${CADENCE_COLORS[m.cadence]}`}>
-                    {m.cadence}
-                  </span>
-                </div>
-                <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
-                  {m.description}
-                </p>
-              </button>
-            ))}
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto pr-1">
+              {MEETINGS.map(m => (
+                <button
+                  key={m.name}
+                  onClick={() => onSend(m.prompt, 'pm')}
+                  disabled={isStreaming}
+                  className="flex flex-col gap-2 px-4 py-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800/80 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
+                      {m.name}
+                    </span>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5 whitespace-nowrap ${CADENCE_COLORS[m.cadence]}`}>
+                      {m.cadence}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
+                    {m.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+            <div className="pointer-events-none absolute bottom-0 left-0 right-1 h-10 bg-gradient-to-t from-black/50 to-transparent rounded-b-2xl" />
           </div>
         )}
 
         {/* Technical tab */}
         {activeTab === 'technical' && (
-          <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
-            {TECH_TOPICS.map(t => (
-              <button
-                key={t.name}
-                onClick={() => onSend(t.prompt, 'pm')}
-                disabled={isStreaming}
-                className="flex flex-col gap-1.5 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
-                    {t.name}
-                  </span>
-                  <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${t.tagColor}`}>
-                    {t.tag}
-                  </span>
-                </div>
-                <p className="text-[10px] text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
-                  {t.description}
-                </p>
-              </button>
-            ))}
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto pr-1">
+              {TECH_TOPICS.map(t => (
+                <button
+                  key={t.name}
+                  onClick={() => onSend(t.prompt, 'pm')}
+                  disabled={isStreaming}
+                  className="flex flex-col gap-2 px-4 py-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800/80 transition-all text-left disabled:opacity-40 disabled:cursor-not-allowed group"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
+                      {t.name}
+                    </span>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5 whitespace-nowrap ${t.tagColor}`}>
+                      {t.tag}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-500 leading-snug group-hover:text-zinc-400 transition-colors">
+                    {t.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+            <div className="pointer-events-none absolute bottom-0 left-0 right-1 h-10 bg-gradient-to-t from-black/50 to-transparent rounded-b-2xl" />
           </div>
         )}
       </div>
