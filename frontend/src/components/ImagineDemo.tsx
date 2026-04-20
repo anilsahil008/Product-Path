@@ -112,18 +112,101 @@ const QUICK_PROMPTS = [
   },
 ]
 
+// ── News ──────────────────────────────────────────────────────────────────────
+
+const NEWS = [
+  {
+    source: 'HRTech Series',
+    date: 'Apr 17, 2026 · 3 days ago',
+    badge: '🔴 Breaking',
+    badgeColor: 'bg-rose-500/15 text-rose-400 border-rose-500/30',
+    headline: 'Imagine Learning Introduces Enhancements Across Curriculum, Assessment, and Services for Back to School 2026',
+    summary: 'Imagine Learning announced major updates across its curriculum, courseware, assessment, and services portfolio ahead of the 2026–27 school year. Enhancements span Imagine Math, Imagine Reading, Edgenuity, and new AI-powered assessment integrations.',
+    biRelevance: 'Back-to-School launches = spike in new district onboardings, product adoption metrics, and renewal pipeline. BI PM must ensure dashboards reflect new product lines and track adoption velocity from day 1.',
+    prompt: "Imagine Learning just launched Back to School 2026 enhancements across curriculum, assessment, and services. As the BI PM, what metrics should I add to the District Analytics Dashboard to track adoption of new features? How do I update the Snowflake data model and Power BI reports to reflect new product lines? What does the ideal launch-week BI monitoring setup look like?",
+  },
+  {
+    source: 'PR Newswire',
+    date: 'Jan 15, 2026',
+    badge: '🤝 Partnership',
+    badgeColor: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
+    headline: 'Imagine Learning and Eedi Launch the First Curriculum-Embedded AI Assessments for U.S. Math Classrooms',
+    summary: 'Imagine Learning announced a strategic partnership with Eedi Labs (UK-based AI learning pioneer) to launch Curriculum-Embedded AI Assessments — the first of its kind for U.S. Math. AI diagnostics are embedded directly inside math curriculum, not bolted on as a separate tool.',
+    biRelevance: 'This partnership creates a new assessment data stream. BI PM needs to define how Eedi assessment data flows into Snowflake, how it joins with Imagine Math usage data, and what teacher/district dashboards need to show AI assessment results alongside curriculum progress.',
+    prompt: "Imagine Learning just partnered with Eedi to launch Curriculum-Embedded AI Assessments for U.S. Math. As the BI PM, how should I design the data pipeline for this new assessment data source? What new metrics should district admin dashboards surface (assessment completion, diagnostic accuracy, intervention trigger rates)? How do I write the data requirements spec for integrating Eedi assessment results into our Snowflake warehouse and Power BI dashboards?",
+  },
+  {
+    source: 'Yahoo Finance',
+    date: 'Mar 2026',
+    badge: '📈 Growth',
+    badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+    headline: 'Imagine Learning Partners with Modern Classrooms Project to Drive Stronger Math Outcomes Through Improved Implementation',
+    summary: 'Imagine Learning partnered with Modern Classrooms Project to improve blended instruction implementation for Imagine Math. Focus: professional learning for teachers on mastery-based pacing, self-paced video instruction, and data-driven small group coaching.',
+    biRelevance: 'Professional learning = new engagement metric. BI PM must track teacher PD completion rates, correlation between PD hours and student growth percentile, and implementation fidelity scores — new dimensions on existing dashboards.',
+    prompt: "Imagine Learning partnered with Modern Classrooms Project on blended instruction implementation for math. As the BI PM, what new metrics should I add to teacher dashboards to track implementation fidelity? How do I correlate professional development completion data with student outcome data in Snowflake? What does the data model look like for linking teacher PD events to class-level student growth metrics?",
+  },
+  {
+    source: 'PR Newswire',
+    date: 'Dec 2024',
+    badge: '🏢 Acquisition',
+    badgeColor: 'bg-violet-500/15 text-violet-400 border-violet-500/30',
+    headline: 'Imagine Learning Acquires Pango Education to Advance AI-Powered Personalized K-12 Solutions',
+    summary: 'Imagine Learning acquired Pango Education, accelerating their proprietary Curriculum-Informed AI™ platform. Pango brings AI tools for lesson planning, professional learning, and personalized instruction that integrate directly with curriculum content.',
+    biRelevance: 'M&A = data integration challenge. BI PM must assess Pango data systems, define integration architecture into Snowflake, ensure Pango usage metrics appear in unified dashboards, and track post-acquisition product adoption for reporting to the board.',
+    prompt: "Imagine Learning acquired Pango Education. As the new BI PM joining the company, what is my data integration roadmap for bringing Pango's data systems into the Imagine Learning data warehouse (Snowflake)? What are the key risks in M&A data integration? How do I define a unified data model that allows cross-product reporting across Imagine Learning's native products and Pango? What KPIs should I track to measure post-acquisition product integration success?",
+  },
+  {
+    source: 'EdTech Breakthrough Awards',
+    date: '2024',
+    badge: '🏆 Award',
+    badgeColor: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+    headline: 'Imagine Learning Wins Overall STEM Education Solution of the Year — EdTech Breakthrough Awards 2024',
+    summary: 'Imagine Learning won the top EdTech industry award for STEM education, recognizing their Twig Science platform and AI-integrated curriculum approach. Judges cited measurable student outcome improvements across math and science.',
+    biRelevance: 'Award is based on measurable outcomes — meaning IL\'s BI and analytics capabilities are what prove product efficacy. The BI PM\'s work is directly what generates the data story that wins awards and drives renewals.',
+    prompt: "Imagine Learning won the STEM Education Solution of the Year award based on measurable student outcomes. As the BI PM, how do I build an Outcomes Analytics capability that can clearly demonstrate product efficacy to districts, school boards, and award committees? What metrics matter most (student growth percentile, assessment score lift, teacher usage correlation), how should they be visualized, and how do I ensure data integrity so the numbers can be shared publicly?",
+  },
+]
+
+// ── LinkedIn Profile ──────────────────────────────────────────────────────────
+
+const LINKEDIN = {
+  employees: '2,200+',
+  founded: '2009',
+  hq: 'Tempe, AZ (HQ) + Austin TX, Petaluma CA, Rock Rapids IA, Bloomington MN',
+  industry: 'E-Learning / Educational Technology / K-12 EdTech',
+  ceo: 'Eric Shackleton',
+  followers: '35K+',
+  type: 'Private (Weld North Education portfolio)',
+  hiring: ['Senior Data Engineers', 'AI/ML Engineers', 'Product Managers', 'Curriculum Specialists', 'Implementation Consultants'],
+  recentPosts: [
+    'Launched Curriculum-Informed AI assessments with Eedi for U.S. Math classrooms',
+    'Back to School 2026: new features across Math, Reading, Edgenuity & Twig Science',
+    'Partnership with Modern Classrooms Project — improving blended instruction fidelity',
+    'Hiring: Senior BI Product Manager, Data Engineers, AI Engineers',
+    'Mission post: "Technology should support educators, not replace them"',
+  ],
+  culture: [
+    'Remote-first across U.S. with 5 office hubs',
+    'Mission-driven — "Empower Potential" in students & educators',
+    '16 paid holidays + winter shutdown Dec 24–Jan 1',
+    'Tuition reimbursement + professional development budget',
+    'Glassdoor: 3.8★ — leadership transparency scores high',
+  ],
+}
+
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
-type DemoTab = 'overview' | 'dashboard' | 'roadmap' | 'actions'
+type DemoTab = 'overview' | 'dashboard' | 'roadmap' | 'actions' | 'news'
 
 export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
   const [tab, setTab] = useState<DemoTab>('overview')
 
   const TABS: { key: DemoTab; label: string }[] = [
-    { key: 'overview',   label: '🏢 Overview' },
-    { key: 'dashboard',  label: '📊 BI Dashboard' },
-    { key: 'roadmap',    label: '🗺️ Roadmap' },
-    { key: 'actions',    label: '⚡ Quick Actions' },
+    { key: 'overview',  label: '🏢 Overview' },
+    { key: 'news',      label: '📰 News' },
+    { key: 'dashboard', label: '📊 BI Dashboard' },
+    { key: 'roadmap',   label: '🗺️ Roadmap' },
+    { key: 'actions',   label: '⚡ Quick Actions' },
   ]
 
   return (
@@ -135,8 +218,8 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-sm font-black text-white">IL</div>
             <div>
-              <p className="text-sm font-bold text-zinc-100">Imagine Learning Demo</p>
-              <p className="text-[11px] text-zinc-500">Senior Enterprise Systems PM · Business Intelligence</p>
+              <p className="text-sm font-bold text-zinc-100">Imagine Learning</p>
+              <p className="text-[11px] text-zinc-500">Senior Enterprise Systems PM · Business Intelligence · <span className="text-amber-400">⚠ Demo data — not live</span></p>
             </div>
           </div>
           <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300 transition-colors p-1">
@@ -147,7 +230,7 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1.5 px-6 py-3 border-b border-zinc-800 flex-shrink-0">
+        <div className="flex items-center gap-1.5 px-6 py-3 border-b border-zinc-800 flex-shrink-0 flex-wrap">
           {TABS.map(t => (
             <button
               key={t.key}
@@ -167,22 +250,56 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-6">
 
-          {/* Overview tab */}
+          {/* ── Overview ── */}
           {tab === 'overview' && (
-            <div className="space-y-5">
+            <div className="space-y-4">
+
+              {/* LinkedIn profile card */}
+              <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-white text-[10px] font-black">in</div>
+                  <p className="text-xs font-bold text-blue-400 uppercase tracking-wider">LinkedIn Company Profile</p>
+                </div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                  {[
+                    { label: 'Employees', value: LINKEDIN.employees },
+                    { label: 'Founded', value: LINKEDIN.founded },
+                    { label: 'CEO', value: LINKEDIN.ceo },
+                    { label: 'Followers', value: LINKEDIN.followers },
+                    { label: 'Type', value: LINKEDIN.type },
+                    { label: 'Industry', value: LINKEDIN.industry },
+                  ].map(row => (
+                    <div key={row.label} className="flex items-baseline gap-2">
+                      <span className="text-[10px] text-zinc-500 w-16 flex-shrink-0">{row.label}</span>
+                      <span className="text-[11px] font-semibold text-zinc-300">{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 pt-3 border-t border-blue-500/10">
+                  <p className="text-[10px] text-zinc-500 mb-1.5">📍 {LINKEDIN.hq}</p>
+                  <p className="text-[10px] font-semibold text-blue-400 mb-1">Actively hiring:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {LINKEDIN.hiring.map(h => (
+                      <span key={h} className="text-[9px] text-blue-300 bg-blue-500/10 border border-blue-500/20 rounded-full px-2 py-0.5">{h}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* About + BI Stack */}
               <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
                 <p className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">About Imagine Learning</p>
                 <p className="text-sm text-zinc-300 leading-relaxed">
-                  The leading K–12 digital curriculum provider serving <span className="text-white font-semibold">18.4M students</span> across <span className="text-white font-semibold">50%+ of US school districts</span>. Their <span className="text-indigo-400 font-semibold">Curriculum-Informed AI™</span> approach grounds AI in vetted, research-backed curricula — ensuring instructional integrity. 3 AI-focused acquisitions in 2024 (Pango Education, CueThink, EarlyBird) signal aggressive expansion.
+                  The leading K–12 digital curriculum provider serving <span className="text-white font-semibold">18.4M students</span> across <span className="text-white font-semibold">50%+ of US school districts</span>. Their <span className="text-indigo-400 font-semibold">Curriculum-Informed AI™</span> approach grounds AI in vetted, research-backed curricula — educators lead, technology supports. <span className="text-white font-semibold">3 AI acquisitions in 2024</span> (Pango Education, CueThink, EarlyBird) plus an Eedi partnership in Jan 2026 signal aggressive AI-powered expansion. Part of <span className="text-zinc-300">Weld North Education</span> portfolio.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { title: 'Core Products', items: ['Imagine Math, Reading, Language & Literacy', 'StudySync (ELA curriculum)', 'Edgenuity (online courseware)', 'Twig Science'] },
-                  { title: 'BI Stack (JD)', items: ['Salesforce → CRM & lead pipeline', 'NetSuite → Finance & revenue', 'Snowflake → Data warehouse', 'Power BI → Reporting & dashboards'] },
-                  { title: 'Key Personas', items: ['Teachers (coaching & blended learning)', 'Principals (usage & progress dashboards)', 'Superintendents (ROI & district outcomes)', 'District Ops (curriculum adoption data)'] },
-                  { title: 'BI Priorities', items: ['Lead-to-cash pipeline visibility', 'Curriculum adoption & renewal correlation', 'Student growth & intervention analytics', 'Speed to insight: 2.3 days → 4 hours'] },
+                  { title: 'Core Products', items: ['Imagine Math, Reading, Language & Literacy', 'StudySync (ELA/ELL curriculum)', 'Edgenuity (online courseware)', 'Twig Science · CueThink · Pango AI', 'EarlyBird (K-3 dyslexia screening)'] },
+                  { title: 'Enterprise Tech Stack', items: ['Salesforce → CRM & lead pipeline', 'NetSuite → Finance & revenue', 'Snowflake → Data warehouse', 'Power BI → Self-serve reporting', 'Eedi API → AI assessment data'] },
+                  { title: 'Key Personas', items: ['Teachers (coaching & blended learning)', 'Principals (usage & progress dashboards)', 'Superintendents (ROI & district outcomes)', 'District Ops (curriculum adoption data)', 'Sales/CS (renewal risk signals)'] },
+                  { title: 'Culture Signals', items: LINKEDIN.culture },
                 ].map(box => (
                   <div key={box.title} className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
                     <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide mb-2">{box.title}</p>
@@ -198,38 +315,79 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
                 ))}
               </div>
 
+              {/* LinkedIn recent posts */}
+              <div className="rounded-xl border border-blue-500/20 bg-zinc-900 p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-4 h-4 rounded bg-blue-600 flex items-center justify-center text-white text-[8px] font-black">in</div>
+                  <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Recent LinkedIn Activity</p>
+                </div>
+                <ul className="space-y-2">
+                  {LINKEDIN.recentPosts.map(post => (
+                    <li key={post} className="flex items-start gap-2 text-xs text-zinc-400">
+                      <span className="text-blue-500 mt-0.5 flex-shrink-0">↗</span>
+                      {post}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-                <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">What they're hiring for</p>
+                <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">What they're hiring for in this role</p>
                 <div className="grid grid-cols-3 gap-2">
-                  {[
-                    'BI roadmap strategy',
-                    'Lead-to-cash BI',
-                    'Salesforce + NetSuite',
-                    'Snowflake + Power BI',
-                    'Data quality initiatives',
-                    'AI & automation for insights',
-                    'Agile / CSPO',
-                    'Stakeholder communication',
-                    'Speed to insight',
-                  ].map(skill => (
-                    <span key={skill} className="text-[10px] font-medium text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1.5 text-center">
-                      {skill}
-                    </span>
+                  {['BI roadmap strategy', 'Lead-to-cash BI', 'Salesforce + NetSuite', 'Snowflake + Power BI', 'Data quality', 'AI & automation', 'Agile / CSPO', 'Stakeholder comms', 'Speed to insight', 'Cross-functional', 'Greenfield builds', 'Enterprise systems'].map(skill => (
+                    <span key={skill} className="text-[10px] font-medium text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1.5 text-center">{skill}</span>
                   ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Dashboard tab */}
+          {/* ── News ── */}
+          {tab === 'news' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-bold text-zinc-200">Latest Imagine Learning News</p>
+                <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2.5 py-1 font-semibold">⚠ Curated research — not live feed</span>
+              </div>
+              {NEWS.map(n => (
+                <div key={n.headline} className="rounded-2xl border border-zinc-800 bg-zinc-900 overflow-hidden">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between gap-3 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${n.badgeColor}`}>{n.badge}</span>
+                        <span className="text-[10px] text-zinc-500">{n.source}</span>
+                        <span className="text-[10px] text-zinc-600">·</span>
+                        <span className="text-[10px] text-zinc-500">{n.date}</span>
+                      </div>
+                    </div>
+                    <p className="text-sm font-bold text-zinc-200 leading-snug mb-2">{n.headline}</p>
+                    <p className="text-xs text-zinc-400 leading-relaxed mb-3">{n.summary}</p>
+                    <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3">
+                      <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wide mb-1">📊 BI PM Relevance</p>
+                      <p className="text-[11px] text-zinc-400 leading-snug">{n.biRelevance}</p>
+                    </div>
+                  </div>
+                  <div className="border-t border-zinc-800 px-4 py-2.5">
+                    <button
+                      onClick={() => { onSend(n.prompt, 'pm'); onClose() }}
+                      disabled={isStreaming}
+                      className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 transition-colors disabled:opacity-40"
+                    >
+                      Ask Product Path AI about this →
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── Dashboard ── */}
           {tab === 'dashboard' && (
             <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-bold text-zinc-200">District Analytics Dashboard</p>
-                <span className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2.5 py-1 font-semibold">● Live (mock)</span>
+                <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2.5 py-1 font-semibold">⚠ Demo data</span>
               </div>
-
-              {/* KPI cards */}
               <div className="grid grid-cols-4 gap-2.5">
                 {KPI_CARDS.map(k => (
                   <div key={k.label} className={`rounded-xl border border-zinc-800 ${k.bg} p-3`}>
@@ -241,8 +399,6 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
                   </div>
                 ))}
               </div>
-
-              {/* Product adoption bars */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
                 <p className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-3">Curriculum Adoption by Product</p>
                 <div className="space-y-2.5">
@@ -257,18 +413,13 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
                   ))}
                 </div>
               </div>
-
-              {/* Lead-to-cash pipeline */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
                 <p className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-3">Lead-to-Cash Pipeline (Salesforce → NetSuite)</p>
                 <div className="flex items-end gap-2">
                   {PIPELINE.map((p, i) => (
                     <div key={p.stage} className="flex-1 flex flex-col items-center gap-1.5">
                       <span className="text-xs font-bold text-zinc-300">{p.count.toLocaleString()}</span>
-                      <div
-                        className={`w-full rounded-t-lg ${p.color}`}
-                        style={{ height: `${Math.max(8, Math.min(60, i === 5 ? 60 : (p.count / 234) * 60))}px` }}
-                      />
+                      <div className={`w-full rounded-t-lg ${p.color}`} style={{ height: `${Math.max(8, Math.min(60, i === 5 ? 60 : (p.count / 234) * 60))}px` }} />
                       <span className="text-[9px] text-zinc-500 text-center leading-tight">{p.stage}</span>
                     </div>
                   ))}
@@ -277,11 +428,11 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
             </div>
           )}
 
-          {/* Roadmap tab */}
+          {/* ── Roadmap ── */}
           {tab === 'roadmap' && (
             <div className="space-y-4">
-              <p className="text-sm font-bold text-zinc-200">BI Capabilities Roadmap · 2025</p>
-              <p className="text-xs text-zinc-500">Lead-to-cash BI initiative across Salesforce → NetSuite → Snowflake → Power BI</p>
+              <p className="text-sm font-bold text-zinc-200">BI Capabilities Roadmap · 2025–2026</p>
+              <p className="text-xs text-zinc-500">Lead-to-cash BI across Salesforce → NetSuite → Snowflake → Power BI</p>
               <div className="grid grid-cols-3 gap-3">
                 {ROADMAP.map(phase => (
                   <div key={phase.phase} className={`rounded-xl border p-4 ${phase.color}`}>
@@ -301,9 +452,9 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
                 <p className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-2">First 90 Days · Priority Focus</p>
                 <div className="space-y-2">
                   {[
-                    { days: 'Days 1–30', focus: 'Listen & assess — stakeholder interviews, audit current data flows, identify top 3 pain points in BI pipeline' },
-                    { days: 'Days 31–60', focus: 'Deliver — launch District Dashboard v1, fix top data quality issue in Salesforce→Snowflake sync, define metrics framework' },
-                    { days: 'Days 61–90', focus: 'Scale — expand self-serve analytics, align H2 roadmap with VP of Business Transformation, define AI/automation opportunities' },
+                    { days: 'Days 1–30', focus: 'Listen & assess — stakeholder interviews, audit current Salesforce→Snowflake data flows, identify top 3 BI pain points, map existing Power BI reports' },
+                    { days: 'Days 31–60', focus: 'Deliver — launch District Dashboard v1, fix top data quality issue in lead-to-cash pipeline, define metrics framework, first sprint retro' },
+                    { days: 'Days 61–90', focus: 'Scale — expand self-serve analytics for district ops, align H2 roadmap with VP of Business Transformation, define AI/automation quick wins' },
                   ].map(row => (
                     <div key={row.days} className="flex gap-3">
                       <span className="text-[10px] font-bold text-indigo-400 w-20 flex-shrink-0 mt-0.5">{row.days}</span>
@@ -315,11 +466,11 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
             </div>
           )}
 
-          {/* Quick Actions tab */}
+          {/* ── Quick Actions ── */}
           {tab === 'actions' && (
             <div className="space-y-3">
               <p className="text-sm font-bold text-zinc-200">Generate Imagine Learning–specific PM artifacts</p>
-              <p className="text-xs text-zinc-500">Click any card to ask Product Path AI to generate a real artifact tailored to this role</p>
+              <p className="text-xs text-zinc-500">Click any card — Product Path AI generates a real artifact tailored to this role live</p>
               <div className="grid grid-cols-2 gap-3">
                 {QUICK_PROMPTS.map(p => (
                   <button
@@ -330,12 +481,8 @@ export default function ImagineDemo({ onSend, isStreaming, onClose }: Props) {
                   >
                     <span className="text-2xl flex-shrink-0">{p.icon}</span>
                     <div>
-                      <p className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">
-                        {p.label}
-                      </p>
-                      <p className="text-[10px] text-zinc-500 mt-1 group-hover:text-zinc-400 transition-colors leading-snug">
-                        Click to generate with Product Path AI →
-                      </p>
+                      <p className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors leading-tight">{p.label}</p>
+                      <p className="text-[10px] text-zinc-500 mt-1 group-hover:text-zinc-400 transition-colors">Click to generate with Product Path AI →</p>
                     </div>
                   </button>
                 ))}
