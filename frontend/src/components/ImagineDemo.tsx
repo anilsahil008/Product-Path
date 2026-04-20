@@ -174,7 +174,7 @@ const LINKEDIN = {
   founded: '2009',
   hq: 'Tempe, AZ (HQ) + Austin TX, Petaluma CA, Rock Rapids IA, Bloomington MN',
   industry: 'E-Learning / Educational Technology / K-12 EdTech',
-  ceo: 'Eric Shackleton',
+  ceo: 'Jonathan Grayer (Founder & CEO)',
   followers: '35K+',
   type: 'Private (Weld North Education portfolio)',
   hiring: ['Senior Data Engineers', 'AI/ML Engineers', 'Product Managers', 'Curriculum Specialists', 'Implementation Consultants'],
