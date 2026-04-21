@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import ImagineDemo from './ImagineDemo'
 
 interface Props {
   onSend: (text: string, mode: string) => void
@@ -769,18 +768,8 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
   const firstName = user?.email?.split('@')[0]?.split('.')[0] ?? 'there'
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1)
   const [activeTab, setActiveTab] = useState<Tab>('books')
-  const [showImagineDemo, setShowImagineDemo] = useState(false)
-
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 select-none">
-
-      {showImagineDemo && (
-        <ImagineDemo
-          onSend={onSend}
-          isStreaming={isStreaming}
-          onClose={() => setShowImagineDemo(false)}
-        />
-      )}
 
       {/* Greeting */}
       <div className="mb-4 text-center">
@@ -791,19 +780,6 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
           What are you working on today?
         </p>
       </div>
-
-      {/* Imagine Learning demo button */}
-      <button
-        onClick={() => setShowImagineDemo(true)}
-        className="mb-6 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600/30 to-violet-600/20 border border-indigo-500/40 hover:border-indigo-400/60 hover:from-indigo-600/40 hover:to-violet-600/30 transition-all group"
-      >
-        <span className="w-5 h-5 rounded-md bg-indigo-600 flex items-center justify-center text-[10px] font-black text-white flex-shrink-0">IL</span>
-        <span className="text-sm font-semibold text-indigo-300 group-hover:text-indigo-200 transition-colors">Imagine Learning Demo</span>
-        <span className="text-[10px] text-indigo-500 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-2 py-0.5 font-semibold">Senior BI PM</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 text-indigo-500 group-hover:text-indigo-300 transition-colors ml-0.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>
 
       {/* Quick action cards */}
       <div className="w-full max-w-2xl grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
