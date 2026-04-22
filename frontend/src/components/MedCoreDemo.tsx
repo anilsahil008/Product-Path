@@ -6,6 +6,8 @@ interface Props {
   isStreaming: boolean
 }
 
+type MainTab = 'modules' | 'selector'
+
 const MODULES = [
   {
     num: 1, icon: '📱', title: 'Member Engagement',
@@ -207,22 +209,131 @@ const MODULES = [
       'Population health dashboard',
     ],
     example: 'Molina California — 2 years of data, modules 1+3+5 active, 200 coordinators, ER reduction is #1 goal, 40,000 members. → Module ON: ER + no-show prediction active. New MCO with 3,000 members → Module OFF until population and data grow.',
-    prompt: 'Write a product requirements brief for an AI Risk Prediction module in a Medicaid care management platform. Include: minimum data requirements (6+ months, 5,000+ members, 3+ modules active), model inputs (SDOH flags, PHQ-9 scores, ER history, appointment no-shows, medication patterns), prediction outputs (30-day ER risk score, no-show probability), how predictions surface to care coordinators (daily priority list), care coordinator workflow integration, success metrics (ER reduction %, revenue recovered), and explicit criteria for when NOT to activate — including what happens if a client activates too early.',
+    prompt: 'Write a product requirements brief for an AI Risk Prediction module in a Medicaid care management platform. Include: minimum data requirements (6+ months, 5,000+ members, 3+ modules active), model inputs (SDOH flags, PHQ-9 scores, ER history, appointment no-shows, medication patterns), prediction outputs (30-day ER risk score, no-show probability), how predictions surface to care coordinators (daily priority list), care coordinator workflow integration, success metrics (ER reduction %, revenue recovered), and explicit criteria for when NOT to activate.',
   },
 ]
 
-const COLOR_MAP: Record<string, { header: string; dot: string; mustHave: string; turnsOff: string; addOn: string; example: string; btn: string }> = {
-  indigo:  { header: 'bg-indigo-500/10 border-indigo-500/20',  dot: 'bg-indigo-400',  mustHave: 'text-indigo-400',  turnsOff: 'text-rose-400',   addOn: 'text-amber-400',   example: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300',  btn: 'bg-indigo-600/20 border-indigo-500/40 text-indigo-400 hover:bg-indigo-600/30' },
-  emerald: { header: 'bg-emerald-500/10 border-emerald-500/20', dot: 'bg-emerald-400', mustHave: 'text-emerald-400', turnsOff: 'text-rose-400',   addOn: 'text-amber-400',   example: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300', btn: 'bg-emerald-600/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30' },
-  teal:    { header: 'bg-teal-500/10 border-teal-500/20',      dot: 'bg-teal-400',    mustHave: 'text-teal-400',    turnsOff: 'text-rose-400',   addOn: 'text-amber-400',   example: 'bg-teal-500/10 border-teal-500/20 text-teal-300',        btn: 'bg-teal-600/20 border-teal-500/40 text-teal-400 hover:bg-teal-600/30' },
-  violet:  { header: 'bg-violet-500/10 border-violet-500/20',  dot: 'bg-violet-400',  mustHave: 'text-violet-400',  turnsOff: 'text-rose-400',   addOn: 'text-amber-400',   example: 'bg-violet-500/10 border-violet-500/20 text-violet-300',  btn: 'bg-violet-600/20 border-violet-500/40 text-violet-400 hover:bg-violet-600/30' },
-  amber:   { header: 'bg-amber-500/10 border-amber-500/20',    dot: 'bg-amber-400',   mustHave: 'text-amber-400',   turnsOff: 'text-rose-400',   addOn: 'text-amber-400',   example: 'bg-amber-500/10 border-amber-500/20 text-amber-300',    btn: 'bg-amber-600/20 border-amber-500/40 text-amber-400 hover:bg-amber-600/30' },
-  sky:     { header: 'bg-sky-500/10 border-sky-500/20',        dot: 'bg-sky-400',     mustHave: 'text-sky-400',     turnsOff: 'text-rose-400',   addOn: 'text-amber-400',   example: 'bg-sky-500/10 border-sky-500/20 text-sky-300',          btn: 'bg-sky-600/20 border-sky-500/40 text-sky-400 hover:bg-sky-600/30' },
-  rose:    { header: 'bg-rose-500/10 border-rose-500/20',      dot: 'bg-rose-400',    mustHave: 'text-rose-400',    turnsOff: 'text-rose-400',   addOn: 'text-amber-400',   example: 'bg-rose-500/10 border-rose-500/20 text-rose-300',        btn: 'bg-rose-600/20 border-rose-500/40 text-rose-400 hover:bg-rose-600/30' },
+// ── Module Selector questions ─────────────────────────────────────────────────
+
+interface Question {
+  id: string
+  text: string
+  section: string
 }
 
+const QUESTIONS: Question[] = [
+  // Section A — Client Basics
+  { id: 'roster',    section: 'Client Basics',    text: 'Does the MCO have an active Medicaid member roster with contact data (phone/address)?' },
+  { id: 'hipaa',     section: 'Client Basics',    text: 'Is a HIPAA Business Associate Agreement (BAA) signed with this client?' },
+  { id: 'channel',   section: 'Client Basics',    text: 'Is at least one outreach channel available — SMS, mobile app, or kiosk?' },
+  // Section B — Programs
+  { id: 'sdoh_req',  section: 'Programs',         text: 'Does the state Medicaid contract or CMS waiver require SDOH screening?' },
+  { id: 'findhelp',  section: 'Programs',         text: 'Is the FindHelp community resource network available in the service area?' },
+  { id: 'care_team', section: 'Programs',         text: 'Does the client have a care coordinator team to act on referrals and alerts?' },
+  { id: 'hcbs',      section: 'Programs',         text: 'Does this client run an HCBS or LTSS home-based care program?' },
+  { id: 'evv',       section: 'Programs',         text: 'Is the state EVV (Electronic Visit Verification) mandate currently active?' },
+  { id: 'bh_pop',    section: 'Programs',         text: 'Does the client serve a behavioral health Medicaid population?' },
+  // Section C — Compliance
+  { id: 'state_rpt', section: 'Compliance',       text: 'Does the state Medicaid contract require compliance reporting?' },
+  { id: 'cfr42',     section: 'Compliance',       text: 'Has 42 CFR Part 2 compliance capability been confirmed (behavioral health data)?' },
+  { id: 'crisis',    section: 'Compliance',       text: 'Is a crisis response protocol defined and operational?' },
+  { id: 'mco_nav',   section: 'Compliance',       text: 'Is this an MCO-driven program (not a direct state program) with a digitized benefits catalog?' },
+  // Section D — Data Readiness
+  { id: 'data_6mo',  section: 'Data Readiness',   text: 'Does the client have at least 6 months of historical member data?' },
+  { id: 'pop_5k',    section: 'Data Readiness',   text: 'Is the member population 5,000 or more?' },
+  { id: 'consent',   section: 'Data Readiness',   text: 'Has member data sharing consent been obtained for AI / analytics use?' },
+]
+
+type Answer = 'yes' | 'no' | null
+type Answers = Record<string, Answer>
+type ModuleStatus = 'active' | 'optional' | 'off' | 'pending'
+
+function deriveModules(a: Answers): Record<number, ModuleStatus> {
+  const yes = (id: string) => a[id] === 'yes'
+  const no  = (id: string) => a[id] === 'no'
+  const pending = (ids: string[]) => ids.some(id => a[id] === null)
+
+  const m1: ModuleStatus = pending(['roster','hipaa','channel']) ? 'pending'
+    : yes('roster') && yes('hipaa') && yes('channel') ? 'active'
+    : yes('roster') && yes('hipaa') && no('channel') ? 'optional'
+    : 'off'
+
+  const m2: ModuleStatus = pending(['sdoh_req','findhelp','care_team']) ? 'pending'
+    : yes('sdoh_req') && yes('findhelp') && yes('care_team') ? 'active'
+    : yes('sdoh_req') && yes('findhelp') && no('care_team') ? 'optional'
+    : 'off'
+
+  const m3: ModuleStatus = pending(['hcbs','evv']) ? 'pending'
+    : yes('hcbs') && yes('evv') ? 'active'
+    : yes('hcbs') && no('evv') ? 'optional'
+    : 'off'
+
+  const m4: ModuleStatus = pending(['bh_pop','cfr42','crisis']) ? 'pending'
+    : yes('bh_pop') && yes('cfr42') && yes('crisis') ? 'active'
+    : yes('bh_pop') && no('cfr42') ? 'optional'
+    : 'off'
+
+  const m5: ModuleStatus = pending(['state_rpt']) ? 'pending'
+    : yes('state_rpt') ? 'active'
+    : 'optional'
+
+  const m6: ModuleStatus = pending(['mco_nav']) ? 'pending'
+    : yes('mco_nav') ? 'active'
+    : 'off'
+
+  const activeCount = [m1,m2,m3,m4,m5].filter(s => s === 'active').length
+  const m7: ModuleStatus = pending(['data_6mo','pop_5k','consent']) ? 'pending'
+    : yes('data_6mo') && yes('pop_5k') && yes('consent') && activeCount >= 3 ? 'active'
+    : yes('data_6mo') && yes('pop_5k') && yes('consent') && activeCount < 3 ? 'optional'
+    : 'off'
+
+  return { 1: m1, 2: m2, 3: m3, 4: m4, 5: m5, 6: m6, 7: m7 }
+}
+
+const STATUS_STYLE: Record<ModuleStatus, { badge: string; dot: string; label: string }> = {
+  active:  { badge: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30', dot: 'bg-emerald-400', label: 'Active' },
+  optional:{ badge: 'bg-amber-500/15 text-amber-400 border border-amber-500/30',       dot: 'bg-amber-400',   label: 'Optional' },
+  off:     { badge: 'bg-zinc-800 text-zinc-500 border border-zinc-700',                dot: 'bg-zinc-600',    label: 'OFF' },
+  pending: { badge: 'bg-zinc-800/50 text-zinc-600 border border-zinc-800',             dot: 'bg-zinc-700',    label: '?' },
+}
+
+const COLOR_MAP: Record<string, { header: string; mustHave: string; example: string; btn: string }> = {
+  indigo:  { header: 'bg-indigo-500/10 border-indigo-500/20',  mustHave: 'text-indigo-400',  example: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300',  btn: 'bg-indigo-600/20 border-indigo-500/40 text-indigo-400 hover:bg-indigo-600/30' },
+  emerald: { header: 'bg-emerald-500/10 border-emerald-500/20', mustHave: 'text-emerald-400', example: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300', btn: 'bg-emerald-600/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30' },
+  teal:    { header: 'bg-teal-500/10 border-teal-500/20',      mustHave: 'text-teal-400',    example: 'bg-teal-500/10 border-teal-500/20 text-teal-300',        btn: 'bg-teal-600/20 border-teal-500/40 text-teal-400 hover:bg-teal-600/30' },
+  violet:  { header: 'bg-violet-500/10 border-violet-500/20',  mustHave: 'text-violet-400',  example: 'bg-violet-500/10 border-violet-500/20 text-violet-300',  btn: 'bg-violet-600/20 border-violet-500/40 text-violet-400 hover:bg-violet-600/30' },
+  amber:   { header: 'bg-amber-500/10 border-amber-500/20',    mustHave: 'text-amber-400',   example: 'bg-amber-500/10 border-amber-500/20 text-amber-300',    btn: 'bg-amber-600/20 border-amber-500/40 text-amber-400 hover:bg-amber-600/30' },
+  sky:     { header: 'bg-sky-500/10 border-sky-500/20',        mustHave: 'text-sky-400',     example: 'bg-sky-500/10 border-sky-500/20 text-sky-300',          btn: 'bg-sky-600/20 border-sky-500/40 text-sky-400 hover:bg-sky-600/30' },
+  rose:    { header: 'bg-rose-500/10 border-rose-500/20',      mustHave: 'text-rose-400',    example: 'bg-rose-500/10 border-rose-500/20 text-rose-300',        btn: 'bg-rose-600/20 border-rose-500/40 text-rose-400 hover:bg-rose-600/30' },
+}
+
+const SECTIONS = ['Client Basics', 'Programs', 'Compliance', 'Data Readiness']
+
 export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
+  const [mainTab, setMainTab]   = useState<MainTab>('modules')
   const [expanded, setExpanded] = useState<number | null>(null)
+  const [answers, setAnswers]   = useState<Answers>(
+    Object.fromEntries(QUESTIONS.map(q => [q.id, null]))
+  )
+
+  const moduleResults = deriveModules(answers)
+  const answered      = Object.values(answers).filter(v => v !== null).length
+  const totalQ        = QUESTIONS.length
+  const activeModules = Object.values(moduleResults).filter(s => s === 'active').length
+
+  const resetAnswers = () => setAnswers(Object.fromEntries(QUESTIONS.map(q => [q.id, null])))
+
+  const summaryLine = () => {
+    const active   = MODULES.filter(m => moduleResults[m.num] === 'active').map(m => m.title)
+    const optional = MODULES.filter(m => moduleResults[m.num] === 'optional').map(m => m.title)
+    const off      = MODULES.filter(m => moduleResults[m.num] === 'off').map(m => m.title)
+    if (active.length === 0 && optional.length === 0) return null
+    const parts = []
+    if (active.length)   parts.push(`${active.join(', ')} → Active`)
+    if (optional.length) parts.push(`${optional.join(', ')} → Optional when ready`)
+    if (off.length)      parts.push(`${off.join(', ')} → OFF`)
+    return parts.join('. ') + '.'
+  }
 
   return (
     <div className="flex flex-col h-full bg-zinc-950 select-none">
@@ -241,110 +352,222 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
           </button>
           <span className="text-zinc-700">|</span>
           <span className="text-sm font-bold text-zinc-100">Medicaid Platform</span>
-          <span className="text-xs text-zinc-500">— 7 Modules · Activation Requirements</span>
         </div>
-        <span className="text-[10px] text-zinc-500">Click any module to expand</span>
+        <div className="flex gap-1.5">
+          {([
+            { key: 'modules',  label: '📦 7 Modules' },
+            { key: 'selector', label: '⚙️ Module Selector' },
+          ] as { key: MainTab; label: string }[]).map(t => (
+            <button
+              key={t.key}
+              onClick={() => setMainTab(t.key)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                mainTab === t.key
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-zinc-800/60 text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Module grid */}
-      <div className="flex-1 overflow-y-auto p-5">
-        <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto">
-          {MODULES.map(m => {
-            const c = COLOR_MAP[m.color]
-            const isOpen = expanded === m.num
-            return (
-              <div
-                key={m.num}
-                className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition-all"
-              >
-                {/* Tile header — always visible */}
-                <button
-                  className="w-full text-left p-4 hover:bg-zinc-800/40 transition-colors"
-                  onClick={() => setExpanded(isOpen ? null : m.num)}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl border flex-shrink-0 ${c.header}`}>
-                        {m.icon}
-                      </span>
-                      <div>
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-[10px] text-zinc-600 font-mono">0{m.num}</span>
-                          <span className="text-sm font-bold text-zinc-100">{m.title}</span>
+      {/* ── MODULES TAB ── */}
+      {mainTab === 'modules' && (
+        <div className="flex-1 overflow-y-auto p-5">
+          <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto">
+            {MODULES.map(m => {
+              const c = COLOR_MAP[m.color]
+              const isOpen = expanded === m.num
+              return (
+                <div key={m.num} className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                  <button
+                    className="w-full text-left p-4 hover:bg-zinc-800/40 transition-colors"
+                    onClick={() => setExpanded(isOpen ? null : m.num)}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl border flex-shrink-0 ${c.header}`}>
+                          {m.icon}
+                        </span>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-100 mb-0.5">{m.title}</p>
+                          <p className="text-xs text-zinc-400 leading-snug">{m.tagline}</p>
                         </div>
-                        <p className="text-xs text-zinc-400 leading-snug">{m.tagline}</p>
                       </div>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+                        className={`w-4 h-4 text-zinc-600 flex-shrink-0 mt-1 transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                      </svg>
                     </div>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                      strokeWidth={2} stroke="currentColor"
-                      className={`w-4 h-4 text-zinc-600 flex-shrink-0 mt-1 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </div>
-                </button>
+                  </button>
 
-                {/* Expanded content */}
-                {isOpen && (
-                  <div className="px-4 pb-4 border-t border-zinc-800 pt-4 space-y-4">
-
-                    {/* 3-column requirements */}
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <p className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider mb-2">Must have to turn ON</p>
-                        <ul className="space-y-1.5">
-                          {m.mustHave.map(r => (
-                            <li key={r} className="flex gap-2 text-xs text-zinc-300 leading-snug">
-                              <span className="text-emerald-500 flex-shrink-0 mt-0.5">✓</span>{r}
-                            </li>
-                          ))}
-                        </ul>
+                  {isOpen && (
+                    <div className="px-4 pb-4 border-t border-zinc-800 pt-4 space-y-4">
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <p className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider mb-2">Must have to turn ON</p>
+                          <ul className="space-y-1.5">
+                            {m.mustHave.map(r => (
+                              <li key={r} className="flex gap-2 text-xs text-zinc-300 leading-snug">
+                                <span className="text-emerald-500 flex-shrink-0 mt-0.5">✓</span>{r}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-semibold text-rose-500 uppercase tracking-wider mb-2">Turns OFF if</p>
+                          <ul className="space-y-1.5">
+                            {m.turnsOff.map(r => (
+                              <li key={r} className="flex gap-2 text-xs text-zinc-400 leading-snug">
+                                <span className="text-rose-500 flex-shrink-0 mt-0.5">✕</span>{r}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-semibold text-amber-500 uppercase tracking-wider mb-2">Optional add-ons</p>
+                          <ul className="space-y-1.5">
+                            {m.addOns.map(r => (
+                              <li key={r} className="flex gap-2 text-xs text-zinc-400 leading-snug">
+                                <span className="text-amber-500 flex-shrink-0 mt-0.5">+</span>{r}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-[10px] font-semibold text-rose-500 uppercase tracking-wider mb-2">Turns OFF if</p>
-                        <ul className="space-y-1.5">
-                          {m.turnsOff.map(r => (
-                            <li key={r} className="flex gap-2 text-xs text-zinc-400 leading-snug">
-                              <span className="text-rose-500 flex-shrink-0 mt-0.5">✕</span>{r}
-                            </li>
-                          ))}
-                        </ul>
+                      <div className={`rounded-xl border px-3 py-2.5 ${c.example}`}>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1 opacity-70">Real decision example</p>
+                        <p className="text-xs leading-relaxed">{m.example}</p>
                       </div>
-                      <div>
-                        <p className="text-[10px] font-semibold text-amber-500 uppercase tracking-wider mb-2">Optional add-ons</p>
-                        <ul className="space-y-1.5">
-                          {m.addOns.map(r => (
-                            <li key={r} className="flex gap-2 text-xs text-zinc-400 leading-snug">
-                              <span className="text-amber-500 flex-shrink-0 mt-0.5">+</span>{r}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      <button
+                        onClick={() => onSend(m.prompt, 'pm')}
+                        disabled={isStreaming}
+                        className={`w-full py-2 rounded-xl border text-xs font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${c.btn}`}
+                      >
+                        Ask Product Path AI about {m.title} →
+                      </button>
                     </div>
-
-                    {/* Real example */}
-                    <div className={`rounded-xl border px-3 py-2.5 ${c.example}`}>
-                      <p className="text-[10px] font-semibold uppercase tracking-wider mb-1 opacity-70">Real decision example</p>
-                      <p className="text-xs leading-relaxed">{m.example}</p>
-                    </div>
-
-                    {/* Ask AI button */}
-                    <button
-                      onClick={() => onSend(m.prompt, 'pm')}
-                      disabled={isStreaming}
-                      className={`w-full py-2 rounded-xl border text-xs font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${c.btn}`}
-                    >
-                      Ask Product Path AI about Module {m.num} →
-                    </button>
-
-                  </div>
-                )}
-              </div>
-            )
-          })}
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ── MODULE SELECTOR TAB ── */}
+      {mainTab === 'selector' && (
+        <div className="flex-1 overflow-hidden flex gap-0">
+
+          {/* Left — Questions */}
+          <div className="flex-1 overflow-y-auto p-5 border-r border-zinc-800">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-bold text-zinc-100">Discovery Questionnaire</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">Answer each question to determine which modules this MCO should receive.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-zinc-500">{answered} / {totalQ} answered</span>
+                <button
+                  onClick={resetAnswers}
+                  className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors border border-zinc-800 hover:border-zinc-700 px-2.5 py-1 rounded-lg"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-5 max-w-xl">
+              {SECTIONS.map(section => (
+                <div key={section}>
+                  <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2.5">{section}</p>
+                  <div className="space-y-2">
+                    {QUESTIONS.filter(q => q.section === section).map(q => (
+                      <div key={q.id} className={`rounded-xl border p-3.5 transition-all ${
+                        answers[q.id] === 'yes' ? 'bg-emerald-500/5 border-emerald-500/30'
+                        : answers[q.id] === 'no' ? 'bg-rose-500/5 border-rose-500/20'
+                        : 'bg-zinc-900 border-zinc-800'
+                      }`}>
+                        <p className="text-xs text-zinc-200 mb-2.5 leading-relaxed">{q.text}</p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setAnswers(prev => ({ ...prev, [q.id]: answers[q.id] === 'yes' ? null : 'yes' }))}
+                            className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
+                              answers[q.id] === 'yes'
+                                ? 'bg-emerald-500 text-white border-emerald-500'
+                                : 'bg-zinc-800/60 text-zinc-400 border-zinc-700 hover:border-emerald-500/50 hover:text-emerald-400'
+                            }`}
+                          >
+                            Yes
+                          </button>
+                          <button
+                            onClick={() => setAnswers(prev => ({ ...prev, [q.id]: answers[q.id] === 'no' ? null : 'no' }))}
+                            className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
+                              answers[q.id] === 'no'
+                                ? 'bg-rose-500 text-white border-rose-500'
+                                : 'bg-zinc-800/60 text-zinc-400 border-zinc-700 hover:border-rose-500/50 hover:text-rose-400'
+                            }`}
+                          >
+                            No
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right — Live module results */}
+          <div className="w-64 flex-shrink-0 overflow-y-auto p-4 flex flex-col gap-3">
+            <div>
+              <h3 className="text-xs font-bold text-zinc-100 mb-0.5">Module Activation</h3>
+              <p className="text-[10px] text-zinc-500">Updates as you answer</p>
+            </div>
+
+            {/* Module status cards */}
+            <div className="space-y-2">
+              {MODULES.map(m => {
+                const status = moduleResults[m.num]
+                const st = STATUS_STYLE[status]
+                return (
+                  <div key={m.num} className={`rounded-xl border p-3 transition-all ${
+                    status === 'active' ? 'bg-emerald-500/5 border-emerald-500/20'
+                    : status === 'optional' ? 'bg-amber-500/5 border-amber-500/20'
+                    : status === 'off' ? 'bg-zinc-900/50 border-zinc-800/50 opacity-50'
+                    : 'bg-zinc-900 border-zinc-800'
+                  }`}>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">{m.icon}</span>
+                        <span className="text-xs font-semibold text-zinc-200 leading-tight">{m.title}</span>
+                      </div>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${st.badge}`}>
+                        {st.label}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Summary */}
+            {answered >= 8 && (
+              <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-3 mt-1">
+                <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+                  Summary · {activeModules} of 7 active
+                </p>
+                <p className="text-[11px] text-zinc-300 leading-relaxed italic">
+                  "{summaryLine()}"
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
     </div>
   )
