@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import MedCoreDemo from './MedCoreDemo'
 
 interface Props {
   onSend: (text: string, mode: string) => void
@@ -759,7 +760,7 @@ const FRAMEWORKS = [
 
 // ── Tab types ─────────────────────────────────────────────────────────────────
 
-type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical'
+type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical' | 'medicaid'
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -768,6 +769,17 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
   const firstName = user?.email?.split('@')[0]?.split('.')[0] ?? 'there'
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1)
   const [activeTab, setActiveTab] = useState<Tab>('books')
+
+  if (activeTab === 'medicaid') {
+    return (
+      <MedCoreDemo
+        onBack={() => setActiveTab('books')}
+        onSend={onSend}
+        isStreaming={isStreaming}
+      />
+    )
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 select-none">
 
@@ -812,6 +824,7 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
             { key: 'teams',      label: '🏢 Teams' },
             { key: 'meetings',   label: '📅 Meetings' },
             { key: 'technical',  label: '⚙️ Technical' },
+            { key: 'medicaid',   label: '🏥 Medicaid' },
           ] as { key: Tab; label: string }[]).map(tab => (
             <button
               key={tab.key}
