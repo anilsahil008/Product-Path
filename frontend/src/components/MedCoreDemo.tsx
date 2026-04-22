@@ -6,7 +6,7 @@ interface Props {
   isStreaming: boolean
 }
 
-type MainTab = 'modules' | 'selector' | 'states'
+type MainTab = 'modules' | 'selector' | 'states' | 'onboard'
 
 const MODULES = [
   {
@@ -346,12 +346,72 @@ const COLOR_MAP: Record<string, { header: string; mustHave: string; example: str
 
 const SECTIONS = ['Client Basics', 'Programs', 'Compliance', 'Data Readiness']
 
+// ── Onboard types ─────────────────────────────────────────────────────────────
+
+interface OnboardForm {
+  mcoName: string
+  state: string
+  memberCount: string
+  adults: string
+  children: string
+  elderly: string
+  disabilities: string
+  dualEligible: string
+  pregnant: string
+  hasHCBS: boolean
+  hasBH: boolean
+  hasLTSS: boolean
+  hasDual: boolean
+  coordinators: string
+  dataMonths: string
+  hipaa: boolean
+}
+
+const BLANK_FORM: OnboardForm = {
+  mcoName: '', state: '', memberCount: '', adults: '', children: '',
+  elderly: '', disabilities: '', dualEligible: '', pregnant: '',
+  hasHCBS: false, hasBH: false, hasLTSS: false, hasDual: false,
+  coordinators: '', dataMonths: '', hipaa: false,
+}
+
+const SAMPLE_MEMBERS = [
+  { id: 'M-4821', name: 'Maria G.',  age: 67, program: 'HCBS',          risk: 'High',   flag: 'ER visit predicted in 14 days',      riskColor: 'text-rose-400',   dotColor: 'bg-rose-400' },
+  { id: 'M-2093', name: 'James T.',  age: 45, program: 'Behavioral Health', risk: 'Medium', flag: 'PHQ-9 score elevated — follow up needed', riskColor: 'text-amber-400',  dotColor: 'bg-amber-400' },
+  { id: 'M-7741', name: 'Rosa M.',   age: 52, program: 'Dual Eligible',  risk: 'Low',    flag: 'Care plan current — next visit in 12 days', riskColor: 'text-emerald-400', dotColor: 'bg-emerald-400' },
+  { id: 'M-3318', name: 'David K.',  age: 38, program: 'Adult Expansion', risk: 'Medium', flag: 'SDOH flag — housing instability reported', riskColor: 'text-amber-400',  dotColor: 'bg-amber-400' },
+  { id: 'M-9902', name: 'Linda P.',  age: 71, program: 'LTSS',           risk: 'High',   flag: 'No-show pattern — 3 missed visits',  riskColor: 'text-rose-400',   dotColor: 'bg-rose-400' },
+]
+
 export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
   const [mainTab, setMainTab]   = useState<MainTab>('modules')
   const [expanded, setExpanded] = useState<number | null>(null)
   const [answers, setAnswers]   = useState<Answers>(
     Object.fromEntries(QUESTIONS.map(q => [q.id, null]))
   )
+  const [onboardStep, setOnboardStep] = useState(1)
+  const [form, setForm]               = useState<OnboardForm>(BLANK_FORM)
+  const [showPortal, setShowPortal]   = useState(false)
+
+  const stateData = STATES.find(s => s.state === form.state)
+
+  const setF = (field: keyof OnboardForm, val: string | boolean) =>
+    setForm(prev => ({ ...prev, [field]: val }))
+
+  const totalMembers   = parseInt(form.memberCount.replace(/,/g, '')) || 0
+  const sdohScreenings = Math.round(totalMembers * 0.15)
+  const evvVisits      = form.hasHCBS ? Math.round(totalMembers * 0.08) : 0
+  const riskAlerts     = Math.round(totalMembers * 0.03)
+  const coordinators   = parseInt(form.coordinators) || Math.max(1, Math.round(totalMembers / 200))
+
+  const derivedModuleStatus = (): Record<number, ModuleStatus> => ({
+    1: form.memberCount && form.hipaa ? 'active' : 'optional',
+    2: stateData?.sdoh ? 'active' : (form.hasHCBS ? 'optional' : 'off'),
+    3: form.hasHCBS ? 'active' : 'off',
+    4: form.hasBH ? 'active' : 'off',
+    5: 'active',
+    6: !stateData || form.mcoName ? 'active' : 'off',
+    7: parseInt(form.dataMonths) >= 6 && totalMembers >= 5000 ? 'active' : 'off',
+  })
 
   const moduleResults = deriveModules(answers)
   const answered      = Object.values(answers).filter(v => v !== null).length
@@ -395,6 +455,7 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
             { key: 'modules',  label: '📦 7 Modules' },
             { key: 'selector', label: '⚙️ Module Selector' },
             { key: 'states',   label: '🗺️ States' },
+            { key: 'onboard',  label: '🚀 Onboard MCO' },
           ] as { key: MainTab; label: string }[]).map(t => (
             <button
               key={t.key}
@@ -603,6 +664,438 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
                 </p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ── ONBOARD TAB ── */}
+      {mainTab === 'onboard' && !showPortal && (
+        <div className="flex-1 overflow-y-auto p-5">
+          <div className="max-w-3xl mx-auto space-y-6">
+
+            {/* Step indicator */}
+            <div className="flex items-center gap-2">
+              {[1,2,3,4].map(s => (
+                <div key={s} className="flex items-center gap-2">
+                  <button
+                    onClick={() => setOnboardStep(s)}
+                    className={`w-7 h-7 rounded-full text-xs font-bold border transition-all flex items-center justify-center ${
+                      onboardStep === s ? 'bg-indigo-600 text-white border-indigo-500' :
+                      onboardStep > s  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' :
+                      'bg-zinc-900 text-zinc-600 border-zinc-700'
+                    }`}
+                  >{s}</button>
+                  {s < 4 && <div className={`h-px w-8 ${onboardStep > s ? 'bg-emerald-500/40' : 'bg-zinc-800'}`} />}
+                </div>
+              ))}
+              <span className="ml-2 text-xs text-zinc-500">
+                {onboardStep === 1 ? 'MCO Info' : onboardStep === 2 ? 'Population & Eligibility' : onboardStep === 3 ? 'Programs & Team' : 'Review & Launch'}
+              </span>
+            </div>
+
+            {/* ── STEP 1: MCO Info + State auto-load ── */}
+            {onboardStep === 1 && (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-bold text-zinc-100 mb-1">MCO Information</h3>
+                  <p className="text-xs text-zinc-500">Select your state and we'll pre-load all Medicaid requirements automatically.</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-400 mb-1.5 block">MCO Name</label>
+                    <input
+                      type="text"
+                      value={form.mcoName}
+                      onChange={e => setF('mcoName', e.target.value)}
+                      placeholder="e.g. Molina Healthcare"
+                      className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-400 mb-1.5 block">State</label>
+                    <select
+                      value={form.state}
+                      onChange={e => setF('state', e.target.value)}
+                      className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-indigo-500 transition-colors"
+                    >
+                      <option value="">Select state…</option>
+                      {STATES.map(s => <option key={s.abbr} value={s.state}>{s.state}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Auto-loaded state requirements */}
+                {stateData && (
+                  <div className="bg-zinc-900 border border-indigo-500/30 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">State Requirements Auto-Loaded — {stateData.state}</span>
+                      <span className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2 py-0.5">✓ Pre-filled</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">EVV Mandate</span>
+                          <span className="text-xs font-semibold text-emerald-400">Active ✓</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">EVV Vendor</span>
+                          <span className="text-xs font-semibold text-zinc-300">{stateData.evvVendor}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">EVV Model</span>
+                          <span className="text-xs font-semibold text-zinc-300">{stateData.evvModel}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">SDOH Required</span>
+                          <span className={`text-xs font-semibold ${stateData.sdoh ? 'text-emerald-400' : 'text-zinc-500'}`}>{stateData.sdoh ? 'Yes ✓' : 'No'}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">HCBS Program</span>
+                          <span className={`text-xs font-semibold ${stateData.hcbs ? 'text-emerald-400' : 'text-zinc-500'}`}>{stateData.hcbs ? 'Active ✓' : 'Not active'}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">Managed Care</span>
+                          <span className="text-xs font-semibold text-sky-400">{stateData.mcPct} penetration</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-zinc-800">
+                      <p className="text-[10px] text-zinc-500">{stateData.notes}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" checked={form.hipaa} onChange={e => setF('hipaa', e.target.checked)}
+                      className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-indigo-600" />
+                    <span className="text-xs text-zinc-300">HIPAA BAA signed with this MCO</span>
+                  </label>
+                </div>
+
+                <button
+                  onClick={() => setOnboardStep(2)}
+                  disabled={!form.mcoName || !form.state}
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-xl transition-colors"
+                >
+                  Next → Population & Eligibility
+                </button>
+              </div>
+            )}
+
+            {/* ── STEP 2: Population & Eligibility ── */}
+            {onboardStep === 2 && (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-bold text-zinc-100 mb-1">Population & Eligibility</h3>
+                  <p className="text-xs text-zinc-500">Enter total enrollment and break down by eligibility group. This determines module priorities.</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Total Members Enrolled</label>
+                  <input
+                    type="text"
+                    value={form.memberCount}
+                    onChange={e => setF('memberCount', e.target.value)}
+                    placeholder="e.g. 40000"
+                    className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold text-zinc-400 mb-2">Eligibility Group Breakdown <span className="text-zinc-600 font-normal">(optional — enter numbers or leave blank)</span></p>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { field: 'adults',       label: 'Adults (19–64)',          icon: '👤' },
+                      { field: 'children',     label: 'Children / CHIP',         icon: '👶' },
+                      { field: 'elderly',      label: 'Elderly (65+)',            icon: '🧓' },
+                      { field: 'disabilities', label: 'People w/ Disabilities',  icon: '♿' },
+                      { field: 'dualEligible', label: 'Dual Eligibles',          icon: '🔄' },
+                      { field: 'pregnant',     label: 'Pregnant Women',          icon: '🤰' },
+                    ].map(g => (
+                      <div key={g.field}>
+                        <label className="text-[10px] text-zinc-500 mb-1 flex items-center gap-1 block">
+                          <span>{g.icon}</span>{g.label}
+                        </label>
+                        <input
+                          type="text"
+                          value={form[g.field as keyof OnboardForm] as string}
+                          onChange={e => setF(g.field as keyof OnboardForm, e.target.value)}
+                          placeholder="0"
+                          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-700 focus:outline-none focus:border-indigo-500 transition-colors"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button onClick={() => setOnboardStep(1)} className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-xl transition-colors">← Back</button>
+                  <button
+                    onClick={() => setOnboardStep(3)}
+                    disabled={!form.memberCount}
+                    className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-xl transition-colors"
+                  >
+                    Next → Programs & Team
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── STEP 3: Programs & Team ── */}
+            {onboardStep === 3 && (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-bold text-zinc-100 mb-1">Programs & Team Readiness</h3>
+                  <p className="text-xs text-zinc-500">Which programs does this MCO run? This determines which modules activate.</p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold text-zinc-400 mb-2.5">Active Medicaid Programs</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { field: 'hasHCBS', label: 'HCBS / Home-Based Care',    desc: 'Activates EVV + Care Coordination module', icon: '🏠' },
+                      { field: 'hasBH',   label: 'Behavioral Health',          desc: 'Activates BH module with 42 CFR Part 2',  icon: '🧠' },
+                      { field: 'hasLTSS', label: 'LTSS / Long-Term Services',  desc: 'Extended care coordination requirements', icon: '🔄' },
+                      { field: 'hasDual', label: 'Dual Eligible (Medicare+)',   desc: 'Integrated care coordination required',   icon: '♾️' },
+                    ].map(p => (
+                      <label key={p.field} className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
+                        form[p.field as keyof OnboardForm]
+                          ? 'bg-indigo-500/10 border-indigo-500/40'
+                          : 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
+                      }`}>
+                        <input type="checkbox"
+                          checked={form[p.field as keyof OnboardForm] as boolean}
+                          onChange={e => setF(p.field as keyof OnboardForm, e.target.checked)}
+                          className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-indigo-600 flex-shrink-0"
+                        />
+                        <div>
+                          <p className="text-xs font-semibold text-zinc-200">{p.icon} {p.label}</p>
+                          <p className="text-[10px] text-zinc-500 mt-0.5">{p.desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Care Coordinators on Team</label>
+                    <input
+                      type="text"
+                      value={form.coordinators}
+                      onChange={e => setF('coordinators', e.target.value)}
+                      placeholder={`~${Math.max(1, Math.round((parseInt(form.memberCount) || 0) / 200))} (estimated)`}
+                      className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-400 mb-1.5 block">Months of Historical Member Data</label>
+                    <select
+                      value={form.dataMonths}
+                      onChange={e => setF('dataMonths', e.target.value)}
+                      className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-indigo-500 transition-colors"
+                    >
+                      <option value="">Select…</option>
+                      <option value="3">Less than 6 months</option>
+                      <option value="6">6–12 months</option>
+                      <option value="12">1–2 years</option>
+                      <option value="24">2+ years</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button onClick={() => setOnboardStep(2)} className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-xl transition-colors">← Back</button>
+                  <button onClick={() => setOnboardStep(4)} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition-colors">
+                    Next → Review & Launch
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── STEP 4: Review + Module Recommendations ── */}
+            {onboardStep === 4 && (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-bold text-zinc-100 mb-1">Module Recommendations for {form.mcoName || 'This MCO'}</h3>
+                  <p className="text-xs text-zinc-500">Based on your answers — here is the recommended module configuration.</p>
+                </div>
+
+                {/* Summary row */}
+                <div className="grid grid-cols-4 gap-3">
+                  {[
+                    { label: 'MCO',      value: form.mcoName || '—' },
+                    { label: 'State',    value: form.state || '—' },
+                    { label: 'Members',  value: parseInt(form.memberCount || '0').toLocaleString() || '—' },
+                    { label: 'Programs', value: [form.hasHCBS && 'HCBS', form.hasBH && 'BH', form.hasLTSS && 'LTSS', form.hasDual && 'Dual'].filter(Boolean).join(', ') || 'None selected' },
+                  ].map(s => (
+                    <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-3">
+                      <p className="text-[10px] text-zinc-600 mb-0.5">{s.label}</p>
+                      <p className="text-xs font-bold text-zinc-200 truncate">{s.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Module recommendations */}
+                <div className="space-y-2">
+                  {MODULES.map(m => {
+                    const status = derivedModuleStatus()[m.num]
+                    const st = STATUS_STYLE[status]
+                    const reasons: Record<number, string> = {
+                      1: form.hipaa ? 'HIPAA BAA signed + member roster confirmed' : 'Activate after HIPAA BAA is signed',
+                      2: stateData?.sdoh ? `${stateData.state} requires SDOH screening in MCO contracts` : 'State does not require — activate when budget approved',
+                      3: form.hasHCBS ? 'HCBS program confirmed — EVV mandate applies' : 'Not applicable — no HCBS program selected',
+                      4: form.hasBH ? 'Behavioral health program confirmed' : 'Not applicable — no BH population selected',
+                      5: 'State Medicaid contract requires compliance reporting',
+                      6: form.mcoName ? 'MCO-driven program — benefits catalog required before activation' : 'Confirm benefits catalog is digitized',
+                      7: parseInt(form.dataMonths) >= 6 && totalMembers >= 5000
+                        ? `${form.dataMonths}+ months data + ${totalMembers.toLocaleString()} members meets threshold`
+                        : 'Needs 6+ months data and 5,000+ members — revisit in 6 months',
+                    }
+                    return (
+                      <div key={m.num} className={`flex items-center gap-3 p-3.5 rounded-xl border ${
+                        status === 'active' ? 'bg-emerald-500/5 border-emerald-500/20' :
+                        status === 'optional' ? 'bg-amber-500/5 border-amber-500/20' :
+                        'bg-zinc-900/50 border-zinc-800/50 opacity-60'
+                      }`}>
+                        <span className="text-base flex-shrink-0">{m.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-zinc-200">{m.title}</p>
+                          <p className="text-[10px] text-zinc-500 mt-0.5 leading-snug">{reasons[m.num]}</p>
+                        </div>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${st.badge}`}>{st.label}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div className="flex gap-3">
+                  <button onClick={() => setOnboardStep(3)} className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-xl transition-colors">← Back</button>
+                  <button
+                    onClick={() => setShowPortal(true)}
+                    className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-colors"
+                  >
+                    🚀 Launch Portal Preview →
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── PORTAL PREVIEW ── */}
+      {mainTab === 'onboard' && showPortal && (
+        <div className="flex-1 overflow-y-auto bg-zinc-950">
+          {/* Portal header */}
+          <div className="bg-slate-900 border-b border-slate-700/60 px-6 py-3 flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <span className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs font-black text-white">
+                {form.mcoName ? form.mcoName[0].toUpperCase() : 'M'}
+              </span>
+              <div>
+                <p className="text-sm font-bold text-white">{form.mcoName || 'MCO'} — MedCore Portal</p>
+                <p className="text-[10px] text-slate-400">{form.state} · {parseInt(form.memberCount || '0').toLocaleString()} members · {[form.hasHCBS && 'HCBS', form.hasBH && 'BH', form.hasLTSS && 'LTSS'].filter(Boolean).join(' · ')}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">⚠ Demo preview</span>
+              <button onClick={() => setShowPortal(false)} className="text-xs text-slate-500 hover:text-slate-300 transition-colors border border-slate-700 hover:border-slate-600 px-2.5 py-1 rounded-lg">← Back to Setup</button>
+            </div>
+          </div>
+
+          <div className="p-5 space-y-5">
+            {/* Module status bar */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] text-zinc-600 font-semibold uppercase tracking-wider">Active Modules:</span>
+              {MODULES.map(m => {
+                const status = derivedModuleStatus()[m.num]
+                return (
+                  <span key={m.num} className={`text-[10px] font-semibold px-2 py-1 rounded-full border flex items-center gap-1 ${
+                    status === 'active' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' :
+                    status === 'optional' ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' :
+                    'bg-zinc-800/50 text-zinc-600 border-zinc-800 opacity-50'
+                  }`}>
+                    {m.icon} {m.title}
+                  </span>
+                )
+              })}
+            </div>
+
+            {/* KPI cards */}
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                { label: 'Total Members',         value: parseInt(form.memberCount || '0').toLocaleString(), sub: `${form.state} program`, color: 'text-indigo-400' },
+                { label: 'Care Coordinators',     value: coordinators.toLocaleString(),                      sub: 'assigned to platform',  color: 'text-sky-400' },
+                { label: 'SDOH Screenings',       value: stateData?.sdoh ? sdohScreenings.toLocaleString() : '—', sub: 'this month',       color: 'text-emerald-400' },
+                { label: 'EVV Visits Logged',     value: form.hasHCBS ? evvVisits.toLocaleString() : '—',  sub: 'this month',             color: 'text-violet-400' },
+                { label: 'Risk Alerts Today',     value: riskAlerts.toLocaleString(),                        sub: 'need coordinator action', color: 'text-rose-400' },
+                { label: 'Active Care Plans',     value: Math.round(totalMembers * 0.22).toLocaleString(),   sub: 'members enrolled',       color: 'text-teal-400' },
+                { label: 'BH Screenings',         value: form.hasBH ? Math.round(totalMembers * 0.12).toLocaleString() : '—', sub: 'PHQ-9 + GAD-7 this month', color: 'text-violet-400' },
+                { label: 'Compliance Reports',    value: '4',                                                sub: 'auto-generated this week', color: 'text-amber-400' },
+              ].map(k => (
+                <div key={k.label} className="bg-slate-900/70 border border-slate-700/50 rounded-xl p-3.5">
+                  <p className="text-[10px] text-slate-400 mb-1.5">{k.label}</p>
+                  <p className={`text-xl font-black ${k.color} mb-0.5`}>{k.value}</p>
+                  <p className="text-[10px] text-slate-600">{k.sub}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Member list + Activity feed */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Priority member list */}
+              <div className="bg-slate-900/70 border border-slate-700/50 rounded-xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-slate-700/50">
+                  <p className="text-xs font-bold text-slate-200">Priority Members — Today's List</p>
+                  <p className="text-[10px] text-slate-500">AI-ranked by risk score</p>
+                </div>
+                <div className="divide-y divide-slate-800/60">
+                  {SAMPLE_MEMBERS.map(m => (
+                    <div key={m.id} className="px-4 py-3 flex items-start gap-3">
+                      <span className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${m.dotColor}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-xs font-semibold text-slate-200">{m.name} <span className="text-slate-600 font-normal">· {m.age} · {m.program}</span></p>
+                          <span className={`text-[10px] font-bold flex-shrink-0 ${m.riskColor}`}>{m.risk}</span>
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">{m.flag}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Activity feed */}
+              <div className="bg-slate-900/70 border border-slate-700/50 rounded-xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-slate-700/50">
+                  <p className="text-xs font-bold text-slate-200">Recent Activity</p>
+                  <p className="text-[10px] text-slate-500">Live platform events</p>
+                </div>
+                <div className="divide-y divide-slate-800/60">
+                  {[
+                    { time: '2m ago',  icon: '🤖', text: `Member M-4821 flagged — ER risk score 87%` },
+                    { time: '8m ago',  icon: '✅', text: `EVV visit logged — Home health worker #334` },
+                    { time: '14m ago', icon: '🏘️', text: `SDOH referral completed — M-3318 housing` },
+                    { time: '31m ago', icon: '📊', text: `${stateData?.evvVendor || 'EVV'} compliance report auto-generated` },
+                    { time: '1h ago',  icon: '💬', text: `M-2093 responded to PHQ-9 screening — score 14` },
+                    { time: '2h ago',  icon: '🧭', text: `M-9902 benefit alert sent — plan renewal in 30 days` },
+                  ].map((a, i) => (
+                    <div key={i} className="px-4 py-2.5 flex items-start gap-2.5">
+                      <span className="text-sm flex-shrink-0">{a.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] text-slate-300 leading-snug">{a.text}</p>
+                        <p className="text-[10px] text-slate-600 mt-0.5">{a.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
