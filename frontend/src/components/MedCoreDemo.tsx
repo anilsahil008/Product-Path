@@ -1034,34 +1034,60 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
             </div>
           </div>
 
-          {/* Right — Live module results */}
-          <div className="w-64 flex-shrink-0 overflow-y-auto p-4 flex flex-col gap-3">
-            <div>
-              <h3 className="text-xs font-bold text-zinc-100 mb-0.5">Module Activation</h3>
-              <p className="text-[10px] text-zinc-500">Updates as you answer</p>
+          {/* Right — Recommended configuration */}
+          <div className="w-72 flex-shrink-0 overflow-y-auto p-4 flex flex-col gap-3">
+
+            {/* Header */}
+            <div className="bg-zinc-900 border border-indigo-500/20 rounded-xl p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                <h3 className="text-xs font-bold text-zinc-100">Recommended Configuration</h3>
+              </div>
+              <p className="text-[10px] text-zinc-500 leading-snug">
+                Not what the MCO currently has — what we recommend enabling based on your discovery answers.
+              </p>
+              <div className="mt-2 pt-2 border-t border-zinc-800 grid grid-cols-3 gap-1 text-center">
+                {(['active','optional','off'] as const).map(s => (
+                  <div key={s}>
+                    <p className={`text-[10px] font-bold ${STATUS_STYLE[s].badge.includes('emerald') ? 'text-emerald-400' : STATUS_STYLE[s].badge.includes('amber') ? 'text-amber-400' : 'text-zinc-600'}`}>
+                      {Object.values(moduleResults).filter(v => v === s).length}
+                    </p>
+                    <p className="text-[9px] text-zinc-600 capitalize">{s === 'off' ? 'Not needed' : s === 'active' ? 'Activate' : 'Optional'}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Module status cards */}
+            {/* Module recommendation cards */}
             <div className="space-y-2">
               {MODULES.map(m => {
                 const status = moduleResults[m.num]
                 const st = STATUS_STYLE[status]
+                const reasonMap: Record<string, Record<number, string>> = {
+                  active:   { 1: 'HIPAA confirmed + churn pain', 2: 'SDOH incentive active', 3: 'EVV / HCBS confirmed', 4: 'BH population confirmed', 5: 'Audit pain flagged', 6: 'Member churn pain', 7: 'Cost + scale threshold met' },
+                  optional: { 1: 'Channel gap — enable when ready', 2: 'No closed loop yet', 3: 'HCBS present, EVV pending', 4: 'BH population, setup needed', 5: 'Always recommended', 6: 'After engagement live', 7: 'Scale not yet met' },
+                  off:      { 1: 'No member contact data', 2: 'No SDOH requirement', 3: 'No HCBS program', 4: 'No BH population', 5: 'Separate vendor', 6: 'State program only', 7: 'Insufficient data / size' },
+                  pending:  { 1: 'Answer remaining questions', 2: 'Answer remaining questions', 3: 'Answer remaining questions', 4: 'Answer remaining questions', 5: 'Answer remaining questions', 6: 'Answer remaining questions', 7: 'Answer remaining questions' },
+                }
                 return (
                   <div key={m.num} className={`rounded-xl border p-3 transition-all ${
-                    status === 'active' ? 'bg-emerald-500/5 border-emerald-500/20'
+                    status === 'active'  ? 'bg-emerald-500/5 border-emerald-500/20'
                     : status === 'optional' ? 'bg-amber-500/5 border-amber-500/20'
-                    : status === 'off' ? 'bg-zinc-900/50 border-zinc-800/50 opacity-50'
+                    : status === 'off'  ? 'bg-zinc-900/50 border-zinc-800/50 opacity-40'
                     : 'bg-zinc-900 border-zinc-800'
                   }`}>
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2 mb-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-base">{m.icon}</span>
+                        <span className="text-sm">{m.icon}</span>
                         <span className="text-xs font-semibold text-zinc-200 leading-tight">{m.title}</span>
                       </div>
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${st.badge}`}>
                         {st.label}
                       </span>
                     </div>
+                    {status !== 'pending' && (
+                      <p className="text-[10px] text-zinc-500 leading-snug pl-6">{reasonMap[status][m.num]}</p>
+                    )}
                   </div>
                 )
               })}
@@ -1071,7 +1097,7 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
             {answered >= 8 && (
               <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-3 mt-1">
                 <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                  Summary · {activeModules} of 7 active
+                  Proposal · {activeModules} of 7 to activate
                 </p>
                 <p className="text-[11px] text-zinc-300 leading-relaxed italic">
                   "{summaryLine()}"
