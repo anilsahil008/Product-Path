@@ -372,6 +372,104 @@ const STATES: StateData[] = [
   { state: 'Washington DC',   abbr: 'DC', evvModel: 'Open',            evvVendor: 'Sandata',                  sdoh: true,  hcbs: true,  mcPct: '~90%', mcos: ['MedStar Family Choice', 'AmeriHealth Caritas DC', 'CareFirst Community Health'], notes: 'DC Healthy Families · Covers up to 215% FPL — most generous Medicaid in US · SDOH required',       expansion: true,  fpl: '215% FPL (most generous)', mcoModel: 'Statewide (5 regions)',       planCount: 5  },
 ]
 
+// ── Tech stack per module ─────────────────────────────────────────────────────
+
+interface TechTool { name: string; category: string; oneliner: string; points: string[] }
+
+const CAT_COLOR: Record<string, string> = {
+  'Communication':      'bg-sky-500/15 text-sky-400 border-sky-500/30',
+  'Mobile App':         'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
+  'Hardware / Device':  'bg-zinc-700/60 text-zinc-300 border-zinc-600',
+  'Push & Analytics':   'bg-orange-500/15 text-orange-400 border-orange-500/30',
+  'Device Mgmt (MDM)':  'bg-zinc-700/60 text-zinc-300 border-zinc-600',
+  'Automation':         'bg-amber-500/15 text-amber-400 border-amber-500/30',
+  'SDOH Network':       'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  'NEMT Transport':     'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  'Reporting':          'bg-amber-500/15 text-amber-400 border-amber-500/30',
+  'Platform':           'bg-violet-500/15 text-violet-400 border-violet-500/30',
+  'EVV Platform':       'bg-teal-500/15 text-teal-400 border-teal-500/30',
+  'EVV Connector':      'bg-teal-500/15 text-teal-400 border-teal-500/30',
+  'Remote Monitoring':  'bg-teal-500/15 text-teal-400 border-teal-500/30',
+  'Telehealth':         'bg-sky-500/15 text-sky-400 border-sky-500/30',
+  'Care Alerts':        'bg-sky-500/15 text-sky-400 border-sky-500/30',
+  'Compliance':         'bg-violet-500/15 text-violet-400 border-violet-500/30',
+  'Clinical Tool':      'bg-rose-500/15 text-rose-400 border-rose-500/30',
+  'Crisis Response':    'bg-rose-500/15 text-rose-400 border-rose-500/30',
+  'AI / ML':            'bg-rose-500/15 text-rose-400 border-rose-500/30',
+  'AI Reasoning':       'bg-violet-500/15 text-violet-400 border-violet-500/30',
+  'Embedded AI':        'bg-violet-500/15 text-violet-400 border-violet-500/30',
+  'ML Platform':        'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
+  'Data Engineering':   'bg-zinc-700/60 text-zinc-300 border-zinc-600',
+  'Provider Data':      'bg-sky-500/15 text-sky-400 border-sky-500/30',
+  'Mapping':            'bg-sky-500/15 text-sky-400 border-sky-500/30',
+  'Interoperability':   'bg-teal-500/15 text-teal-400 border-teal-500/30',
+  'Federal Reporting':  'bg-amber-500/15 text-amber-400 border-amber-500/30',
+  'Voice Automation':   'bg-sky-500/15 text-sky-400 border-sky-500/30',
+}
+
+const MODULE_TECH_STACK: Record<number, TechTool[]> = {
+  1: [
+    { name: 'Twilio SMS',        category: 'Communication',     oneliner: 'Reaches members on any phone — no smartphone needed',     points: ['SMS to any phone including basic flip phones', 'Appointment reminders + SDOH check-ins', 'Multi-language, configurable per state mandate'] },
+    { name: 'Twilio Voice (IVR)',  category: 'Voice Automation',  oneliner: 'Automated voice calls for members with no data plan',       points: ['Reaches members with no SMS or data plan', 'Voice menu in member\'s language', 'Works on landlines — rural area coverage'] },
+    { name: 'React Native',       category: 'Mobile App',         oneliner: 'One codebase — iOS and Android from a single build',       points: ['Works on iOS and Android simultaneously', 'Offline mode for rural low-connectivity areas', '5th grade reading level UI — accessibility-first'] },
+    { name: 'Android Kiosk',      category: 'Hardware / Device',  oneliner: 'Physical touchscreen at pharmacies, food banks, shelters', points: ['Built-in cellular SIM — zero WiFi dependency', 'QR code take-home for member follow-up', 'GPS-verified location logging per session'] },
+    { name: 'Firebase',           category: 'Push & Analytics',   oneliner: 'Push notifications + who-opened-what engagement tracking', points: ['Tracks message open rates per member segment', 'Engagement analytics feed directly into AI risk module', 'Real-time notification delivery confirmation'] },
+    { name: 'SOTI MobiControl',   category: 'Device Mgmt (MDM)',  oneliner: 'Manages all tablets remotely — zero in-person support',    points: ['Push software updates overnight silently', 'Remote wipe if device is lost or stolen', 'Monitors device health + battery 24/7 — alerts on failure'] },
+  ],
+  2: [
+    { name: 'Salesforce Flows',   category: 'Automation',         oneliner: 'No-code engine — runs SDOH questions, no engineer needed', points: ['Different question sets per state, zero code change', 'Triggers referrals instantly based on member answers', 'State updates question format → update Flow config only'] },
+    { name: 'FindHelp API',       category: 'SDOH Network',       oneliner: 'Largest SDOH resource network in the USA (Aunt Bertha)',   points: ['500,000+ community programs — food, housing, transport', 'Auto-connects member to nearest resource', 'Tracks if referral was completed — closed-loop proof for CMS'] },
+    { name: 'LogistiCare API',    category: 'NEMT Transport',      oneliner: 'Largest NEMT broker in USA — auto-books Medicaid rides',   points: ['Medicaid transport active in 40+ states', 'Member gets SMS with pickup time automatically', 'Zero manual booking steps — fully automated flow'] },
+    { name: 'Unite Us',           category: 'SDOH Network',       oneliner: 'Alternative SDOH network — strong in NY, NC, VA markets',  points: ['Used directly by some state Medicaid agencies', 'Complements FindHelp in markets where both operate', 'Strong closed-loop outcome tracking for state contracts'] },
+    { name: 'NPI Registry API',   category: 'Provider Data',      oneliner: 'CMS-maintained national provider identifier database',     points: ['Validates provider credentials on every referral', 'Links SDOH referral to specific credentialed provider', 'Always current — CMS updates daily'] },
+    { name: 'Tableau',            category: 'Reporting',           oneliner: 'SDOH outcome dashboards proving closed-loop to CMS',       points: ['Shows CMS what worked — required for 1115 waiver renewal', 'Real-time executive dashboards + state reporting', 'Ran live in a board meeting — secured continued federal funding'] },
+  ],
+  3: [
+    { name: 'Salesforce Health Cloud', category: 'Platform',      oneliner: 'Unified member record across all providers and counties',  points: ['All providers see same record simultaneously', 'Member moves county — record follows automatically', 'Care plans and documentation all in one place'] },
+    { name: 'HHAeXchange',        category: 'EVV Platform',        oneliner: 'Industry standard EVV — MCOs and states already know it',  points: ['Home health workers GPS check-in + check-out', 'Timestamped, verified, state Medicaid EVV compliant', 'Feeds directly into state compliance reports automatically'] },
+    { name: 'Sandata',            category: 'EVV Connector',       oneliner: 'Plugin connector for CA, TX, OH, PA state EVV mandates',   points: ['Same HCBS module code — different API connector', 'Swapped in when state requires Sandata (hours not sprints)', 'Used in majority of EVV-mandate states nationally'] },
+    { name: 'Netsmart',           category: 'EVV Connector',       oneliner: 'Plugin connector required in Florida and Georgia',         points: ['FL and GA mandate Netsmart for EVV compliance', 'Caregiver app integrates with state portal directly', 'Plugin swap from HHAeXchange — zero re-code on HCBS module'] },
+    { name: 'Withings Devices',   category: 'Remote Monitoring',   oneliner: 'Medical-grade Bluetooth vitals — auto-synced to Salesforce', points: ['BP monitors, glucose meters, pulse oximeters', 'Abnormal reading triggers coordinator alert in 15 minutes', 'No manual data entry — device syncs automatically'] },
+    { name: 'Zoom SDK',           category: 'Telehealth',          oneliner: 'HIPAA-compliant video — one button, call starts',          points: ['Embedded in app and tablet — no separate app needed', 'No account or login required for member', 'For homebound members who physically cannot travel to clinic'] },
+    { name: 'Twilio Alerts',      category: 'Care Alerts',         oneliner: 'Real-time care team notifications — 24/7 automated',       points: ['Missed visit → supervisor alerted within minutes', 'Abnormal vitals → coordinator notified in 15 min', '24/7 automated — no overnight monitoring staff needed'] },
+  ],
+  4: [
+    { name: 'Salesforce Shield',  category: 'Compliance',          oneliner: '42 CFR Part 2 — stricter than standard HIPAA, always on', points: ['Field-level encryption on all BH data fields', 'Audit trail for every single data access event', 'Separate member consent tracking (distinct from HIPAA BAA)'] },
+    { name: 'PHQ-9 Screener',     category: 'Clinical Tool',       oneliner: 'Clinical gold standard for depression — 9 questions',     points: ['Runs automatically at every member touchpoint', 'Score ≥10 → care coordinator alerted immediately', 'Score ≥15 → crisis protocol triggered automatically'] },
+    { name: 'GAD-7 Screener',     category: 'Clinical Tool',       oneliner: 'Clinical gold standard for anxiety — 7 questions',        points: ['Runs at same touchpoint as PHQ-9 (one session)', 'Integrated scoring shown together in coordinator alert', 'Both use NCQA-approved question sets — audit defensible'] },
+    { name: 'AUDIT-C Screener',   category: 'Clinical Tool',       oneliner: '3-question substance use screener — SAMHSA standard',     points: ['Screens for alcohol use disorder in 3 questions', 'Runs alongside PHQ-9 + GAD-7 in same session', 'Positive result → SUD referral pathway triggered automatically'] },
+    { name: 'Crisis Text Line API', category: 'Crisis Response',   oneliner: '24/7 crisis counseling — works at 2am without coordinator', points: ['Text HOME to 741741 — free, always available', 'API auto-connects member when crisis score threshold met', 'Immediate trained human connection — no wait time'] },
+    { name: 'Twilio SMS',         category: 'Communication',       oneliner: 'Plain language BH reminders in member\'s language',       points: ['No medical jargon — configurable literacy level', 'Available in 5+ languages instantly', 'One-tap confirm or reschedule — reduces no-shows'] },
+    { name: 'SAMHSA TEDS',        category: 'Federal Reporting',   oneliner: 'Federal substance use treatment data reporting (required)', points: ['Treatment Episode Data Set — CMS required for SUD waivers', 'Auto-generated from AUDIT-C screener results', 'Replaces manual state submission — runs on schedule'] },
+  ],
+  5: [
+    { name: 'Salesforce Reports', category: 'Reporting',           oneliner: 'Auto-generates all compliance docs — zero manual work',   points: ['Configurable per state format without code changes', 'Runs every Monday 7am — report in inbox before staff arrive', 'Every data point sourced from live Salesforce records'] },
+    { name: 'Salesforce Flows',   category: 'Automation',          oneliner: 'State format changes → update Flow config, not code',     points: ['No engineer needed when state changes template', 'EVV data pulled and formatted automatically on schedule', '4 days to update format vs 3 months without this'] },
+    { name: 'HHAeXchange Feed',   category: 'EVV Platform',        oneliner: 'GPS-verified home visit records — audit-ready always',    points: ['Timestamped check-in + check-out data per visit', 'Feeds directly into state EVV compliance reports', 'Pre-validated before hitting compliance engine'] },
+    { name: 'Tableau',            category: 'Reporting',           oneliner: 'Real-time compliance visibility — ran live in board meeting', points: ['HEDIS measure tracking across all members', 'Star Ratings monitoring with gap alerts', 'CMS federal reporting + executive dashboards'] },
+    { name: 'SQL + Python',       category: 'Data Engineering',    oneliner: 'Catches data errors before auditors do',                  points: ['Connects HHAeXchange → Salesforce → Tableau pipeline', 'Automated data validation runs overnight', 'Flags mismatches before they become compliance violations'] },
+    { name: 'NCQA HEDIS',         category: 'Federal Reporting',   oneliner: '90+ clinical quality measures — tied to Star Ratings',    points: ['HEDIS measures auto-tracked from Salesforce data', 'Feeds directly into Star Ratings calculation', 'MCO contract compliance and bonuses tied to HEDIS scores'] },
+    { name: 'CMS TMSIS',          category: 'Federal Reporting',   oneliner: 'Transformed Medicaid Statistical Information System',     points: ['Federal Medicaid data submission — required by CMS', 'Auto-populated from Salesforce pipeline', 'Replaces legacy MSIS manual reporting submissions'] },
+  ],
+  6: [
+    { name: 'Salesforce Health Cloud', category: 'Platform',      oneliner: 'Benefits catalog per MCO — configurable per contract',    points: ['What\'s covered and what\'s not, per MCO plan', 'Benefit expiration dates tracked automatically', 'Updated when benefits change — zero code deploy'] },
+    { name: 'Claude API',         category: 'AI Reasoning',        oneliner: 'Answers member questions 24/7 in plain language',        points: ['"Do I have dental coverage?" → immediate clear answer', 'Any language instantly — no translation delay', 'No call center wait — available at 2am on weekends'] },
+    { name: 'NPI Registry API',   category: 'Provider Data',       oneliner: 'CMS authoritative source for all credentialed providers', points: ['Validates Medicaid participation status per provider', 'Powers provider finder with always-current data', 'Filters by language spoken, specialty, distance'] },
+    { name: 'Provider Directory API', category: 'Provider Data',   oneliner: 'Finds Medicaid-accepting doctors near any member',       points: ['Filters by Medicaid acceptance + language + specialty', 'Distance from member\'s address in real time', 'Shows next available appointment slot'] },
+    { name: 'Google Maps Platform', category: 'Mapping',           oneliner: 'Distance and turn-by-turn for any member on any phone',  points: ['Works on low-end phones with weak data connection', 'Shows transit and walking routes for carless members', 'Embedded in app and kiosk — no separate map app'] },
+    { name: 'Twilio Benefit Alerts', category: 'Communication',    oneliner: 'Benefit expiration reminders before it\'s too late',     points: ['"Your dental benefit expires in 30 days" — automatic', '"3 unused home visits this month" — drives utilization', 'One-tap to schedule — prevents benefits expiring unused'] },
+  ],
+  7: [
+    { name: 'Python ML Models',   category: 'AI / ML',             oneliner: 'Predicts ER visits 30 days ahead — recovered $1.2M at Siemens', points: ['Inputs: missed meds, SDOH flags, PHQ-9, ER history', '30-day ER risk score per member, updated nightly', 'Trained on historical Medicaid claims — state-specific weights'] },
+    { name: 'Claude API',         category: 'AI Reasoning',        oneliner: 'Explains WHY — not just a score, a clear reason',        points: ['"Maria: 3 missed visits + PHQ-9 up + housing flag"', 'Natural language summary — coordinator acts in seconds', 'Pattern analysis that a score number alone cannot convey'] },
+    { name: 'AWS SageMaker',      category: 'ML Platform',         oneliner: 'Cloud ML infrastructure — HIPAA-eligible, BAA available', points: ['Hosts Python ML models at enterprise scale', 'Auto-retrains model monthly as new claims data arrives', 'Scales to any member population without re-architecture'] },
+    { name: 'FHIR R4 API',        category: 'Interoperability',    oneliner: 'Federal standard for healthcare data — CMS required',    points: ['CMS mandates FHIR compliance for Medicaid data exchange', 'Connects to state Medicaid systems for claims history', 'Richer training data → more accurate risk predictions'] },
+    { name: 'Salesforce Einstein', category: 'Embedded AI',        oneliner: 'Risk score inside member record — no separate tool',     points: ['Predictions visible on care plan, no extra login', 'Integrated with coordinator daily workflow natively', 'Coordinator sees risk score the moment they open a record'] },
+    { name: 'Tableau Risk Dashboard', category: 'Reporting',       oneliner: 'Daily priority list — top members to contact today',     points: ['Population health view for MCO leadership', 'ER trend tracking by county and program', 'Star Rating impact dashboard — ties AI to contract value'] },
+    { name: 'SQL + Python',       category: 'Data Engineering',    oneliner: 'Feeds all member data to ML model — validated daily',    points: ['Connects Salesforce → ML engine → priority list', 'Validates data quality before every scoring run', 'Sends coordinator priority list automatically each morning'] },
+  ],
+}
+
 // ── Module Selector questions ─────────────────────────────────────────────────
 
 interface Question {
@@ -780,6 +878,27 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
                             </li>
                           ))}
                         </ul>
+                      </div>
+
+                      {/* Tech Stack */}
+                      <div>
+                        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">🔧 Tech Stack</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {MODULE_TECH_STACK[m.num].map(tool => (
+                            <div key={tool.name} className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-3">
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border mb-1.5 inline-block ${CAT_COLOR[tool.category] ?? 'bg-zinc-700/60 text-zinc-300 border-zinc-600'}`}>{tool.category}</span>
+                              <p className="text-xs font-bold text-zinc-100 mb-0.5">{tool.name}</p>
+                              <p className="text-[10px] text-zinc-500 italic mb-2 leading-snug">{tool.oneliner}</p>
+                              <ul className="space-y-1">
+                                {tool.points.map(pt => (
+                                  <li key={pt} className="text-[10px] text-zinc-400 flex gap-1.5 leading-snug">
+                                    <span className="text-zinc-600 flex-shrink-0 mt-0.5">→</span>{pt}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
                       <div className={`rounded-xl border px-3 py-2.5 ${c.example}`}>
