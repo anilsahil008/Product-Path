@@ -6,7 +6,37 @@ interface Props {
   isStreaming: boolean
 }
 
-type MainTab = 'modules' | 'selector' | 'states' | 'onboard'
+type MainTab = 'modules' | 'selector' | 'states' | 'market' | 'onboard'
+
+const BIG_FIVE = [
+  {
+    name: 'Centene Corporation', ticker: 'CNC', plans: 30, states: 29, color: 'indigo',
+    brands: ['Sunshine Health (FL)', 'Superior Health Plan (TX)', 'Peach State (GA)', 'Buckeye Health (OH)', 'IlliniCare (IL)', 'Meridian (MI)', 'WellCare (KY)', 'Healthy Blue (LA)', 'Sunflower (KS)', 'Missouri Care (MO)'],
+    note: 'Largest Medicaid MCO by plan count — operates in 29 states via local brand strategy',
+  },
+  {
+    name: 'UnitedHealth / Optum', ticker: 'UNH', plans: 30, states: 27, color: 'sky',
+    brands: ['UHC Community Plan', 'TennCare Select (TN)', 'AmeriChoice (various)', 'Medicaid plans in 27 states'],
+    note: 'Tied with Centene for most plans — strong dual-eligible and LTSS programs',
+  },
+  {
+    name: 'Elevance Health', ticker: 'ELV', plans: 22, states: 21, color: 'violet',
+    brands: ['Anthem', 'Amerigroup', 'Simply Healthcare (FL)', 'HealthSun', 'Wellpoint'],
+    note: 'Strong in Southern and Midwestern states — Amerigroup brand dominates LTSS markets',
+  },
+  {
+    name: 'Molina Healthcare', ticker: 'MOH', plans: 20, states: 19, color: 'emerald',
+    brands: ['Molina Healthcare (CA, TX, FL, NY, WA, OH, MI, etc.)'],
+    note: 'Pure-play Medicaid MCO — focuses exclusively on government-sponsored health programs',
+  },
+  {
+    name: 'CVS / Aetna', ticker: 'CVS', plans: 13, states: 12, color: 'amber',
+    brands: ['Aetna Better Health', 'WellCare (select states)', 'Allwell (Medicare-Medicaid)'],
+    note: 'Smaller Medicaid footprint — growing through Aetna Better Health brand post-CVS merger',
+  },
+]
+
+const NON_MCO_STATES = ['Alaska', 'Connecticut', 'Maine', 'Vermont', 'Wyoming']
 
 const MODULES = [
   {
@@ -225,29 +255,33 @@ interface StateData {
   mcPct: string
   mcos: string[]
   notes: string
+  expansion: boolean
+  fpl: string
+  mcoModel: string
+  planCount: number
 }
 
 const STATES: StateData[] = [
-  { state: 'California',      abbr: 'CA', evvModel: 'Hybrid',         evvVendor: 'CalEVV (Sandata)',        sdoh: true,  hcbs: true,  mcPct: '~82%', mcos: ['Anthem', 'Molina', 'Health Net', 'L.A. Care'],          notes: '1115 waiver active · SDOH required in MCO contracts · CalAIM reform ongoing' },
-  { state: 'Texas',           abbr: 'TX', evvModel: 'Hybrid',         evvVendor: 'TMHP EVV Aggregator',     sdoh: true,  hcbs: true,  mcPct: '~88%', mcos: ['Centene (Superior)', 'Molina', 'UHC', 'Amerigroup'],    notes: 'STAR+PLUS for HCBS · Large rural population · No Medicaid expansion' },
-  { state: 'Florida',         abbr: 'FL', evvModel: 'Hybrid',         evvVendor: 'Netsmart',                sdoh: true,  hcbs: true,  mcPct: '~72%', mcos: ['Centene (Sunshine)', 'Molina', 'UHC', 'Humana'],        notes: 'SDOH in MCO contracts · BH parity active · Large elderly HCBS population' },
-  { state: 'New York',        abbr: 'NY', evvModel: 'Provider Choice', evvVendor: 'NY State EVV Aggregator', sdoh: true,  hcbs: true,  mcPct: '~78%', mcos: ['Molina', 'Fidelis', 'MetroPlus', 'Centene'],           notes: '1115 waiver · HRSN pilot · Largest HCBS population in US' },
-  { state: 'Pennsylvania',    abbr: 'PA', evvModel: 'Open',           evvVendor: 'Sandata / DHS Aggregator', sdoh: true,  hcbs: true,  mcPct: '~86%', mcos: ['UPMC', 'Centene', 'Molina', 'Geisinger'],              notes: 'SDOH required · LTSS managed care · Strong BH integration requirements' },
-  { state: 'Ohio',            abbr: 'OH', evvModel: 'Open',           evvVendor: 'Sandata',                 sdoh: true,  hcbs: true,  mcPct: '~89%', mcos: ['Centene (Buckeye)', 'Molina', 'CareSource', 'UHC'],    notes: 'MyCare Ohio for dual eligibles · SDOH required in contracts' },
-  { state: 'Michigan',        abbr: 'MI', evvModel: 'Open',           evvVendor: 'HHAeXchange',             sdoh: true,  hcbs: true,  mcPct: '~83%', mcos: ['Molina', 'Meridian (Centene)', 'UHC', 'McLaren'],      notes: 'SDOH required · BH parity active · Integrated care model' },
-  { state: 'Georgia',         abbr: 'GA', evvModel: 'Open',           evvVendor: 'Netsmart',                sdoh: false, hcbs: true,  mcPct: '~81%', mcos: ['Centene (Peach State)', 'Amerigroup', 'Molina'],       notes: 'No Medicaid expansion · SDOH not yet required · HCBS waiver active' },
-  { state: 'North Carolina',  abbr: 'NC', evvModel: 'Hybrid',         evvVendor: 'Sandata',                 sdoh: true,  hcbs: true,  mcPct: '~87%', mcos: ['Centene', 'UHC', 'Aetna', 'WellCare'],                 notes: 'NC Medicaid Managed Care launched 2023 · SDOH required · BH integrated' },
-  { state: 'Tennessee',       abbr: 'TN', evvModel: 'Hybrid',         evvVendor: 'Sandata / PPL',           sdoh: true,  hcbs: true,  mcPct: '~98%', mcos: ['Centene (BlueCare)', 'UHC (TennCare Select)', 'Amerigroup'], notes: 'TennCare — nearly 100% managed care · SDOH required · No expansion' },
-  { state: 'Arizona',         abbr: 'AZ', evvModel: 'Open',           evvVendor: 'AHCCCS In-House',         sdoh: true,  hcbs: true,  mcPct: '~93%', mcos: ['Centene', 'UHC', 'Mercy Care', 'Banner'],              notes: 'AHCCCS — one of oldest managed care programs · SDOH required · 1115 waiver' },
-  { state: 'Illinois',        abbr: 'IL', evvModel: 'Hybrid',         evvVendor: 'HHAeXchange',             sdoh: true,  hcbs: true,  mcPct: '~74%', mcos: ['Centene (IlliniCare)', 'Molina', 'Meridian', 'Aetna'], notes: 'SDOH required · BH parity · Medicaid expansion state' },
-  { state: 'Virginia',        abbr: 'VA', evvModel: 'Provider Choice', evvVendor: 'N/A (provider selects)', sdoh: true,  hcbs: true,  mcPct: '~85%', mcos: ['Centene (Optima)', 'Molina', 'Aetna', 'UHC'],         notes: 'CCC Plus for LTSS · SDOH in contracts · BH parity active' },
-  { state: 'Washington',      abbr: 'WA', evvModel: 'Provider Choice', evvVendor: 'ProviderOne',            sdoh: true,  hcbs: true,  mcPct: '~80%', mcos: ['Centene', 'Molina', 'UHC', 'Community Health Plan'],   notes: '1115 waiver · SDOH required · Strong HCBS program' },
-  { state: 'Colorado',        abbr: 'CO', evvModel: 'Hybrid',         evvVendor: 'Sandata',                 sdoh: true,  hcbs: true,  mcPct: '~84%', mcos: ['Centene', 'UHC', 'Rocky Mountain Health Plans'],       notes: 'ACC Phase III · SDOH required · BH integrated into contracts' },
-  { state: 'Missouri',        abbr: 'MO', evvModel: 'Open',           evvVendor: 'Sandata',                 sdoh: true,  hcbs: true,  mcPct: '~88%', mcos: ['Centene (Missouri Care)', 'Molina', 'UHC'],            notes: 'MO HealthNet · SDOH required post-2023 · Medicaid expansion 2021' },
-  { state: 'Indiana',         abbr: 'IN', evvModel: 'Open',           evvVendor: 'Sandata',                 sdoh: true,  hcbs: true,  mcPct: '~91%', mcos: ['Centene (MDwise)', 'Molina', 'UHC', 'Anthem'],         notes: 'HIP 2.0 · SDOH required · HCBS waiver · Strong managed care penetration' },
-  { state: 'Kentucky',        abbr: 'KY', evvModel: 'Hybrid',         evvVendor: 'Therap',                  sdoh: true,  hcbs: true,  mcPct: '~88%', mcos: ['Centene (Wellcare)', 'Molina', 'Aetna', 'UHC'],       notes: 'KY Medicaid · SDOH required · BH parity · Medicaid expansion state' },
-  { state: 'Louisiana',       abbr: 'LA', evvModel: 'Open',           evvVendor: 'LaSRS',                   sdoh: true,  hcbs: true,  mcPct: '~89%', mcos: ['Centene (Healthy Blue)', 'Molina', 'Aetna', 'UHC'],   notes: 'Bayou Health · SDOH required · BH integration in contracts' },
-  { state: 'Kansas',          abbr: 'KS', evvModel: 'Provider Choice', evvVendor: 'Fiserv',                 sdoh: false, hcbs: true,  mcPct: '~86%', mcos: ['Centene (Sunflower)', 'Molina', 'UHC'],               notes: 'KanCare · SDOH not yet required · HCBS waiver active' },
+  { state: 'California',     abbr: 'CA', evvModel: 'Hybrid',          evvVendor: 'CalEVV (Sandata)',         sdoh: true,  hcbs: true,  mcPct: '~82%', mcos: ['Anthem', 'Molina', 'Health Net', 'L.A. Care'],             notes: '1115 waiver active · SDOH required in MCO contracts · CalAIM reform ongoing', expansion: true,  fpl: '138% FPL',           mcoModel: 'County-based (6 regions)', planCount: 23 },
+  { state: 'Texas',          abbr: 'TX', evvModel: 'Hybrid',          evvVendor: 'TMHP EVV Aggregator',      sdoh: true,  hcbs: true,  mcPct: '~88%', mcos: ['Centene (Superior)', 'Molina', 'UHC', 'Amerigroup'],       notes: 'STAR+PLUS for HCBS · Large rural population · No Medicaid expansion',          expansion: false, fpl: '~18% FPL (parents)', mcoModel: 'Regional (service areas)',  planCount: 22 },
+  { state: 'Florida',        abbr: 'FL', evvModel: 'Hybrid',          evvVendor: 'Netsmart',                 sdoh: true,  hcbs: true,  mcPct: '~72%', mcos: ['Centene (Sunshine)', 'Molina', 'UHC', 'Humana'],           notes: 'SDOH in MCO contracts · BH parity active · Large elderly HCBS population',   expansion: false, fpl: '~26% FPL (parents)', mcoModel: 'Regional (11 regions)',     planCount: 14 },
+  { state: 'New York',       abbr: 'NY', evvModel: 'Provider Choice', evvVendor: 'NY State EVV Aggregator',  sdoh: true,  hcbs: true,  mcPct: '~78%', mcos: ['Molina', 'Fidelis', 'MetroPlus', 'Centene'],              notes: '1115 waiver · HRSN pilot · Largest HCBS population in US',                    expansion: true,  fpl: '138% FPL',           mcoModel: 'Statewide + MLTC',         planCount: 17 },
+  { state: 'Pennsylvania',   abbr: 'PA', evvModel: 'Open',            evvVendor: 'Sandata / DHS Aggregator', sdoh: true,  hcbs: true,  mcPct: '~86%', mcos: ['UPMC', 'Centene', 'Molina', 'Geisinger'],                 notes: 'SDOH required · LTSS managed care · Strong BH integration requirements',      expansion: true,  fpl: '138% FPL',           mcoModel: 'Regional (6 zones)',        planCount: 8  },
+  { state: 'Ohio',           abbr: 'OH', evvModel: 'Open',            evvVendor: 'Sandata',                  sdoh: true,  hcbs: true,  mcPct: '~89%', mcos: ['Centene (Buckeye)', 'Molina', 'CareSource', 'UHC'],       notes: 'MyCare Ohio for dual eligibles · SDOH required in contracts',                  expansion: true,  fpl: '138% FPL',           mcoModel: 'Statewide',                planCount: 7  },
+  { state: 'Michigan',       abbr: 'MI', evvModel: 'Open',            evvVendor: 'HHAeXchange',              sdoh: true,  hcbs: true,  mcPct: '~83%', mcos: ['Molina', 'Meridian (Centene)', 'UHC', 'McLaren'],         notes: 'SDOH required · BH parity active · Integrated care model',                    expansion: true,  fpl: '138% FPL',           mcoModel: 'Statewide',                planCount: 9  },
+  { state: 'Georgia',        abbr: 'GA', evvModel: 'Open',            evvVendor: 'Netsmart',                 sdoh: false, hcbs: true,  mcPct: '~81%', mcos: ['Centene (Peach State)', 'Amerigroup', 'Molina'],          notes: 'No Medicaid expansion · SDOH not yet required · HCBS waiver active',          expansion: false, fpl: '~35% FPL (parents)', mcoModel: 'Statewide',                planCount: 8  },
+  { state: 'North Carolina', abbr: 'NC', evvModel: 'Hybrid',          evvVendor: 'Sandata',                  sdoh: true,  hcbs: true,  mcPct: '~87%', mcos: ['Centene', 'UHC', 'Aetna', 'WellCare'],                   notes: 'NC Medicaid Managed Care launched 2023 · SDOH required · BH integrated',      expansion: true,  fpl: '138% FPL',           mcoModel: 'Statewide',                planCount: 4  },
+  { state: 'Tennessee',      abbr: 'TN', evvModel: 'Hybrid',          evvVendor: 'Sandata / PPL',            sdoh: true,  hcbs: true,  mcPct: '~98%', mcos: ['Centene (BlueCare)', 'UHC (TennCare Select)', 'Amerigroup'], notes: 'TennCare — nearly 100% managed care · SDOH required · No expansion',         expansion: false, fpl: '~88% FPL (TennCare)', mcoModel: 'Statewide (3 plans)',      planCount: 3  },
+  { state: 'Arizona',        abbr: 'AZ', evvModel: 'Open',            evvVendor: 'AHCCCS In-House',          sdoh: true,  hcbs: true,  mcPct: '~93%', mcos: ['Centene', 'UHC', 'Mercy Care', 'Banner'],                 notes: 'AHCCCS — one of oldest managed care programs · SDOH required · 1115 waiver',  expansion: true,  fpl: '138% FPL',           mcoModel: 'Regional (2 areas)',        planCount: 9  },
+  { state: 'Illinois',       abbr: 'IL', evvModel: 'Hybrid',          evvVendor: 'HHAeXchange',              sdoh: true,  hcbs: true,  mcPct: '~74%', mcos: ['Centene (IlliniCare)', 'Molina', 'Meridian', 'Aetna'],    notes: 'SDOH required · BH parity · Medicaid expansion state',                         expansion: true,  fpl: '138% FPL',           mcoModel: 'Regional (Cook + statewide)', planCount: 12 },
+  { state: 'Virginia',       abbr: 'VA', evvModel: 'Provider Choice', evvVendor: 'N/A (provider selects)',   sdoh: true,  hcbs: true,  mcPct: '~85%', mcos: ['Centene (Optima)', 'Molina', 'Aetna', 'UHC'],            notes: 'CCC Plus for LTSS · SDOH in contracts · BH parity active',                    expansion: true,  fpl: '138% FPL',           mcoModel: 'Statewide',                planCount: 7  },
+  { state: 'Washington',     abbr: 'WA', evvModel: 'Provider Choice', evvVendor: 'ProviderOne',              sdoh: true,  hcbs: true,  mcPct: '~80%', mcos: ['Centene', 'Molina', 'UHC', 'Community Health Plan'],      notes: '1115 waiver · SDOH required · Strong HCBS program',                            expansion: true,  fpl: '138% FPL',           mcoModel: 'Regional',                 planCount: 5  },
+  { state: 'Colorado',       abbr: 'CO', evvModel: 'Hybrid',          evvVendor: 'Sandata',                  sdoh: true,  hcbs: true,  mcPct: '~84%', mcos: ['Centene', 'UHC', 'Rocky Mountain Health Plans'],          notes: 'ACC Phase III · SDOH required · BH integrated into contracts',                 expansion: true,  fpl: '138% FPL',           mcoModel: 'Regional (7 regions)',      planCount: 10 },
+  { state: 'Missouri',       abbr: 'MO', evvModel: 'Open',            evvVendor: 'Sandata',                  sdoh: true,  hcbs: true,  mcPct: '~88%', mcos: ['Centene (Missouri Care)', 'Molina', 'UHC'],               notes: 'MO HealthNet · SDOH required post-2023 · Medicaid expansion 2021',             expansion: true,  fpl: '138% FPL',           mcoModel: 'Statewide',                planCount: 4  },
+  { state: 'Indiana',        abbr: 'IN', evvModel: 'Open',            evvVendor: 'Sandata',                  sdoh: true,  hcbs: true,  mcPct: '~91%', mcos: ['Centene (MDwise)', 'Molina', 'UHC', 'Anthem'],            notes: 'HIP 2.0 · SDOH required · HCBS waiver · Strong managed care penetration',    expansion: true,  fpl: '138% FPL',           mcoModel: 'Statewide',                planCount: 7  },
+  { state: 'Kentucky',       abbr: 'KY', evvModel: 'Hybrid',          evvVendor: 'Therap',                   sdoh: true,  hcbs: true,  mcPct: '~88%', mcos: ['Centene (Wellcare)', 'Molina', 'Aetna', 'UHC'],          notes: 'KY Medicaid · SDOH required · BH parity · Medicaid expansion state',          expansion: true,  fpl: '138% FPL',           mcoModel: 'Regional (6 MCOs)',         planCount: 6  },
+  { state: 'Louisiana',      abbr: 'LA', evvModel: 'Open',            evvVendor: 'LaSRS',                    sdoh: true,  hcbs: true,  mcPct: '~89%', mcos: ['Centene (Healthy Blue)', 'Molina', 'Aetna', 'UHC'],      notes: 'Bayou Health · SDOH required · BH integration in contracts',                  expansion: true,  fpl: '138% FPL',           mcoModel: 'Regional',                 planCount: 5  },
+  { state: 'Kansas',         abbr: 'KS', evvModel: 'Provider Choice', evvVendor: 'Fiserv',                   sdoh: false, hcbs: true,  mcPct: '~86%', mcos: ['Centene (Sunflower)', 'Molina', 'UHC'],                  notes: 'KanCare · SDOH not yet required · HCBS waiver active',                        expansion: false, fpl: '~38% FPL (parents)', mcoModel: 'Statewide',                planCount: 3  },
 ]
 
 // ── Module Selector questions ─────────────────────────────────────────────────
@@ -455,6 +489,7 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
             { key: 'modules',  label: '📦 7 Modules' },
             { key: 'selector', label: '⚙️ Module Selector' },
             { key: 'states',   label: '🗺️ States' },
+            { key: 'market',   label: '🏢 Market' },
             { key: 'onboard',  label: '🚀 Onboard MCO' },
           ] as { key: MainTab; label: string }[]).map(t => (
             <button
@@ -735,19 +770,27 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-zinc-500">EVV Mandate</span>
-                          <span className="text-xs font-semibold text-emerald-400">Active ✓</span>
+                          <span className="text-xs text-zinc-500">ACA Expansion</span>
+                          <span className={`text-xs font-semibold ${stateData.expansion ? 'text-emerald-400' : 'text-rose-400'}`}>{stateData.expansion ? 'Expanded ✓' : 'Not expanded'}</span>
                         </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">Adult FPL Threshold</span>
+                          <span className="text-xs font-semibold text-zinc-300">{stateData.fpl}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">MCO Model</span>
+                          <span className="text-xs font-semibold text-zinc-300">{stateData.mcoModel}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">Active Plans</span>
+                          <span className="text-xs font-semibold text-violet-400">{stateData.planCount} MCO plans</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-zinc-500">EVV Vendor</span>
                           <span className="text-xs font-semibold text-zinc-300">{stateData.evvVendor}</span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-zinc-500">EVV Model</span>
-                          <span className="text-xs font-semibold text-zinc-300">{stateData.evvModel}</span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-zinc-500">SDOH Required</span>
                           <span className={`text-xs font-semibold ${stateData.sdoh ? 'text-emerald-400' : 'text-zinc-500'}`}>{stateData.sdoh ? 'Yes ✓' : 'No'}</span>
@@ -1100,6 +1143,102 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
         </div>
       )}
 
+      {/* ── MARKET TAB ── */}
+      {mainTab === 'market' && (
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+
+          {/* Header stats */}
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { label: 'Total Medicaid MCOs', value: '291', sub: 'nationwide (CMS 2024)', color: 'text-indigo-400' },
+              { label: 'Big Five Market Share', value: '~40%', sub: '115 plans across 5 firms', color: 'text-violet-400' },
+              { label: 'ACA Expansion States', value: '41', sub: '10 states not expanded', color: 'text-emerald-400' },
+              { label: 'Non-MCO States', value: '5', sub: 'fee-for-service only', color: 'text-amber-400' },
+            ].map(k => (
+              <div key={k.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                <p className="text-[10px] text-zinc-500 mb-1.5">{k.label}</p>
+                <p className={`text-2xl font-black ${k.color} mb-0.5`}>{k.value}</p>
+                <p className="text-[10px] text-zinc-600">{k.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Big Five cards */}
+          <div>
+            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">Big Five Parent Firms</h3>
+            <div className="grid grid-cols-1 gap-3">
+              {BIG_FIVE.map((firm, i) => {
+                const colorMap: Record<string, { badge: string; bar: string; num: string }> = {
+                  indigo:  { badge: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300',  bar: 'bg-indigo-500',  num: 'text-indigo-400' },
+                  sky:     { badge: 'bg-sky-500/10 border-sky-500/20 text-sky-300',            bar: 'bg-sky-500',     num: 'text-sky-400' },
+                  violet:  { badge: 'bg-violet-500/10 border-violet-500/20 text-violet-300',  bar: 'bg-violet-500',  num: 'text-violet-400' },
+                  emerald: { badge: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300', bar: 'bg-emerald-500', num: 'text-emerald-400' },
+                  amber:   { badge: 'bg-amber-500/10 border-amber-500/20 text-amber-300',     bar: 'bg-amber-500',   num: 'text-amber-400' },
+                }
+                const c = colorMap[firm.color]
+                return (
+                  <div key={firm.name} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+                    <div className="flex items-start gap-4">
+                      {/* Rank + bar */}
+                      <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                        <span className={`text-lg font-black ${c.num}`}>#{i + 1}</span>
+                        <div className="w-1.5 rounded-full bg-zinc-800 h-12 overflow-hidden">
+                          <div className={`w-full rounded-full ${c.bar}`} style={{ height: `${(firm.plans / 30) * 100}%` }} />
+                        </div>
+                      </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <p className="text-sm font-bold text-zinc-100">{firm.name}</p>
+                          <span className="text-[10px] font-mono text-zinc-600 border border-zinc-700 rounded px-1.5 py-0.5">{firm.ticker}</span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${c.badge}`}>{firm.plans} plans · {firm.states} states</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {firm.brands.map(b => (
+                            <span key={b} className="text-[10px] text-zinc-400 bg-zinc-800 border border-zinc-700 rounded-full px-2 py-0.5">{b}</span>
+                          ))}
+                        </div>
+                        <p className="text-[11px] text-zinc-500 leading-snug">{firm.note}</p>
+                      </div>
+                      {/* Plan share visual */}
+                      <div className="flex-shrink-0 text-right">
+                        <p className={`text-2xl font-black ${c.num}`}>{firm.plans}</p>
+                        <p className="text-[10px] text-zinc-600">plans</p>
+                        <p className={`text-sm font-bold ${c.num} mt-1`}>{firm.states}</p>
+                        <p className="text-[10px] text-zinc-600">states</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Non-MCO states + non-expansion */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+              <h4 className="text-xs font-bold text-zinc-300 mb-1">States with No Managed Care (fee-for-service only)</h4>
+              <p className="text-[10px] text-zinc-500 mb-3">Our platform does not apply in these states — MCO contracts not present.</p>
+              <div className="flex flex-wrap gap-1.5">
+                {NON_MCO_STATES.map(s => (
+                  <span key={s} className="text-[11px] font-semibold text-zinc-400 bg-zinc-800 border border-zinc-700 rounded-full px-2.5 py-1">{s}</span>
+                ))}
+              </div>
+            </div>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+              <h4 className="text-xs font-bold text-zinc-300 mb-1">Non-Expansion States (10)</h4>
+              <p className="text-[10px] text-zinc-500 mb-3">Adults covered only at very low FPL thresholds — smaller eligible population, different SDOH profile.</p>
+              <div className="flex flex-wrap gap-1.5">
+                {['Alabama', 'Florida', 'Georgia', 'Kansas', 'Mississippi', 'South Carolina', 'Tennessee', 'Texas', 'Wisconsin', 'Wyoming'].map(s => (
+                  <span key={s} className="text-[11px] font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-full px-2.5 py-1">{s}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
       {/* ── STATES TAB ── */}
       {mainTab === 'states' && (
         <div className="flex-1 overflow-y-auto p-5">
@@ -1116,8 +1255,8 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
 
           <div className="rounded-2xl border border-zinc-800 overflow-hidden">
             {/* Table header */}
-            <div className="grid grid-cols-[140px_1fr_80px_80px_60px_1fr] bg-zinc-900 border-b border-zinc-800 px-4 py-2.5 gap-3">
-              {['State', 'EVV Vendor', 'SDOH', 'HCBS', 'MC %', 'Active MCOs'].map(h => (
+            <div className="grid grid-cols-[130px_90px_1fr_60px_60px_55px_32px_1fr] bg-zinc-900 border-b border-zinc-800 px-4 py-2.5 gap-3">
+              {['State', 'Expansion', 'EVV Vendor', 'SDOH', 'HCBS', 'MC %', 'Plans', 'Active MCOs'].map(h => (
                 <p key={h} className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">{h}</p>
               ))}
             </div>
@@ -1126,7 +1265,7 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
             {STATES.map((s, idx) => (
               <div
                 key={s.abbr}
-                className={`grid grid-cols-[140px_1fr_80px_80px_60px_1fr] px-4 py-3 gap-3 items-start transition-colors hover:bg-zinc-800/30 ${idx < STATES.length - 1 ? 'border-b border-zinc-800/60' : ''}`}
+                className={`grid grid-cols-[130px_90px_1fr_60px_60px_55px_32px_1fr] px-4 py-3 gap-3 items-start transition-colors hover:bg-zinc-800/30 ${idx < STATES.length - 1 ? 'border-b border-zinc-800/60' : ''}`}
               >
                 {/* State */}
                 <div>
@@ -1134,21 +1273,29 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
                   <p className="text-[10px] text-zinc-600 font-mono">{s.abbr}</p>
                 </div>
 
+                {/* Expansion */}
+                <div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.expansion ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
+                    {s.expansion ? '✓ Expanded' : '✕ Not expanded'}
+                  </span>
+                  <p className="text-[10px] text-zinc-600 mt-1">{s.fpl}</p>
+                </div>
+
                 {/* EVV */}
                 <div>
                   <p className="text-xs text-zinc-300">{s.evvVendor}</p>
-                  <p className="text-[10px] text-zinc-600">{s.evvModel}</p>
+                  <p className="text-[10px] text-zinc-600">{s.evvModel} · {s.mcoModel}</p>
                 </div>
 
                 {/* SDOH */}
-                <div className="flex items-center">
+                <div className="flex items-start pt-0.5">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.sdoh ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-zinc-800 text-zinc-600 border border-zinc-700'}`}>
                     {s.sdoh ? 'Yes' : 'No'}
                   </span>
                 </div>
 
                 {/* HCBS */}
-                <div className="flex items-center">
+                <div className="flex items-start pt-0.5">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.hcbs ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-zinc-800 text-zinc-600 border border-zinc-700'}`}>
                     {s.hcbs ? 'Yes' : 'No'}
                   </span>
@@ -1157,6 +1304,11 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
                 {/* MC % */}
                 <div>
                   <p className="text-xs font-semibold text-sky-400">{s.mcPct}</p>
+                </div>
+
+                {/* Plan count */}
+                <div>
+                  <p className="text-xs font-bold text-violet-400">{s.planCount}</p>
                 </div>
 
                 {/* MCOs */}
