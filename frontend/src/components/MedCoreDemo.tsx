@@ -594,42 +594,78 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
   return (
     <div className="flex flex-col h-full bg-zinc-950 select-none">
 
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-            Back
-          </button>
-          <span className="text-zinc-700">|</span>
-          <span className="text-sm font-bold text-zinc-100">Medicaid Platform</span>
-        </div>
-        <div className="flex gap-1.5">
-          {([
-            { key: 'modules',  label: '📦 7 Modules' },
-            { key: 'selector', label: '⚙️ Module Selector' },
-            { key: 'states',   label: '🗺️ States' },
-            { key: 'market',   label: '🏢 Market' },
-            { key: 'arch',     label: '🏗️ Architecture' },
-            { key: 'onboard',  label: '🚀 Onboard MCO' },
-          ] as { key: MainTab; label: string }[]).map(t => (
-            <button
-              key={t.key}
-              onClick={() => setMainTab(t.key)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                mainTab === t.key
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-zinc-800/60 text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+      {/* Back nav */}
+      <div className="flex items-center justify-between px-5 py-2.5 border-b border-zinc-800/60 flex-shrink-0">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+          Back to Product Path
+        </button>
+        <span className="text-[10px] text-zinc-600 font-mono">MedCore Platform · Demo</span>
+      </div>
+
+      {/* ── Hero tile ── */}
+      <div className="relative flex-shrink-0 overflow-hidden border-b border-zinc-800">
+        {/* Background glow */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/60 via-zinc-950 to-zinc-950 pointer-events-none" />
+        <div className="absolute top-0 left-1/4 w-64 h-32 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/3 w-48 h-24 bg-violet-600/8 rounded-full blur-2xl pointer-events-none" />
+
+        <div className="relative px-6 pt-5 pb-4">
+          {/* Top row — headline + tagline */}
+          <div className="flex items-start justify-between gap-6 mb-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1.5">
+                <span className="text-2xl">🏥</span>
+                <h1 className="text-2xl font-black text-white tracking-tight">Medicaid Platform</h1>
+                <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">v2.0</span>
+              </div>
+              <p className="text-base font-semibold text-zinc-400 ml-10">One System.&nbsp;&nbsp;One Team.&nbsp;&nbsp;Every State.</p>
+            </div>
+
+            {/* Stat pills */}
+            <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+              {[
+                { value: '7',   label: 'Modules',       color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+                { value: '20',  label: 'States ready',  color: 'text-teal-400',   bg: 'bg-teal-500/10 border-teal-500/20' },
+                { value: '291', label: 'Target MCOs',   color: 'text-violet-400', bg: 'bg-violet-500/10 border-violet-500/20' },
+                { value: '0',   label: 'Code deploys\nto add a state', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+              ].map(s => (
+                <div key={s.label} className={`flex flex-col items-center px-3 py-2 rounded-xl border ${s.bg} min-w-[64px]`}>
+                  <span className={`text-xl font-black ${s.color}`}>{s.value}</span>
+                  <span className="text-[9px] text-zinc-500 text-center leading-tight mt-0.5 whitespace-pre-line">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab pills */}
+          <div className="flex gap-1.5 flex-wrap">
+            {([
+              { key: 'modules',  label: '📦 7 Modules' },
+              { key: 'selector', label: '⚙️ Module Selector' },
+              { key: 'states',   label: '🗺️ States' },
+              { key: 'market',   label: '🏢 Market' },
+              { key: 'arch',     label: '🏗️ Architecture' },
+              { key: 'onboard',  label: '🚀 Onboard MCO' },
+            ] as { key: MainTab; label: string }[]).map(t => (
+              <button
+                key={t.key}
+                onClick={() => setMainTab(t.key)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  mainTab === t.key
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                    : 'bg-zinc-800/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
