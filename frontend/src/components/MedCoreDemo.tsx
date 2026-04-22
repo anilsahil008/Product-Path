@@ -667,7 +667,7 @@ const SAMPLE_MEMBERS = [
 ]
 
 export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
-  const [mainTab, setMainTab]   = useState<MainTab>('modules')
+  const [mainTab, setMainTab]   = useState<MainTab>('arch')
   const [expanded, setExpanded] = useState<number | null>(null)
   const [answers, setAnswers]   = useState<Answers>(
     Object.fromEntries(QUESTIONS.map(q => [q.id, null]))
@@ -771,12 +771,12 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
           {/* Tab pills */}
           <div className="flex gap-1.5 flex-wrap">
             {([
+              { key: 'arch',     label: '🏗️ Architecture' },
               { key: 'modules',  label: '📦 7 Modules' },
               { key: 'selector', label: '⚙️ Module Selector' },
+              { key: 'onboard',  label: '🚀 Onboard MCO' },
               { key: 'states',   label: '🗺️ States' },
               { key: 'market',   label: '🏢 Market' },
-              { key: 'arch',     label: '🏗️ Architecture' },
-              { key: 'onboard',  label: '🚀 Onboard MCO' },
             ] as { key: MainTab; label: string }[]).map(t => (
               <button
                 key={t.key}
