@@ -6,7 +6,7 @@ interface Props {
   isStreaming: boolean
 }
 
-type MainTab = 'modules' | 'selector' | 'states' | 'market' | 'onboard'
+type MainTab = 'modules' | 'selector' | 'states' | 'market' | 'arch' | 'onboard'
 
 const BIG_FIVE = [
   {
@@ -490,6 +490,7 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
             { key: 'selector', label: '⚙️ Module Selector' },
             { key: 'states',   label: '🗺️ States' },
             { key: 'market',   label: '🏢 Market' },
+            { key: 'arch',     label: '🏗️ Architecture' },
             { key: 'onboard',  label: '🚀 Onboard MCO' },
           ] as { key: MainTab; label: string }[]).map(t => (
             <button
@@ -1140,6 +1141,191 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── ARCHITECTURE TAB ── */}
+      {mainTab === 'arch' && (
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+
+          {/* Headline */}
+          <div>
+            <h3 className="text-sm font-bold text-zinc-100 mb-1">Configuration-First Architecture</h3>
+            <p className="text-xs text-zinc-500">Every module is an engine. Every state is a data file. Adding a new state never requires new code — only a new config.</p>
+          </div>
+
+          {/* ── Layer Model ── */}
+          <div>
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-3">The Three-Layer Rule Model</p>
+            <div className="space-y-2">
+              {[
+                {
+                  layer: 'Layer 1', label: 'Federal Baseline', color: 'indigo', icon: '🏛️',
+                  desc: 'Hard-coded federal rules that never change. Always on.',
+                  rules: [
+                    '42 CFR Part 2 — behavioral health data protection (always enforced)',
+                    'HIPAA BAA required before any member data flows',
+                    'CMS EVV mandate active for all HCBS states (21st Century Cures Act)',
+                    'CMS closed-loop SDOH reporting for 1115 waiver states',
+                  ],
+                  badge: 'Always active',
+                  badgeColor: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
+                },
+                {
+                  layer: 'Layer 2', label: 'State Overlay', color: 'teal', icon: '🗺️',
+                  desc: 'Toggled on when entering a new state. Overrides federal baseline where the state has a waiver or stricter requirement.',
+                  rules: [
+                    'CA: CalAIM reform rules + SDOH outcome data required in MCO contract',
+                    'FL: Netsmart EVV connector + 11-region managed care model active',
+                    'TX: TMHP aggregator + STAR+PLUS HCBS rules + no-expansion adult FPL thresholds',
+                    'TN: TennCare 3-plan statewide model + 98% managed care penetration rules',
+                  ],
+                  badge: 'Per-state config file',
+                  badgeColor: 'bg-teal-500/15 text-teal-400 border-teal-500/30',
+                },
+                {
+                  layer: 'Layer 3', label: 'MCO Contract Override', color: 'amber', icon: '📋',
+                  desc: 'Final layer. Encodes the signed MCO contract as structured data — SLAs, carve-outs, referral partners.',
+                  rules: [
+                    'SDOH referral SLA: 48h for Molina CA vs 7 days default',
+                    'FindHelp replaced by 211 Connects for this MCO\'s service area',
+                    'BH carve-out: module 4 disabled — MCO has separate BH vendor',
+                    'Compliance report frequency: weekly instead of monthly per contract',
+                  ],
+                  badge: 'Per-contract config',
+                  badgeColor: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+                },
+              ].map((l, i) => (
+                <div key={l.layer} className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                  <div className="flex items-center gap-4 p-4">
+                    <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                      <span className="text-xl">{l.icon}</span>
+                      {i < 2 && <div className="w-px h-4 bg-zinc-700 mt-1" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-mono text-zinc-600">{l.layer}</span>
+                        <span className="text-sm font-bold text-zinc-100">{l.label}</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${l.badgeColor}`}>{l.badge}</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 mb-3 leading-snug">{l.desc}</p>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {l.rules.map(r => (
+                          <div key={r} className="flex items-start gap-2 text-[11px] text-zinc-400 leading-snug">
+                            <span className="text-zinc-600 flex-shrink-0 mt-0.5">→</span>{r}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Conflict resolution note */}
+            <div className="mt-3 bg-zinc-900/60 border border-amber-500/20 rounded-xl p-3">
+              <p className="text-[10px] font-semibold text-amber-400 mb-1">⚠ Conflict Resolution Rule</p>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                When two layers fire on the same claim, Layer 3 wins over Layer 2, which wins over Layer 1 — <strong className="text-zinc-300">except</strong> for federal hard-stops (42 CFR Part 2, HIPAA). Federal hard-stops cannot be overridden by any state or MCO config. All conflicts are logged and flagged for compliance review.
+              </p>
+            </div>
+          </div>
+
+          {/* ── Module as Engine diagram ── */}
+          <div>
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-3">Modules Are Engines — States Are Config Files</p>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { icon: '🔌', label: 'Plugin Architecture', color: 'teal',
+                  title: 'EVV Vendor Swap',
+                  desc: 'When a state changes its EVV vendor, swap the API connector. The HCBS module code never changes.',
+                  before: 'Florida changes from Netsmart → HHAeXchange',
+                  after: 'Update FL config: evvVendor → HHAeXchange. Done in hours.' },
+                { icon: '🌿', label: 'Schema Mapper', color: 'emerald',
+                  title: 'Compliance Report Templates',
+                  desc: 'Reports auto-generate by mapping your data fields to the state\'s required XML or PDF tag format.',
+                  before: 'Texas changes Form H1540 field order',
+                  after: 'Update TX report schema mapping. No code deploy required.' },
+                { icon: '📅', label: 'Effective Dating', color: 'violet',
+                  title: 'Rule Versioning',
+                  desc: 'Every rule has a start date and end date. The engine picks the correct version by Date of Service.',
+                  before: '2025 rule: SDOH screened 1×/year',
+                  after: '2026 rule: SDOH screened 2×/year. Old claims use old rule automatically.' },
+              ].map(card => {
+                const cMap: Record<string, { header: string; badge: string }> = {
+                  teal:    { header: 'border-teal-500/20 bg-teal-500/5',    badge: 'bg-teal-500/15 text-teal-400 border-teal-500/30' },
+                  emerald: { header: 'border-emerald-500/20 bg-emerald-500/5', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+                  violet:  { header: 'border-violet-500/20 bg-violet-500/5', badge: 'bg-violet-500/15 text-violet-400 border-violet-500/30' },
+                }
+                const c = cMap[card.color]
+                return (
+                  <div key={card.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                    <div className={`px-4 py-3 border-b ${c.header}`}>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-base">{card.icon}</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${c.badge}`}>{card.label}</span>
+                      </div>
+                      <p className="text-xs font-bold text-zinc-100 mt-1">{card.title}</p>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      <p className="text-[11px] text-zinc-400 leading-snug">{card.desc}</p>
+                      <div className="space-y-2">
+                        <div className="bg-zinc-800/60 rounded-lg px-3 py-2">
+                          <p className="text-[9px] font-semibold text-rose-400 uppercase tracking-wider mb-0.5">Without this</p>
+                          <p className="text-[11px] text-zinc-400">{card.before} → engineering sprint, 2–6 weeks</p>
+                        </div>
+                        <div className="bg-zinc-800/60 rounded-lg px-3 py-2">
+                          <p className="text-[9px] font-semibold text-emerald-400 uppercase tracking-wider mb-0.5">With config-first</p>
+                          <p className="text-[11px] text-zinc-300">{card.after}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* ── AI Risk Guardrails ── */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+            <div className="flex items-start gap-4">
+              <span className="text-2xl flex-shrink-0">🤖</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <p className="text-sm font-bold text-zinc-100">AI Risk Score — Configurable Weights with Clinical Guardrails</p>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-rose-500/15 text-rose-400 border-rose-500/30">Guardrail Required</span>
+                </div>
+                <p className="text-xs text-zinc-400 mb-3 leading-snug">Risk score weights are adjustable per state and MCO — but weight changes require a clinical validation step before going live. A misconfigured risk model could deprioritize high-risk members, triggering a CMS audit.</p>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { state: 'CA (elderly-heavy)', weights: [['Mobility', '25%'], ['ER history', '20%'], ['SDOH flags', '18%'], ['PHQ-9 score', '15%']] },
+                    { state: 'TX (expansion adults)', weights: [['Employment status', '22%'], ['Housing instability', '20%'], ['ER history', '18%'], ['Rx adherence', '16%']] },
+                    { state: 'TN (BH-heavy TennCare)', weights: [['PHQ-9 / GAD-7', '28%'], ['Crisis history', '22%'], ['Medication gaps', '18%'], ['ER history', '14%']] },
+                  ].map(s => (
+                    <div key={s.state} className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-3">
+                      <p className="text-[10px] font-semibold text-zinc-400 mb-2">{s.state}</p>
+                      {s.weights.map(([label, val]) => (
+                        <div key={label} className="flex items-center gap-2 mb-1.5">
+                          <div className="flex-1">
+                            <p className="text-[10px] text-zinc-500 mb-0.5">{label}</p>
+                            <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                              <div className="h-full bg-indigo-500 rounded-full" style={{ width: val }} />
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold text-indigo-400 flex-shrink-0">{val}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 flex items-center gap-2 text-[11px] text-zinc-500">
+                  <span className="text-amber-400">⚠</span>
+                  Weight changes require clinical sign-off → backtested against 90 days of historical data → approved before going live
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       )}
 
