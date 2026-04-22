@@ -43,25 +43,34 @@ const MODULES = [
     num: 1, icon: '📱', title: 'Member Engagement',
     tagline: 'Reaches every Medicaid member — no matter what device they have',
     color: 'indigo',
+    layerTag: 'Layer 2 (State) + Layer 3 (MCO contract)',
+    execQ: '"What is your churn rate — how many members lose coverage each year from missed renewal paperwork?"',
     mustHave: [
-      'Active Medicaid member roster',
-      'Member contact data — phone or address',
-      'HIPAA BAA signed with client',
-      'At least one channel available — SMS, app, or kiosk',
-      'Language requirements defined',
+      'Active Medicaid member roster with contact data',
+      'HIPAA BAA signed — federal hard-stop, cannot be bypassed',
+      'At least one outreach channel available (SMS / app / kiosk)',
+      'Language requirements defined per state mandate',
+      'Member consent for digital outreach collected',
     ],
     turnsOff: [
       'No member contact data available',
-      'Client uses a different engagement vendor',
+      'Client uses a different engagement vendor already',
       'State has restrictions on member outreach',
-      'HIPAA agreement not yet signed',
+      'HIPAA BAA not yet signed',
     ],
     addOns: [
-      'Incentive program — rewards for engagement',
+      'Incentive program — rewards for engagement milestones',
       'Multi-language beyond English + Spanish',
-      'Branded MCO experience',
-      'Kiosk hardware deployment',
-      'In-home tablet program',
+      'Branded MCO experience (logo, colors)',
+      'Kiosk hardware deployment for in-clinic',
+      'In-home tablet program for homebound members',
+    ],
+    configKey: [
+      'Outreach channels — toggled per MCO contract (SMS / app / kiosk)',
+      'Language pack — set per state mandate, no code change',
+      'Incentive rules — configured per MCO budget and program',
+      'Branding — MCO logo + colors swapped in content config',
+      'Renewal reminder schedule — adjusted per state redetermination cycle',
     ],
     example: 'Molina California — 40,000 member roster, phone numbers for 60% of members, HIPAA BAA signed, needs EN + ES, no incentive program yet. → Module ON: SMS + kiosk, EN + ES, incentives OFF until funded.',
     prompt: 'Write a detailed PRD for a Member Engagement module in a configurable Medicaid platform. Cover: activation requirements, channel configurations (SMS via Twilio, React Native app, Android kiosk, in-home tablet), language and accessibility requirements, optional add-ons (incentive program, branded MCO experience), success metrics (engagement rate, no-show reduction), and a rollout plan. Format as a professional PM PRD.',
@@ -70,13 +79,15 @@ const MODULES = [
     num: 2, icon: '🏘️', title: 'SDOH Screening + Referral',
     tagline: 'Finds what\'s really making members sick — and fixes it automatically',
     color: 'emerald',
+    layerTag: 'Layer 1 (Federal ICD-10 Z-codes) + Layer 2 (State waiver)',
+    execQ: '"If you refer a member to a food bank, do you know if they actually got the food?"',
     mustHave: [
-      'State Medicaid program requires SDOH screening',
-      'CMS waiver includes SDOH requirements',
-      'MCO has community resource budget',
-      'FindHelp network available in service area',
+      'State Medicaid contract or CMS 1115 waiver requires SDOH screening',
+      'CMS ICD-10 Z-code reporting active (federal baseline)',
+      'FindHelp or equivalent resource network in service area',
       'Care coordinator team exists to act on referrals',
       'Member consent for SDOH data collection',
+      'Community resource budget approved by MCO',
     ],
     turnsOff: [
       'State does not require SDOH reporting',
@@ -88,155 +99,205 @@ const MODULES = [
     addOns: [
       'Auto-NEMT booking via LogistiCare',
       'Housing navigator integration',
-      'Food bank direct ordering',
-      'CMS closed-loop reporting',
+      'Food bank direct ordering (closed loop)',
+      'CMS closed-loop outcome reporting',
       'SDOH outcome dashboard for executives',
+    ],
+    configKey: [
+      'Screening question set — configured per state (Z-code triggers vary)',
+      'Referral partner network — swapped per service area (FindHelp / 211)',
+      'NEMT booking vendor — configured per state contract (LogistiCare / Modivcare)',
+      'Closed-loop SLA — set per MCO contract (48h vs 7 days)',
+      'CMS report template — schema-mapped, no code deploy when format changes',
     ],
     example: 'State of California — CMS Section 1115 waiver requires SDOH outcome data, FindHelp statewide, coordinators at all 12 sites, CMS deadline in 90 days. → Module ON immediately, all add-ons including auto-NEMT and CMS reporting activated.',
     prompt: 'Write a product brief for an SDOH Screening and Referral module in a Medicaid platform. Include: screening question sets (food, housing, transportation, safety), FindHelp API integration approach, automated NEMT booking via LogistiCare, closed-loop referral tracking, CMS reporting requirements, care coordinator workflow, and success metrics (% connected within 48 hours, CMS compliance rate).',
   },
   {
     num: 3, icon: '🏠', title: 'HCBS Care Coordination',
-    tagline: 'Coordinates all home-based care in one place — EVV compliant out of the box',
+    tagline: 'Coordinates all home-based care in one place — EVV compliant via plugin, not hard-code',
     color: 'teal',
+    layerTag: 'Layer 1 (21st Century Cures EVV) + Layer 2 (State vendor config)',
+    execQ: '"How are you currently tracking EVV for home caregivers — are you getting flagged for ghost visits?"',
     mustHave: [
-      'Client runs HCBS or LTSS Medicaid program',
-      'State EVV mandate is active',
+      'Client runs HCBS or LTSS Medicaid program (MLTSS / 1115 / 1915c waiver)',
+      'Federal EVV mandate active (21st Century Cures Act — Layer 1 hard-stop)',
       'Home health workers exist in the program',
-      'HHAeXchange integration approved',
+      'State EVV vendor connector configured (plugin architecture)',
       'Member care plans exist or will be created',
       'Care coordinator team assigned',
     ],
     turnsOff: [
-      'Client does not run HCBS program',
+      'Client does not run HCBS / LTSS program',
       'State EVV not yet mandated',
       'No home health workers in program',
-      'Client uses different EVV vendor',
+      'Client uses different EVV platform — not integrated',
       'Managed care only — no home services',
     ],
     addOns: [
-      'Remote monitoring — Withings devices',
-      'In-home tablet deployment',
-      'Family caregiver portal',
-      'Telehealth via Zoom SDK',
-      'Real-time vitals dashboard',
+      'Remote monitoring — Withings biometric devices',
+      'In-home tablet deployment for homebound members',
+      'Family caregiver portal with visit visibility',
+      'Telehealth integration via Zoom SDK',
+      'Real-time vitals alert dashboard',
+    ],
+    configKey: [
+      'EVV vendor connector — plugin swap when state changes vendor (hours, not sprints)',
+      'State EVV data format — configured per state spec (CA, TX, FL each differ)',
+      'Service caps and authorization rules — set per state MLTSS contract',
+      'Care plan template — configured per program type (personal care / skilled nursing)',
+      'Remote monitoring device model — swapped per MCO hardware budget',
     ],
     example: 'Molina California — HCBS program for 40,000 elderly members, CA EVV mandate active, 500 home health workers, HHAeXchange already in use. → Module ON: CA EVV format, remote monitoring for 3,200 highest-need members, in-home tablets for homebound only.',
     prompt: 'Write a product requirements brief for an HCBS Care Coordination module in a configurable Medicaid platform. Cover: federal EVV mandate requirements, state-by-state EVV format differences (Florida, California, Texas), HHAeXchange integration data flow, remote monitoring via Withings devices, care plan management, care team alert workflows, and what happens when a state changes their EVV format (should take days to reconfigure, not months).',
   },
   {
     num: 4, icon: '🧠', title: 'Behavioral Health',
-    tagline: 'Checks on mental health at every touchpoint — 42 CFR Part 2 compliant',
+    tagline: 'Checks on mental health at every touchpoint — 42 CFR Part 2 is a federal hard-stop',
     color: 'violet',
+    layerTag: 'Layer 1 (42 CFR Part 2 — federal hard-stop, cannot be overridden)',
+    execQ: '"How do you manage 42 CFR Part 2 consent today — is it a paper process or digital?"',
     mustHave: [
+      '42 CFR Part 2 compliance confirmed — federal hard-stop, always enforced',
+      'Separate member consent for BH data (distinct from standard HIPAA)',
       'Client serves behavioral health Medicaid population',
-      'State behavioral health parity requirements exist',
-      '42 CFR Part 2 compliance capability confirmed',
-      'Separate member consent for BH data',
-      'Behavioral health providers in network',
-      'Crisis response protocol defined',
+      'State behavioral health parity requirements active',
+      'BH providers in-network',
+      'Crisis response protocol defined and operational',
     ],
     turnsOff: [
       'Client does not serve BH population',
-      'Separate BH vendor already contracted',
-      '42 CFR Part 2 compliance not yet set up',
-      'No crisis response protocol in place',
-      'State manages BH separately from MCO',
+      'Separate BH vendor already contracted — MCO carve-out',
+      '42 CFR Part 2 compliance infrastructure not yet in place',
+      'No crisis response protocol defined',
+      'State manages BH separately from MCO contract',
     ],
     addOns: [
-      'PHQ-9 depression screening',
+      'PHQ-9 depression screening (automated trigger)',
       'GAD-7 anxiety screening',
       'AUDIT-C substance use screening',
-      'Crisis Text Line API integration',
-      'BH + physical health integration',
+      'Crisis Text Line API integration (24/7)',
+      'BH + physical health integrated care record',
+    ],
+    configKey: [
+      'Consent workflow — Decision Tree Builder, configurable per state consent rules',
+      'Screening triggers — PHQ-9 / GAD-7 / AUDIT-C toggled per MCO program',
+      'Crisis routing — configured per local crisis center network',
+      'BH data segregation level — set per 42 CFR Part 2 interpretation by state',
+      'BH + physical health integration — toggled per MCO contract carve-out status',
     ],
     example: 'Centene Florida — serves BH Medicaid population, FL parity requirements active, 42 CFR Part 2 confirmed, crisis protocol defined with local centers. → Module ON: PHQ-9 + GAD-7, Crisis Text Line integrated, BH + physical health integration ON.',
     prompt: 'Write a compliance specification for a Behavioral Health module in a Medicaid SaaS platform. Include: 42 CFR Part 2 data protection requirements (what it covers, how it differs from standard HIPAA), member consent workflow, data segregation architecture, PHQ-9 and GAD-7 automated screening triggers, Crisis Text Line API integration for 24/7 crisis response, and how BH data integrates with the physical health record while maintaining 42 CFR Part 2 protections.',
   },
   {
     num: 5, icon: '📊', title: 'Compliance Reporting',
-    tagline: 'Auto-generates every Medicaid report — zero manual work',
+    tagline: 'Auto-generates every Medicaid report via Schema Mapper — no IT sprint when formats change',
     color: 'amber',
+    layerTag: 'Layer 2 (State template) + Layer 3 (MCO contract frequency)',
+    execQ: '"When your state changed a reporting template last time, how long did IT take to update your system?"',
     mustHave: [
-      'State Medicaid contract requires reporting',
-      'EVV mandate active in state',
-      'CMS federal reporting requirements exist',
-      'Client has compliance team to receive reports',
-      'Data sources connected — EVV, member, SDOH',
-      'Report formats defined by state',
+      'State Medicaid contract requires compliance reporting',
+      'CMS federal reporting requirements exist (HEDIS, Star Ratings)',
+      'Data sources connected — EVV, member, SDOH feeds',
+      'Report formats defined by state (XML, PDF, CSV — varies)',
+      'Client compliance team assigned to receive and validate reports',
     ],
     turnsOff: [
-      'Client has separate reporting vendor',
+      'Client has separate reporting vendor under contract',
       'State reporting not yet required',
       'Data sources not yet connected',
-      'Client manages compliance manually by choice',
+      'Client manages compliance manually by deliberate choice',
     ],
     addOns: [
-      'Executive Tableau dashboard',
-      'HEDIS measure tracking',
-      'Star Ratings monitoring',
+      'Executive Tableau / Power BI dashboard',
+      'HEDIS measure auto-tracking',
+      'Star Ratings monitoring + gap alerts',
       'Audit preparation package',
-      'CMS federal closed-loop reporting',
+      'CMS federal closed-loop SDOH reporting',
     ],
-    example: 'Almost always ON for every client. Every MCO and state program has compliance requirements. Variable is which reports: EVV format per state, HEDIS per MCO, CMS templates per waiver. Configuration takes days — module is already built.',
+    configKey: [
+      'State report template — Schema Mapper, data fields re-mapped when format changes (no code)',
+      'Report frequency — set per MCO contract (weekly / monthly / quarterly)',
+      'HEDIS measures — toggled per MCO contract requirements',
+      'Effective dating — old reports auto-use old template version by Date of Service',
+      'Output format — XML / PDF / CSV configured per state requirement',
+    ],
+    example: 'Almost always ON for every client. Every MCO and state program has compliance requirements. Variable is which reports: EVV format per state, HEDIS per MCO, CMS templates per waiver. Schema Mapper means a state format change takes hours — not an IT sprint.',
     prompt: 'Write a product brief for an automated Compliance Reporting module in a Medicaid platform. Cover: how reports are auto-generated from live platform data (Salesforce Scheduled Flows + SQL pipelines), state-by-state EVV report format differences, HEDIS measure tracking, Star Ratings monitoring, CMS federal reporting, audit preparation workflows, and how the system handles state format changes without engineering sprints. Include the business case: 15 hours per week eliminated, audit prep 3 weeks to 2 days.',
   },
   {
     num: 6, icon: '🧭', title: 'Member Navigation',
-    tagline: 'Helps members understand and actually use their Medicaid benefits',
+    tagline: 'Helps members find and use their benefits — AI-powered, plain language, $50-phone ready',
     color: 'sky',
+    layerTag: 'Layer 3 (MCO contract — OFF for direct state programs)',
+    execQ: '"Can your members find a doctor and download their ID card on a $50 smartphone with a weak data plan?"',
     mustHave: [
-      'MCO has defined benefits catalog',
+      'MCO-driven program — not a direct state program (Layer 3 MCO gate)',
+      'Digitized benefits catalog with data API or feed',
       'Provider network directory available',
       'Member-facing digital channel exists',
-      'Benefits data API or feed available',
-      'MCO wants members to self-serve',
       'Language requirements defined',
+      'MCO wants members to self-serve (call center reduction goal)',
     ],
     turnsOff: [
-      'State program — not MCO driven',
-      'Benefits managed by separate member portal',
+      'Direct state program — not MCO driven (Layer 3 OFF by design)',
+      'Benefits managed by separate member portal already',
       'No digital channel for members',
-      'MCO has call center handling all navigation',
+      'MCO has call center handling all navigation — no self-serve goal',
       'Benefits catalog not yet digitized',
     ],
     addOns: [
-      'Claude AI conversational navigator',
-      'Benefit expiration alerts',
+      'Claude AI conversational navigator (plain language)',
+      'Benefit expiration + renewal alerts',
       'Appointment scheduling integration',
       'Provider distance and language filter',
-      'Multi-language support beyond 2 languages',
+      'Multi-language support beyond English + Spanish',
+    ],
+    configKey: [
+      'Benefits catalog — content-key driven, state-specific text updated without a code deploy',
+      'AI navigator language — configured per state language mandate',
+      'Provider directory filter — distance / language / specialty toggled per MCO network',
+      'Renewal alert schedule — configured per state redetermination cycle',
+      'Branding — MCO-branded or white-label set in content config',
     ],
     example: 'Centene Florida — full benefits catalog, provider directory API available, wants self-serve to reduce call center volume. → Module ON: Claude AI navigator, EN + ES + Creole, scheduling + benefit alerts ON. CA State Program → Module OFF: state does not run MCO benefits.',
     prompt: 'Write a PRD for a Member Navigation module in a Medicaid platform powered by the Claude API as a conversational AI navigator. Cover: benefits discovery flow, provider finder with language and distance filter, appointment scheduling integration, benefit expiration alert logic, how the Claude API navigator handles member questions in plain language (no medical jargon), multi-language support, and why this module is OFF for state programs vs ON for MCOs. Include success metrics.',
   },
   {
     num: 7, icon: '🤖', title: 'AI Risk Prediction',
-    tagline: 'Predicts health crises before they happen — moves care from reactive to proactive',
+    tagline: 'Predicts health crises before they happen — configurable weights with clinical guardrail',
     color: 'rose',
+    layerTag: 'Layer 2 (State weight config) + clinical sign-off required before any weight change goes live',
+    execQ: '"Which 5% of your members are driving 50% of your costs — and can you see who\'s next before they hit the ER?"',
     mustHave: [
-      'Minimum 6 months of member data exists',
-      'At least 3 other modules already active',
-      'Care coordinator team exists to act on alerts',
-      'Client has ER utilization reduction goal',
-      'Data science capability or partnership',
-      'Member data sharing consent obtained',
-      'Minimum member population — 5,000+',
+      'Minimum 6 months of member claims history',
+      'At least 3 other modules active — model needs multi-source data',
+      'Care coordinator team to act on daily risk alerts',
+      'Client has ER utilization reduction as a stated contract goal',
+      'Member data sharing consent obtained for AI use',
+      'Minimum population 5,000+ (below this, model under-performs)',
     ],
     turnsOff: [
       'Less than 6 months member data',
       'Population too small — under 5,000',
-      'No care team to act on predictions',
-      'No data sharing consent',
-      'Client not ready for AI — trust not built',
-      'Fewer than 3 modules active — not enough data',
+      'No care team to act on AI predictions',
+      'No member data sharing consent',
+      'Fewer than 3 modules active — insufficient data signals',
+      'Client not yet ready for AI (trust not established)',
     ],
     addOns: [
-      'ER visit prediction model',
+      'ER visit prediction model (30-day risk score)',
       'No-show prediction model',
       'Behavioral health crisis prediction',
       'Medication non-adherence prediction',
-      'Population health dashboard',
+      'Population health executive dashboard',
+    ],
+    configKey: [
+      'Risk score weights — configurable per state population profile (elderly / BH / expansion adults)',
+      'Weight changes require clinical sign-off + 90-day backtest before going live (guardrail)',
+      'Prediction model inputs — toggled per active modules (SDOH / PHQ-9 / EVV / ER history)',
+      'Alert threshold — set per MCO coordinator capacity (top 50 vs top 200 daily)',
+      'ER risk window — 14-day or 30-day prediction horizon, configured per MCO goal',
     ],
     example: 'Molina California — 2 years of data, modules 1+3+5 active, 200 coordinators, ER reduction is #1 goal, 40,000 members. → Module ON: ER + no-show prediction active. New MCO with 3,000 members → Module OFF until population and data grow.',
     prompt: 'Write a product requirements brief for an AI Risk Prediction module in a Medicaid care management platform. Include: minimum data requirements (6+ months, 5,000+ members, 3+ modules active), model inputs (SDOH flags, PHQ-9 scores, ER history, appointment no-shows, medication patterns), prediction outputs (30-day ER risk score, no-show probability), how predictions surface to care coordinators (daily priority list), care coordinator workflow integration, success metrics (ER reduction %, revenue recovered), and explicit criteria for when NOT to activate.',
@@ -288,31 +349,89 @@ const STATES: StateData[] = [
 
 interface Question {
   id: string
-  text: string
   section: string
+  text: string
+  followUp: string
+  matchIf: string
+  modules: number[]
 }
 
 const QUESTIONS: Question[] = [
-  // Section A — Client Basics
-  { id: 'roster',    section: 'Client Basics',    text: 'Does the MCO have an active Medicaid member roster with contact data (phone/address)?' },
-  { id: 'hipaa',     section: 'Client Basics',    text: 'Is a HIPAA Business Associate Agreement (BAA) signed with this client?' },
-  { id: 'channel',   section: 'Client Basics',    text: 'Is at least one outreach channel available — SMS, mobile app, or kiosk?' },
-  // Section B — Programs
-  { id: 'sdoh_req',  section: 'Programs',         text: 'Does the state Medicaid contract or CMS waiver require SDOH screening?' },
-  { id: 'findhelp',  section: 'Programs',         text: 'Is the FindHelp community resource network available in the service area?' },
-  { id: 'care_team', section: 'Programs',         text: 'Does the client have a care coordinator team to act on referrals and alerts?' },
-  { id: 'hcbs',      section: 'Programs',         text: 'Does this client run an HCBS or LTSS home-based care program?' },
-  { id: 'evv',       section: 'Programs',         text: 'Is the state EVV (Electronic Visit Verification) mandate currently active?' },
-  { id: 'bh_pop',    section: 'Programs',         text: 'Does the client serve a behavioral health Medicaid population?' },
-  // Section C — Compliance
-  { id: 'state_rpt', section: 'Compliance',       text: 'Does the state Medicaid contract require compliance reporting?' },
-  { id: 'cfr42',     section: 'Compliance',       text: 'Has 42 CFR Part 2 compliance capability been confirmed (behavioral health data)?' },
-  { id: 'crisis',    section: 'Compliance',       text: 'Is a crisis response protocol defined and operational?' },
-  { id: 'mco_nav',   section: 'Compliance',       text: 'Is this an MCO-driven program (not a direct state program) with a digitized benefits catalog?' },
-  // Section D — Data Readiness
-  { id: 'data_6mo',  section: 'Data Readiness',   text: 'Does the client have at least 6 months of historical member data?' },
-  { id: 'pop_5k',    section: 'Data Readiness',   text: 'Is the member population 5,000 or more?' },
-  { id: 'consent',   section: 'Data Readiness',   text: 'Has member data sharing consent been obtained for AI / analytics use?' },
+  // ── State Contract & Program ──────────────────────────────────────────────
+  {
+    id: 'mltss', section: 'State Contract & Program', modules: [3],
+    text: '"Does your state contract include Managed Long-Term Services and Supports (MLTSS) or specialized waivers — 1115 or 1915(c)?"',
+    followUp: '"How are you currently tracking EVV for home caregivers to ensure you aren\'t paying for ghost visits?"',
+    matchIf: 'High elderly or disabled population, caregiver fraud concerns, HCBS waiver active',
+  },
+  {
+    id: 'bh_consent', section: 'State Contract & Program', modules: [4],
+    text: '"How do you currently manage 42 CFR Part 2 consent for behavioral health data — is it a paper process or digital?"',
+    followUp: '"Are you required by the state to integrate mental health screenings into every primary care visit?"',
+    matchIf: 'High opioid-use disorder rates, strict data privacy state laws, BH parity requirements',
+  },
+  {
+    id: 'sdoh_incentive', section: 'State Contract & Program', modules: [2],
+    text: '"Does your state Medicaid contract pay incentive bonuses for hitting Social Determinants of Health goals?"',
+    followUp: '"What is your biggest driver of non-emergent ER use — transportation, food insecurity, or housing instability?"',
+    matchIf: 'State pays SDOH performance bonuses, 1115 waiver with SDOH outcome requirements active',
+  },
+  {
+    id: 'audit_pain', section: 'State Contract & Program', modules: [5],
+    text: '"How many person-hours per month does your team spend manually pulling data for state audits or HEDIS reporting?"',
+    followUp: '"When your state changes a reporting template, how long does it take your IT team to update your system?"',
+    matchIf: 'Manual compliance work, state fines for late or incorrect reports, HEDIS under-reporting',
+  },
+  // ── Current Pain Points ───────────────────────────────────────────────────
+  {
+    id: 'evv_fraud', section: 'Current Pain Points', modules: [3],
+    text: '"Are you currently being flagged by the state for EVV compliance gaps or ghost visit fraud?"',
+    followUp: '"Do you know in real-time when a home health worker didn\'t show up for a scheduled visit?"',
+    matchIf: 'EVV mandate active, no real-time caregiver tracking, state audits flagging visit discrepancies',
+  },
+  {
+    id: 'member_churn', section: 'Current Pain Points', modules: [1, 6],
+    text: '"What is your current churn rate — how many members do you lose each year simply because they forgot to fill out renewal paperwork?"',
+    followUp: '"Are your redetermination loss rates higher than your state average?"',
+    matchIf: 'Low member satisfaction scores, high redetermination losses, members losing coverage at renewal',
+  },
+  {
+    id: 'sdoh_closeloop', section: 'Current Pain Points', modules: [2],
+    text: '"If you refer a member to a food bank, do you know if they actually received the food?"',
+    followUp: '"Can you trace a single SDOH referral from screening all the way to a confirmed outcome in your current system?"',
+    matchIf: 'No closed-loop referral tracking, CMS compliance requirements for SDOH outcome data',
+  },
+  {
+    id: 'ai_cost', section: 'Current Pain Points', modules: [7],
+    text: '"Which 5% of your members are driving 50% of your costs — and can you identify the next person on that list before they hit the ER?"',
+    followUp: '"Are you looking to move from reactive care management to proactive prevention?"',
+    matchIf: 'Large plan focused on Medical Loss Ratio reduction, ER utilization a contract metric',
+  },
+  // ── Population & Scale ────────────────────────────────────────────────────
+  {
+    id: 'bh_screening', section: 'Population & Scale', modules: [4],
+    text: '"Do you operate in a state with high opioid-use disorder rates or strict behavioral health parity laws?"',
+    followUp: '"Do you have a defined crisis response protocol — what happens at 2am when a member calls in crisis?"',
+    matchIf: 'States with opioid epidemic burden, 42 CFR Part 2 compliance gap, BH parity active',
+  },
+  {
+    id: 'large_plan', section: 'Population & Scale', modules: [7],
+    text: '"Is your enrolled population over 10,000 members with at least 6 months of Medicaid claims history?"',
+    followUp: '"Do you have a care coordinator team in place who could act on AI-generated daily risk alerts?"',
+    matchIf: 'Large plan at Centene / United tier — MLR reduction is a stated board-level goal',
+  },
+  {
+    id: 'member_digital', section: 'Population & Scale', modules: [1],
+    text: '"Can your members find a doctor, check their benefits, and download their ID card on a $50 smartphone with a weak data plan?"',
+    followUp: '"What percentage of your member outreach still goes out as paper mail?"',
+    matchIf: 'Low digital adoption, rural or low-income populations, high call center volume from basic questions',
+  },
+  {
+    id: 'hipaa', section: 'Population & Scale', modules: [1],
+    text: '"Is a HIPAA Business Associate Agreement already signed — or actively in progress — with this MCO\'s legal team?"',
+    followUp: '"Have you completed a Medicaid data security assessment in the last 12 months?"',
+    matchIf: 'Required gate before any member data can flow through the platform',
+  },
 ]
 
 type Answer = 'yes' | 'no' | null
@@ -321,45 +440,51 @@ type ModuleStatus = 'active' | 'optional' | 'off' | 'pending'
 
 function deriveModules(a: Answers): Record<number, ModuleStatus> {
   const yes = (id: string) => a[id] === 'yes'
-  const no  = (id: string) => a[id] === 'no'
   const pending = (ids: string[]) => ids.some(id => a[id] === null)
 
-  const m1: ModuleStatus = pending(['roster','hipaa','channel']) ? 'pending'
-    : yes('roster') && yes('hipaa') && yes('channel') ? 'active'
-    : yes('roster') && yes('hipaa') && no('channel') ? 'optional'
+  const m1: ModuleStatus = pending(['member_churn','member_digital','hipaa']) ? 'pending'
+    : (yes('member_churn') || yes('member_digital')) && yes('hipaa') ? 'active'
+    : (yes('member_churn') || yes('member_digital')) ? 'optional'
     : 'off'
 
-  const m2: ModuleStatus = pending(['sdoh_req','findhelp','care_team']) ? 'pending'
-    : yes('sdoh_req') && yes('findhelp') && yes('care_team') ? 'active'
-    : yes('sdoh_req') && yes('findhelp') && no('care_team') ? 'optional'
+  const m2: ModuleStatus = pending(['sdoh_incentive','sdoh_closeloop']) ? 'pending'
+    : yes('sdoh_incentive') ? 'active'
+    : yes('sdoh_closeloop') ? 'optional'
     : 'off'
 
-  const m3: ModuleStatus = pending(['hcbs','evv']) ? 'pending'
-    : yes('hcbs') && yes('evv') ? 'active'
-    : yes('hcbs') && no('evv') ? 'optional'
+  const m3: ModuleStatus = pending(['mltss','evv_fraud']) ? 'pending'
+    : yes('mltss') || yes('evv_fraud') ? 'active'
     : 'off'
 
-  const m4: ModuleStatus = pending(['bh_pop','cfr42','crisis']) ? 'pending'
-    : yes('bh_pop') && yes('cfr42') && yes('crisis') ? 'active'
-    : yes('bh_pop') && no('cfr42') ? 'optional'
+  const m4: ModuleStatus = pending(['bh_consent','bh_screening']) ? 'pending'
+    : yes('bh_consent') || yes('bh_screening') ? 'active'
     : 'off'
 
-  const m5: ModuleStatus = pending(['state_rpt']) ? 'pending'
-    : yes('state_rpt') ? 'active'
+  const m5: ModuleStatus = pending(['audit_pain']) ? 'pending'
+    : yes('audit_pain') ? 'active'
     : 'optional'
 
-  const m6: ModuleStatus = pending(['mco_nav']) ? 'pending'
-    : yes('mco_nav') ? 'active'
+  const m6: ModuleStatus = pending(['member_churn']) ? 'pending'
+    : yes('member_churn') ? 'active'
     : 'off'
 
   const activeCount = [m1,m2,m3,m4,m5].filter(s => s === 'active').length
-  const m7: ModuleStatus = pending(['data_6mo','pop_5k','consent']) ? 'pending'
-    : yes('data_6mo') && yes('pop_5k') && yes('consent') && activeCount >= 3 ? 'active'
-    : yes('data_6mo') && yes('pop_5k') && yes('consent') && activeCount < 3 ? 'optional'
+  const m7: ModuleStatus = pending(['ai_cost','large_plan']) ? 'pending'
+    : yes('ai_cost') && yes('large_plan') && activeCount >= 3 ? 'active'
+    : yes('ai_cost') || yes('large_plan') ? 'optional'
     : 'off'
 
   return { 1: m1, 2: m2, 3: m3, 4: m4, 5: m5, 6: m6, 7: m7 }
 }
+
+const DECISION_MATRIX = [
+  { trigger: '"Audits are killing us."',           modules: [5],    label: 'Compliance Reporting' },
+  { trigger: '"We can\'t find our members."',      modules: [1, 6], label: 'Member Engagement + Navigation' },
+  { trigger: '"Our home care data is a mess."',    modules: [3],    label: 'HCBS Care Coordination' },
+  { trigger: '"ER visits are too high."',          modules: [7, 2], label: 'AI Risk Prediction + SDOH' },
+  { trigger: '"Members keep losing coverage."',    modules: [1, 6], label: 'Member Engagement + Navigation' },
+  { trigger: '"BH consent is a paper nightmare."', modules: [4],    label: 'Behavioral Health' },
+]
 
 const STATUS_STYLE: Record<ModuleStatus, { badge: string; dot: string; label: string }> = {
   active:  { badge: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30', dot: 'bg-emerald-400', label: 'Active' },
@@ -368,17 +493,17 @@ const STATUS_STYLE: Record<ModuleStatus, { badge: string; dot: string; label: st
   pending: { badge: 'bg-zinc-800/50 text-zinc-600 border border-zinc-800',             dot: 'bg-zinc-700',    label: '?' },
 }
 
-const COLOR_MAP: Record<string, { header: string; mustHave: string; example: string; btn: string }> = {
-  indigo:  { header: 'bg-indigo-500/10 border-indigo-500/20',  mustHave: 'text-indigo-400',  example: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300',  btn: 'bg-indigo-600/20 border-indigo-500/40 text-indigo-400 hover:bg-indigo-600/30' },
-  emerald: { header: 'bg-emerald-500/10 border-emerald-500/20', mustHave: 'text-emerald-400', example: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300', btn: 'bg-emerald-600/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30' },
-  teal:    { header: 'bg-teal-500/10 border-teal-500/20',      mustHave: 'text-teal-400',    example: 'bg-teal-500/10 border-teal-500/20 text-teal-300',        btn: 'bg-teal-600/20 border-teal-500/40 text-teal-400 hover:bg-teal-600/30' },
-  violet:  { header: 'bg-violet-500/10 border-violet-500/20',  mustHave: 'text-violet-400',  example: 'bg-violet-500/10 border-violet-500/20 text-violet-300',  btn: 'bg-violet-600/20 border-violet-500/40 text-violet-400 hover:bg-violet-600/30' },
-  amber:   { header: 'bg-amber-500/10 border-amber-500/20',    mustHave: 'text-amber-400',   example: 'bg-amber-500/10 border-amber-500/20 text-amber-300',    btn: 'bg-amber-600/20 border-amber-500/40 text-amber-400 hover:bg-amber-600/30' },
-  sky:     { header: 'bg-sky-500/10 border-sky-500/20',        mustHave: 'text-sky-400',     example: 'bg-sky-500/10 border-sky-500/20 text-sky-300',          btn: 'bg-sky-600/20 border-sky-500/40 text-sky-400 hover:bg-sky-600/30' },
-  rose:    { header: 'bg-rose-500/10 border-rose-500/20',      mustHave: 'text-rose-400',    example: 'bg-rose-500/10 border-rose-500/20 text-rose-300',        btn: 'bg-rose-600/20 border-rose-500/40 text-rose-400 hover:bg-rose-600/30' },
+const COLOR_MAP: Record<string, { header: string; mustHave: string; example: string; btn: string; layer: string }> = {
+  indigo:  { header: 'bg-indigo-500/10 border-indigo-500/20',  mustHave: 'text-indigo-400',  example: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300',  btn: 'bg-indigo-600/20 border-indigo-500/40 text-indigo-400 hover:bg-indigo-600/30', layer: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
+  emerald: { header: 'bg-emerald-500/10 border-emerald-500/20', mustHave: 'text-emerald-400', example: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300', btn: 'bg-emerald-600/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30', layer: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+  teal:    { header: 'bg-teal-500/10 border-teal-500/20',      mustHave: 'text-teal-400',    example: 'bg-teal-500/10 border-teal-500/20 text-teal-300',        btn: 'bg-teal-600/20 border-teal-500/40 text-teal-400 hover:bg-teal-600/30', layer: 'bg-teal-500/10 text-teal-400 border-teal-500/20' },
+  violet:  { header: 'bg-violet-500/10 border-violet-500/20',  mustHave: 'text-violet-400',  example: 'bg-violet-500/10 border-violet-500/20 text-violet-300',  btn: 'bg-violet-600/20 border-violet-500/40 text-violet-400 hover:bg-violet-600/30', layer: 'bg-violet-500/10 text-violet-400 border-violet-500/20' },
+  amber:   { header: 'bg-amber-500/10 border-amber-500/20',    mustHave: 'text-amber-400',   example: 'bg-amber-500/10 border-amber-500/20 text-amber-300',    btn: 'bg-amber-600/20 border-amber-500/40 text-amber-400 hover:bg-amber-600/30', layer: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  sky:     { header: 'bg-sky-500/10 border-sky-500/20',        mustHave: 'text-sky-400',     example: 'bg-sky-500/10 border-sky-500/20 text-sky-300',          btn: 'bg-sky-600/20 border-sky-500/40 text-sky-400 hover:bg-sky-600/30', layer: 'bg-sky-500/10 text-sky-400 border-sky-500/20' },
+  rose:    { header: 'bg-rose-500/10 border-rose-500/20',      mustHave: 'text-rose-400',    example: 'bg-rose-500/10 border-rose-500/20 text-rose-300',        btn: 'bg-rose-600/20 border-rose-500/40 text-rose-400 hover:bg-rose-600/30', layer: 'bg-rose-500/10 text-rose-400 border-rose-500/20' },
 }
 
-const SECTIONS = ['Client Basics', 'Programs', 'Compliance', 'Data Readiness']
+const SECTIONS = ['State Contract & Program', 'Current Pain Points', 'Population & Scale']
 
 // ── Onboard types ─────────────────────────────────────────────────────────────
 
@@ -529,6 +654,7 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
                         <div>
                           <p className="text-sm font-bold text-zinc-100 mb-0.5">{m.title}</p>
                           <p className="text-xs text-zinc-400 leading-snug">{m.tagline}</p>
+                          <span className={`inline-block mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${c.layer}`}>{m.layerTag}</span>
                         </div>
                       </div>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
@@ -540,6 +666,14 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
 
                   {isOpen && (
                     <div className="px-4 pb-4 border-t border-zinc-800 pt-4 space-y-4">
+
+                      {/* Exec question */}
+                      <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl px-3 py-2.5">
+                        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Ask the MCO executive</p>
+                        <p className="text-xs text-zinc-200 italic leading-snug">{m.execQ}</p>
+                      </div>
+
+                      {/* Must have / turns off / add-ons */}
                       <div className="grid grid-cols-3 gap-3">
                         <div>
                           <p className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider mb-2">Must have to turn ON</p>
@@ -572,6 +706,19 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
                           </ul>
                         </div>
                       </div>
+
+                      {/* Config Key */}
+                      <div className="bg-zinc-900/80 border border-zinc-700 rounded-xl px-3 py-3">
+                        <p className="text-[10px] font-semibold text-sky-400 uppercase tracking-wider mb-2">⚙ Config Key — changes without a code deploy</p>
+                        <ul className="space-y-1.5">
+                          {m.configKey.map(r => (
+                            <li key={r} className="flex gap-2 text-xs text-zinc-400 leading-snug">
+                              <span className="text-sky-500 flex-shrink-0 mt-0.5">→</span>{r}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
                       <div className={`rounded-xl border px-3 py-2.5 ${c.example}`}>
                         <p className="text-[10px] font-semibold uppercase tracking-wider mb-1 opacity-70">Real decision example</p>
                         <p className="text-xs leading-relaxed">{m.example}</p>
@@ -596,63 +743,112 @@ export default function MedCoreDemo({ onBack, onSend, isStreaming }: Props) {
       {mainTab === 'selector' && (
         <div className="flex-1 overflow-hidden flex gap-0">
 
-          {/* Left — Questions */}
+          {/* Left — Pain-point discovery questions */}
           <div className="flex-1 overflow-y-auto p-5 border-r border-zinc-800">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-bold text-zinc-100">Discovery Questionnaire</h3>
-                <p className="text-xs text-zinc-500 mt-0.5">Answer each question to determine which modules this MCO should receive.</p>
+                <h3 className="text-sm font-bold text-zinc-100">MCO Discovery — Pain Point Cheat Sheet</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">Don't ask "Do you want this module?" — ask about their pain. Modules activate automatically.</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-zinc-500">{answered} / {totalQ} answered</span>
-                <button
-                  onClick={resetAnswers}
-                  className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors border border-zinc-800 hover:border-zinc-700 px-2.5 py-1 rounded-lg"
-                >
+                <button onClick={resetAnswers} className="text-xs text-zinc-600 hover:text-zinc-400 border border-zinc-800 hover:border-zinc-700 px-2.5 py-1 rounded-lg transition-colors">
                   Reset
                 </button>
               </div>
             </div>
 
-            <div className="space-y-5 max-w-xl">
+            <div className="space-y-5">
               {SECTIONS.map(section => (
                 <div key={section}>
                   <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2.5">{section}</p>
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {QUESTIONS.filter(q => q.section === section).map(q => (
-                      <div key={q.id} className={`rounded-xl border p-3.5 transition-all ${
+                      <div key={q.id} className={`rounded-2xl border p-4 transition-all ${
                         answers[q.id] === 'yes' ? 'bg-emerald-500/5 border-emerald-500/30'
                         : answers[q.id] === 'no' ? 'bg-rose-500/5 border-rose-500/20'
                         : 'bg-zinc-900 border-zinc-800'
                       }`}>
-                        <p className="text-xs text-zinc-200 mb-2.5 leading-relaxed">{q.text}</p>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => setAnswers(prev => ({ ...prev, [q.id]: answers[q.id] === 'yes' ? null : 'yes' }))}
-                            className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
-                              answers[q.id] === 'yes'
-                                ? 'bg-emerald-500 text-white border-emerald-500'
-                                : 'bg-zinc-800/60 text-zinc-400 border-zinc-700 hover:border-emerald-500/50 hover:text-emerald-400'
-                            }`}
-                          >
-                            Yes
-                          </button>
-                          <button
-                            onClick={() => setAnswers(prev => ({ ...prev, [q.id]: answers[q.id] === 'no' ? null : 'no' }))}
-                            className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
-                              answers[q.id] === 'no'
-                                ? 'bg-rose-500 text-white border-rose-500'
-                                : 'bg-zinc-800/60 text-zinc-400 border-zinc-700 hover:border-rose-500/50 hover:text-rose-400'
-                            }`}
-                          >
-                            No
-                          </button>
+                        {/* Main question — spoken to exec */}
+                        <p className="text-xs font-semibold text-zinc-100 mb-1 leading-snug">{q.text}</p>
+
+                        {/* Follow-up probe */}
+                        <p className="text-[11px] text-zinc-500 italic mb-2 leading-snug">↳ {q.followUp}</p>
+
+                        {/* Match if + module tags */}
+                        <div className="flex items-start gap-2 mb-3">
+                          <span className="text-[9px] font-semibold text-zinc-600 uppercase tracking-wider flex-shrink-0 mt-0.5">Match if:</span>
+                          <p className="text-[11px] text-zinc-400 leading-snug">{q.matchIf}</p>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-3">
+                          {/* Module badges */}
+                          <div className="flex gap-1 flex-wrap">
+                            {q.modules.map(num => {
+                              const mod = MODULES.find(m => m.num === num)!
+                              return (
+                                <span key={num} className="text-[10px] font-semibold bg-zinc-800 border border-zinc-700 text-zinc-400 rounded-full px-2 py-0.5">
+                                  {mod.icon} {mod.title}
+                                </span>
+                              )
+                            })}
+                          </div>
+                          {/* Yes / No */}
+                          <div className="flex gap-1.5 flex-shrink-0">
+                            <button
+                              onClick={() => setAnswers(prev => ({ ...prev, [q.id]: answers[q.id] === 'yes' ? null : 'yes' }))}
+                              className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all ${
+                                answers[q.id] === 'yes'
+                                  ? 'bg-emerald-500 text-white border-emerald-500'
+                                  : 'bg-zinc-800/60 text-zinc-400 border-zinc-700 hover:border-emerald-500/50 hover:text-emerald-400'
+                              }`}
+                            >Yes</button>
+                            <button
+                              onClick={() => setAnswers(prev => ({ ...prev, [q.id]: answers[q.id] === 'no' ? null : 'no' }))}
+                              className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all ${
+                                answers[q.id] === 'no'
+                                  ? 'bg-rose-500 text-white border-rose-500'
+                                  : 'bg-zinc-800/60 text-zinc-400 border-zinc-700 hover:border-rose-500/50 hover:text-rose-400'
+                              }`}
+                            >No</button>
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
               ))}
+
+              {/* Decision Matrix — shows after 6 answered */}
+              {answered >= 6 && (
+                <div className="bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden mt-2">
+                  <div className="px-4 py-3 border-b border-zinc-800">
+                    <p className="text-xs font-bold text-zinc-200">Decision Matrix — if they say this, enable that</p>
+                    <p className="text-[10px] text-zinc-500 mt-0.5">Use this in the first 10 minutes with any MCO executive</p>
+                  </div>
+                  <div className="divide-y divide-zinc-800/60">
+                    {DECISION_MATRIX.map((row, i) => (
+                      <div key={i} className="px-4 py-2.5 flex items-center gap-3">
+                        <p className="text-[11px] text-zinc-300 italic flex-1">{row.trigger}</p>
+                        <span className="text-zinc-600">→</span>
+                        <div className="flex gap-1 flex-shrink-0">
+                          {row.modules.map(num => {
+                            const mod = MODULES.find(m => m.num === num)!
+                            return (
+                              <span key={num} className="text-[10px] font-semibold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-full px-2 py-0.5">
+                                {mod.icon} {mod.title}
+                              </span>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="px-4 py-2.5 border-t border-zinc-800 bg-zinc-900/50">
+                    <p className="text-[10px] text-zinc-500 italic">Pro tip: If talking to a national parent company — ask "Which state is your lowest-performing region?" Focus the module configuration on that state's specific rules first.</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
