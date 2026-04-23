@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import MedCoreDemo from './MedCoreDemo'
+import WrapbookDemo from './WrapbookDemo'
 
 interface Props {
   onSend: (text: string, mode: string) => void
@@ -760,7 +761,7 @@ const FRAMEWORKS = [
 
 // ── Tab types ─────────────────────────────────────────────────────────────────
 
-type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical' | 'medicaid'
+type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical' | 'medicaid' | 'wrapbook'
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -778,6 +779,10 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
         isStreaming={isStreaming}
       />
     )
+  }
+
+  if (activeTab === 'wrapbook') {
+    return <WrapbookDemo onBack={() => setActiveTab('books')} />
   }
 
   return (
@@ -825,6 +830,7 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
             { key: 'meetings',   label: '📅 Meetings' },
             { key: 'technical',  label: '⚙️ Technical' },
             { key: 'medicaid',   label: '🏥 Medicaid' },
+            { key: 'wrapbook',   label: '🎬 Wrapbook' },
           ] as { key: Tab; label: string }[]).map(tab => (
             <button
               key={tab.key}
