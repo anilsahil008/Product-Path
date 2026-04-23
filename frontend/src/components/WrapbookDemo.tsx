@@ -314,14 +314,11 @@ export default function WrapbookDemo({ onBack }: Props) {
             <div className="flex-1">
               <div className="flex items-center gap-2.5 mb-1">
                 <span className="text-2xl">🎬</span>
-                <span className="text-xs font-bold tracking-widest text-violet-400 uppercase">Wrapbook · Interview Prep</span>
+                <span className="text-xs font-bold tracking-widest text-violet-400 uppercase">Wrapbook · Demo</span>
               </div>
               <h1 className="text-3xl font-bold text-zinc-50 tracking-tight leading-tight">
                 Entertainment Payroll Platform
               </h1>
-              <p className="text-sm text-zinc-400 mt-1.5">
-                Senior PM · Domain briefing — production, crew, compliance, and platform systems
-              </p>
             </div>
             <div className="flex gap-3 text-center flex-shrink-0">
               {[
