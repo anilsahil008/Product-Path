@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import MedCoreDemo from './MedCoreDemo'
+import WorkdayDemo from './WorkdayDemo'
 
 interface Props {
   onSend: (text: string, mode: string) => void
@@ -760,7 +761,7 @@ const FRAMEWORKS = [
 
 // ── Tab types ─────────────────────────────────────────────────────────────────
 
-type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical' | 'medicaid'
+type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical' | 'medicaid' | 'workday'
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -780,6 +781,9 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
     )
   }
 
+  if (activeTab === 'workday') {
+    return <WorkdayDemo onBack={() => setActiveTab('books')} />
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 select-none">
@@ -826,6 +830,7 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
             { key: 'meetings',   label: '📅 Meetings' },
             { key: 'technical',  label: '⚙️ Technical' },
             { key: 'medicaid',   label: '🏥 Medicaid' },
+            { key: 'workday',    label: '⊞ Workday' },
           ] as { key: Tab; label: string }[]).map(tab => (
             <button
               key={tab.key}
