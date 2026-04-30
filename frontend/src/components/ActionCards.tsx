@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import MedCoreDemo from './MedCoreDemo'
 import WorkdayDemo from './WorkdayDemo'
+import InteleDemo from './InteleDemo'
 
 interface Props {
   onSend: (text: string, mode: string) => void
@@ -761,7 +762,7 @@ const FRAMEWORKS = [
 
 // ── Tab types ─────────────────────────────────────────────────────────────────
 
-type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical' | 'medicaid' | 'workday'
+type Tab = 'books' | 'situations' | 'frameworks' | 'teams' | 'meetings' | 'technical' | 'medicaid' | 'workday' | 'intele'
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -783,6 +784,10 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
 
   if (activeTab === 'workday') {
     return <WorkdayDemo onBack={() => setActiveTab('books')} />
+  }
+
+  if (activeTab === 'intele') {
+    return <InteleDemo onBack={() => setActiveTab('books')} />
   }
 
   return (
@@ -831,6 +836,7 @@ export default function ActionCards({ onSend, isStreaming }: Props) {
             { key: 'technical',  label: '⚙️ Technical' },
             { key: 'medicaid',   label: '🏥 Medicaid' },
             { key: 'workday',    label: '⊞ Workday' },
+            { key: 'intele',     label: '✈️ InteleTravel' },
           ] as { key: Tab; label: string }[]).map(tab => (
             <button
               key={tab.key}
